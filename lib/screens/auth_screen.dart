@@ -17,6 +17,7 @@ import '../services/plex_auth_service.dart';
 import '../services/settings_service.dart';
 import '../services/storage_service.dart';
 import '../providers/account_preferences_controller.dart';
+import '../cgflix/cgflix_logo.dart';
 import '../i18n/strings.g.dart';
 import '../utils/app_logger.dart';
 import '../utils/dialogs.dart';
@@ -51,6 +52,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool _isAuthenticating = false;
+  bool _plexChoice = false; // CGFLIX: mostra as opções do Plex (navegador/QR) depois de tocar em Plex
   String? _errorMessage;
   // Reuse a one-shot service for the debug-token verify path; the Plex
   // PIN/QR flow inside [PlexPinAuthFlow] owns its own service instance.
@@ -281,7 +283,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           mainAxisAlignment: .center,
                           crossAxisAlignment: .center,
                           children: [
-                            Image.asset('assets/plezy.png', width: 120, height: 120),
+                            const CgflixEmblem(size: 120),
                             const SizedBox(height: 24),
                             Text(
                               t.app.title,
@@ -310,7 +312,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       mainAxisSize: .min,
                       crossAxisAlignment: .stretch,
                       children: [
-                        Image.asset('assets/plezy.png', width: 120, height: 120),
+                        const CgflixEmblem(size: 120),
                         const SizedBox(height: 24),
                         Text(
                           t.app.title,
@@ -359,100 +361,88 @@ class _AuthScreenState extends State<AuthScreen> {
     void startBrowserAfterRecovery() => unawaited(_startPlexAfterRecovery(startBrowser));
     void startQrAfterRecovery() => unawaited(_startPlexAfterRecovery(startQr));
     const jellyfinDialect = MediaBrowserDialect.jellyfin;
-    const embyDialect = MediaBrowserDialect.emby;
     void connectToJellyfin() => unawaited(_connectToMediaBrowser(jellyfinDialect));
-    void connectToEmby() => unawaited(_connectToMediaBrowser(embyDialect));
+    // CGFLIX: só duas opções na entrada (Jellyfin em destaque, depois Plex). O QR e o
+    // navegador do Plex ficam dentro do fluxo do Plex (_plexChoice). O suporte a Emby
+    // continua no código, só não é oferecido aqui.
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .stretch,
       children: [
-        if (isTV) ...[
+        if (!_plexChoice) ...[
           FocusableButton(
             autofocus: true,
-            onPressed: busy ? null : startQrAfterRecovery,
-            useBackgroundFocus: true,
-            child: ElevatedButton(
-              onPressed: busy ? null : startQrAfterRecovery,
-              style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-              child: Row(
-                mainAxisAlignment: .center,
-                mainAxisSize: .min,
-                children: [
-                  const BackendBadge(backend: MediaBackend.plex, size: 18),
-                  const SizedBox(width: 8),
-                  Text(t.auth.signInWithPlex),
-                ],
-              ),
-            ),
-          ),
-          if (!isAppleTV) ...[
-            const SizedBox(height: 12),
-            FocusableButton(
-              onPressed: busy ? null : startBrowserAfterRecovery,
-              child: OutlinedButton(
-                onPressed: busy ? null : startBrowserAfterRecovery,
-                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                child: Text(t.auth.useBrowser),
-              ),
-            ),
-          ],
-        ] else ...[
-          FocusableButton(
-            onPressed: busy ? null : startBrowserAfterRecovery,
+            onPressed: connectToJellyfin,
             useBackgroundFocus: true,
             child: ElevatedButton.icon(
-              onPressed: busy ? null : startBrowserAfterRecovery,
+              onPressed: connectToJellyfin,
               style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-              icon: const BackendBadge(backend: MediaBackend.plex, size: 18),
-              label: Text(t.auth.signInWithPlex),
+              icon: const BackendBadge(backend: MediaBackend.jellyfin, size: 18),
+              label: Text(t.auth.connectToMediaBrowser(product: jellyfinDialect.productName)),
             ),
           ),
           const SizedBox(height: 12),
           FocusableButton(
-            onPressed: busy ? null : startQrAfterRecovery,
-            child: OutlinedButton(
-              onPressed: busy ? null : startQrAfterRecovery,
+            onPressed: busy ? null : () => setState(() => _plexChoice = true),
+            child: OutlinedButton.icon(
+              onPressed: busy ? null : () => setState(() => _plexChoice = true),
               style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-              child: Text(t.auth.showQRCode),
+              icon: const BackendBadge(backend: MediaBackend.plex, size: 18),
+              label: Text(t.auth.signInWithPlex),
             ),
           ),
-        ],
-        const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                t.auth.or,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+        ] else ...[
+          // Fluxo do Plex: navegador ou QR code (na TV o QR vem primeiro).
+          if (isTV) ...[
+            FocusableButton(
+              autofocus: true,
+              onPressed: busy ? null : startQrAfterRecovery,
+              useBackgroundFocus: true,
+              child: ElevatedButton(
+                onPressed: busy ? null : startQrAfterRecovery,
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                child: Text(t.auth.showQRCode),
               ),
             ),
-            Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
+            if (!isAppleTV) ...[
+              const SizedBox(height: 12),
+              FocusableButton(
+                onPressed: busy ? null : startBrowserAfterRecovery,
+                child: OutlinedButton(
+                  onPressed: busy ? null : startBrowserAfterRecovery,
+                  style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                  child: Text(t.auth.useBrowser),
+                ),
+              ),
+            ],
+          ] else ...[
+            FocusableButton(
+              autofocus: true,
+              onPressed: busy ? null : startBrowserAfterRecovery,
+              useBackgroundFocus: true,
+              child: ElevatedButton.icon(
+                onPressed: busy ? null : startBrowserAfterRecovery,
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                icon: const BackendBadge(backend: MediaBackend.plex, size: 18),
+                label: Text(t.auth.signInWithPlex),
+              ),
+            ),
+            const SizedBox(height: 12),
+            FocusableButton(
+              onPressed: busy ? null : startQrAfterRecovery,
+              child: OutlinedButton(
+                onPressed: busy ? null : startQrAfterRecovery,
+                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                child: Text(t.auth.showQRCode),
+              ),
+            ),
           ],
-        ),
-        const SizedBox(height: 12),
-        FocusableButton(
-          onPressed: connectToJellyfin,
-          child: OutlinedButton.icon(
-            onPressed: connectToJellyfin,
-            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-            icon: const BackendBadge(backend: MediaBackend.jellyfin, size: 18),
-            label: Text(t.auth.connectToMediaBrowser(product: jellyfinDialect.productName)),
+          const SizedBox(height: 12),
+          FocusableButton(
+            onPressed: () => setState(() => _plexChoice = false),
+            child: TextButton(onPressed: () => setState(() => _plexChoice = false), child: Text(t.common.back)),
           ),
-        ),
-        const SizedBox(height: 12),
-        FocusableButton(
-          onPressed: connectToEmby,
-          child: OutlinedButton.icon(
-            onPressed: connectToEmby,
-            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-            icon: const BackendBadge(backend: MediaBackend.emby, size: 18),
-            label: Text(t.auth.connectToMediaBrowser(product: embyDialect.productName)),
-          ),
-        ),
+        ],
         if (kDebugMode) ...[
           const SizedBox(height: 12),
           FocusableButton(
