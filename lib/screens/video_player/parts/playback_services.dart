@@ -456,6 +456,10 @@ extension _VideoPlayerPlaybackServiceMethods on VideoPlayerScreenState {
 
     if (currentPlayer == null) return;
 
+    // CGFLIX: um tracker antigo que sobrar com o timer ligado reportaria uma
+    // segunda sessão da mesma reprodução ao servidor; cancela antes de recriar.
+    _progressTracker?.dispose();
+
     // Local media still reports live when its server is online; only queue
     // locally when no reporting client is reachable.
     if (mediaClient != null) {
