@@ -89,7 +89,7 @@ void main() {
         deviceId: 'dev-1',
       );
 
-      expect(header, 'MediaBrowser Client="Plezy", Device="Plezy", DeviceId="dev-1", Version="1.0"');
+      expect(header, 'MediaBrowser Client="CGFLIX", Device="CGFLIX", DeviceId="dev-1", Version="1.0"');
     });
 
     test('omits an empty device ID instead of emitting a malformed field', () {
@@ -120,28 +120,28 @@ void main() {
   group('jellyfinClientName', () {
     test('appends the platform the way the first-party apps do', () {
       for (final platform in ['iOS', 'Android', 'macOS', 'Windows', 'Linux']) {
-        expect(jellyfinClientName(DeviceIdentity(platform: platform)), 'Plezy $platform');
+        expect(jellyfinClientName(DeviceIdentity(platform: platform)), 'CGFLIX $platform');
       }
     });
 
     test('names the Android TV variant without repeating TV for tvOS', () {
-      expect(jellyfinClientName(const DeviceIdentity(platform: 'Android', isTv: true)), 'Plezy Android TV');
-      expect(jellyfinClientName(const DeviceIdentity(platform: 'tvOS', isTv: true)), 'Plezy tvOS');
+      expect(jellyfinClientName(const DeviceIdentity(platform: 'Android', isTv: true)), 'CGFLIX Android TV');
+      expect(jellyfinClientName(const DeviceIdentity(platform: 'tvOS', isTv: true)), 'CGFLIX tvOS');
     });
 
     test('keeps the TV suffix on the degraded lowercase OS name', () {
       // DeviceIdentityService falls back to Platform.operatingSystem when the
       // platform plugin fails, and that is lowercase.
-      expect(jellyfinClientName(const DeviceIdentity(platform: 'android', isTv: true)), 'Plezy Android TV');
+      expect(jellyfinClientName(const DeviceIdentity(platform: 'android', isTv: true)), 'CGFLIX Android TV');
     });
 
     test('only Android gets a TV suffix', () {
-      expect(jellyfinClientName(const DeviceIdentity(platform: 'Linux', isTv: true)), 'Plezy Linux');
+      expect(jellyfinClientName(const DeviceIdentity(platform: 'Linux', isTv: true)), 'CGFLIX Linux');
     });
 
     test('falls back to the bare app name without a platform', () {
-      expect(jellyfinClientName(const DeviceIdentity(platform: '')), 'Plezy');
-      expect(jellyfinClientName(const DeviceIdentity(platform: ' \u0000 ')), 'Plezy');
+      expect(jellyfinClientName(const DeviceIdentity(platform: '')), 'CGFLIX');
+      expect(jellyfinClientName(const DeviceIdentity(platform: ' \u0000 ')), 'CGFLIX');
     });
 
     test('survives the header round trip', () {
@@ -151,7 +151,7 @@ void main() {
         deviceName: 'Living Room Shield',
         deviceId: 'dev-1',
       );
-      expect(parseAsJellyfinWould(header)['Client'], 'Plezy Android TV');
+      expect(parseAsJellyfinWould(header)['Client'], 'CGFLIX Android TV');
     });
   });
 
@@ -178,7 +178,7 @@ void main() {
     });
 
     test('falls back to the app name when nothing about the device is known', () {
-      expect(jellyfinDeviceName(const DeviceIdentity(platform: '')), 'Plezy');
+      expect(jellyfinDeviceName(const DeviceIdentity(platform: '')), 'CGFLIX');
     });
   });
 
@@ -189,7 +189,7 @@ void main() {
       DeviceIdentityService.debugOverride(const DeviceIdentity(platform: 'Android', deviceModel: 'AFTKM', isTv: true));
       addTearDown(() => DeviceIdentityService.debugOverride(null));
       final identity = await DeviceIdentityService.resolve();
-      expect(jellyfinClientName(identity), 'Plezy Android TV');
+      expect(jellyfinClientName(identity), 'CGFLIX Android TV');
       expect(jellyfinDeviceName(identity), 'AFTKM');
     });
   });
