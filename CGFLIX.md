@@ -8,8 +8,7 @@ Licença e créditos do Plezy continuam no `LICENSE`, no README e na tela "Sobre
 
 | Arquivo | Mudança |
 |---|---|
-| `lib/cgflix/cgflix_defaults.dart` (novo) | URL sugerida `https://netflix.docaio.com.br` e regra do idioma padrão (PT quando o aparelho está num idioma que o app não traduz) |
-| `lib/screens/settings/add_jellyfin_screen.dart` | campo de servidor Jellyfin já vem preenchido com a URL sugerida (editável; Emby e Plex não mudam) |
+| `lib/cgflix/cgflix_defaults.dart` (novo) | idioma padrão (português) e constantes do CGFLIX (cabeçalho da Início, busca) |
 | `lib/services/settings_service.dart` | `_AppLocalePref.resolvedDefault` chama `cgflixResolveDefaultLocale` |
 | `android/app/build.gradle.kts` | `applicationId = br.com.docaio.cgflix` (o `namespace`/pacote Kotlin continua `com.edde746.plezy`); release sem keystore assina com a chave de debug |
 | `android/app/src/main/AndroidManifest.xml` | nome exibido "CGFLIX"; autoridades dos providers trocadas para o novo applicationId (evita conflito com o Plezy instalado) |
@@ -21,6 +20,30 @@ Licença e créditos do Plezy continuam no `LICENSE`, no README e na tela "Sobre
 | `README.md`, `CGFLIX.md` | aviso do fork e esta página |
 
 Mantidos de propósito: o esquema de deep link `plezy://` e a pasta de código `com.edde746.plezy` (renomear geraria conflito em todo merge).
+
+## Etapa 1A — ajustes do teste no aparelho
+
+O servidor **não** vem mais pré-preenchido (segurança): o campo do Jellyfin começa vazio, com a dica `https://seu.servidor.com`;
+`add_jellyfin_screen.dart` voltou a ser idêntico ao upstream.
+
+| Arquivo | Mudança |
+|---|---|
+| `lib/cgflix/cgflix_logo.dart`, `assets/cgflix_emblema.svg`, `pubspec.yaml` | emblema CGFLIX nas telas de marca (splash do Flutter, entrada, Sobre) |
+| `lib/main.dart`, `lib/screens/auth_screen.dart`, `lib/screens/settings/about_screen.dart` | trocam o logo do Plezy pelo `CgflixEmblem` |
+| `lib/screens/auth_screen.dart` | entrada só com Jellyfin (destaque) e Plex; QR/navegador do Plex dentro do fluxo do Plex; Emby não é oferecido (código mantido) |
+| `lib/media/media_browser_dialect.dart` | dica neutra do campo de servidor |
+| `lib/services/jellyfin_auth_header.dart`, `plex_client.dart`, `plex_auth_service.dart`, `plex_discover_client.dart`, `models/plex/plex_config.dart` | nome do app no servidor: `CGFLIX`, `CGFLIX Android`, `CGFLIX Android TV`; `X-Plex-Product: CGFLIX` |
+| `lib/screens/video_player/parts/playback_services.dart` | cancela o tracker de progresso antigo antes de recriar (evita sessão duplicada) |
+| `lib/screens/discover_screen.dart`, `lib/cgflix/cgflix_advanced.dart` | Início sem Recarregar/Assistir juntos/Controle remoto; puxar para atualizar; os dois recursos vão para Avançado |
+| `lib/widgets/settings_section.dart`, `lib/widgets/settings_page.dart`, `lib/cgflix/cgflix_collapsible.dart` | seções recolhíveis (cartões) nas Configurações |
+| `lib/screens/settings/{settings,general_settings,appearance_settings,playback_settings}_screen.dart` | usam as seções recolhíveis; cartão Avançado; mpv só em Avançado |
+| `lib/services/settings_service.dart` | padrões: tema OLED, áudio/legenda do servidor (`followServerTrackSelections`), idioma português |
+| `lib/cgflix/cgflix_about.dart` | dedicatória e crédito ao Plezy no Sobre |
+| `lib/mixins/debounced_media_search.dart`, `lib/services/data_aggregation_service.dart`, `lib/utils/search_relevance.dart` | busca: debounce 300 ms, 5 pessoas por termo, teto de 40 resultados |
+| `lib/i18n/*.i18n.json` e `strings_*.g.dart` | `app.title` = CGFLIX em todos os idiomas; português sem "Plezy" (regenerado com `dart run slang`) |
+| `docs/CONFIGURACOES.md` | cada opção, onde ficou e o padrão |
+
+Ao sincronizar com o upstream, os conflitos novos esperados estão nesses arquivos; conferir `grep -rn "CGFLIX" lib`.
 
 ## Como gerar o APK
 
