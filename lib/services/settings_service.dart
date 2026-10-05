@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../cgflix/cgflix_defaults.dart';
 import '../media/ids.dart';
 import '../media/playback_rate.dart';
 import '../media/media_version_preference.dart';
@@ -352,7 +353,7 @@ class _SkipMarkerModePref extends LegacyBoolEnumPref<SkipMarkerMode> {
 class _AppLocalePref extends Pref<AppLocale> {
   const _AppLocalePref() : super('app_locale');
   @override
-  AppLocale get resolvedDefault => resolvePreferredAppLocale(PlatformDispatcher.instance.locales);
+  AppLocale get resolvedDefault => cgflixResolveDefaultLocale(PlatformDispatcher.instance.locales); // CGFLIX
   @override
   AppLocale fromJson(Object? value) => AppLocale.values.firstWhere((v) => v.name == value);
   @override
