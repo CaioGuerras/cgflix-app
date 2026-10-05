@@ -245,7 +245,7 @@ android {
   }
 
   defaultConfig {
-    applicationId = "com.edde746.plezy"
+    applicationId = "br.com.docaio.cgflix" // CGFLIX (o namespace continua o do upstream)
     minSdk = 25 // Fire OS 6.x (API 25); :libmpv shares the same floor
     targetSdk = flutter.targetSdkVersion
     versionCode = flutter.versionCode
