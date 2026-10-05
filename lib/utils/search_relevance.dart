@@ -1,3 +1,4 @@
+import '../cgflix/cgflix_defaults.dart';
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
@@ -8,7 +9,7 @@ import '../media/media_item.dart';
 import '../media/media_person.dart';
 import '../media/search_hit.dart';
 
-const int defaultMediaSearchLimit = 100;
+const int defaultMediaSearchLimit = cgflixSearchResultLimit; // CGFLIX: era 100
 
 final RegExp _searchSeparatorPattern = RegExp(r'[^\p{L}\p{N}\p{M}]+', unicode: true);
 

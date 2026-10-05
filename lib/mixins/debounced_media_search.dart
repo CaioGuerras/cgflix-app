@@ -1,3 +1,4 @@
+import '../cgflix/cgflix_defaults.dart';
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -7,7 +8,7 @@ import '../utils/app_logger.dart';
 import '../utils/scroll_utils.dart';
 
 /// Debounced free-text search shared by the main search screen and the
-/// catalog (Explore) search screens: text controller + focus nodes, a 500ms
+/// catalog (Explore) search screens: text controller + focus nodes, a 300ms
 /// debounce, a generation guard against out-of-order responses, in-flight
 /// invalidation when the text diverges from the query being fetched, and the
 /// loading/failed/empty state flags the screens render from.
@@ -20,7 +21,7 @@ import '../utils/scroll_utils.dart';
 /// Implementations override [performSearchQuery]; everything else (including
 /// controller/node disposal) is owned here.
 mixin DebouncedMediaSearch<T extends StatefulWidget, R> on State<T> {
-  static const Duration searchDebounceDuration = Duration(milliseconds: 500);
+  static const Duration searchDebounceDuration = cgflixSearchDebounce; // CGFLIX: era 500 ms
 
   late final TextEditingController searchController = TextEditingController();
   late final FocusNode searchFocusNode = FocusNode(debugLabel: '${searchDebugLabel}Input');
@@ -91,7 +92,7 @@ mixin DebouncedMediaSearch<T extends StatefulWidget, R> on State<T> {
     final query = text.trim();
 
     // The clear affordance tracks text emptiness; without this rebuild it
-    // only appeared when a search landed ~500ms later.
+    // only appeared when a search landed ~300ms later.
     if (query.isNotEmpty != _showedClearButton) {
       _showedClearButton = query.isNotEmpty;
       setState(() {});
