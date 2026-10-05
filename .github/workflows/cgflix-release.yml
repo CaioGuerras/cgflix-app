@@ -1,30 +1,28 @@
-name: CGFLIX Android
+name: CGFLIX Release
 
-# APK de release do CGFLIX a cada push no main e em PRs (artifact `cgflix-apk`).
-# Assinado com a chave de debug: instala normalmente. Sem segredos nem escrita
-# (regra do CI para workflows de PR); a Release com chave própria está em
-# cgflix-release.yml (tags v*).
+# Release do CGFLIX: em tags v* compila o APK e anexa à Release. Fica separado do
+# cgflix-android.yml porque o CI do repositório proíbe segredos e permissão de
+# escrita em workflows acionados por PR. Sem keystore nos secrets, assina com a
+# chave de debug (instala normalmente, mas não serve para a Play Store).
 on:
   push:
-    branches: [main]
-  pull_request:
-  workflow_dispatch:
+    tags: ["v*"]
 
 env:
   # Mesma versão do Flutter usada pelo upstream (build.yml / ci.yml).
   FLUTTER_VERSION: "3.47.1"
 
 concurrency:
-  group: cgflix-android-${{ github.ref }}
+  group: cgflix-release-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   apk:
-    name: APK de release
+    name: APK de release (tag)
     runs-on: ubuntu-latest
     timeout-minutes: 90
     permissions:
-      contents: read
+      contents: write # anexar o APK à Release
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -54,9 +52,34 @@ jobs:
       - name: Dependências
         run: flutter pub get --enforce-lockfile --no-example
 
+      # Opcional: se os 4 secrets existirem, o APK sai assinado com a chave própria.
+      - name: Assinatura (se houver keystore nos secrets)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 --decode > android/app/upload-keystore.jks
+            {
+              echo "storePassword=$STORE_PASSWORD"
+              echo "keyPassword=$KEY_PASSWORD"
+              echo "keyAlias=$KEY_ALIAS"
+              echo "storeFile=upload-keystore.jks"
+            } > android/key.properties
+            echo "Assinando com o keystore dos secrets."
+          else
+            echo "Sem keystore: assinando com a chave de debug."
+          fi
+
       # Sem Sentry nem verificação de atualização do upstream (não definimos esses flags).
       - name: Compilar APK
         run: flutter build apk --release --split-per-abi --dart-define=GIT_COMMIT=${{ github.sha }}
+
+      - name: Limpar keystore
+        if: always()
+        run: rm -f android/app/upload-keystore.jks android/key.properties
 
       - name: Nomear APKs
         run: |
@@ -72,3 +95,10 @@ jobs:
           name: cgflix-apk
           path: dist/*.apk
           if-no-files-found: error
+
+      - name: Anexar à Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --title "CGFLIX $GITHUB_REF_NAME" --generate-notes
+          gh release upload "$GITHUB_REF_NAME" dist/*.apk --clobber
