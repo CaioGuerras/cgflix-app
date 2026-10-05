@@ -57,7 +57,7 @@ enum MediaBrowserDialect {
 
   /// Placeholder host shown in the "server URL" field.
   String get exampleBaseUrl => switch (this) {
-    MediaBrowserDialect.jellyfin => 'https://seu.servidor.com' // CGFLIX: dica neutra, campo começa vazio,
+    MediaBrowserDialect.jellyfin => 'https://seu.servidor.com', // CGFLIX: dica neutra, campo começa vazio
     MediaBrowserDialect.emby => 'https://emby.example.com',
   };
 
