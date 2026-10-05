@@ -300,6 +300,9 @@ android {
         signingConfig = signingConfigs.getByName("release")
       }
       // If key.properties doesn't exist, it will use debug signing for CI builds
+      else {
+        signingConfig = signingConfigs.getByName("debug") // CGFLIX: APK instalável sem keystore
+      }
       ndk {
         debugSymbolLevel = "FULL"
       }

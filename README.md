@@ -1,3 +1,6 @@
+> **CGFLIX** é um fork do [Plezy](https://github.com/edde746/plezy) (GPL-3.0) para o servidor de mídia da família e amigos.
+> O que mudou em relação ao original está em [CGFLIX.md](CGFLIX.md). Créditos e licença do Plezy permanecem abaixo e em [LICENSE](LICENSE).
+
 <h1>
   <img src="assets/plezy.png" alt="Plezy Logo" height="24" style="vertical-align: middle;" />
   Plezy

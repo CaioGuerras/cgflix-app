@@ -46,6 +46,8 @@ env:
 
 jobs:
   validate-trusted-ref:
+    # CGFLIX: depende de segredos do upstream (assinatura, Sentry, winget); só roda no repositório original.
+    if: github.repository == 'edde746/plezy'
     name: Validate trusted build ref
     runs-on: ubuntu-latest
     permissions: {}
