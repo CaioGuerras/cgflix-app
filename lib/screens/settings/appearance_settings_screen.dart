@@ -29,8 +29,10 @@ class AppearanceSettingsScreen extends StatelessWidget {
     final hasExplore = context.watch<CatalogSourcesProvider?>()?.hasAnySource ?? false;
     return SettingsPage(
       title: Text(t.settings.appearance),
+      collapsible: true, // CGFLIX
       children: [
         SettingsGroup(
+          initiallyExpanded: true,
           title: t.settings.display,
           children: [
             _themeSelector(),

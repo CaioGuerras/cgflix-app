@@ -29,8 +29,13 @@ class GeneralSettingsScreen extends StatelessWidget {
     final hasMultipleProfiles = context.watch<ActiveProfileProvider>().hasMultipleProfiles;
     return SettingsPage(
       title: Text(t.settings.general),
+      collapsible: true, // CGFLIX
       children: [
-        SettingsGroup(title: t.settings.languageAndRegion, children: [_languageSelector(context)]),
+        SettingsGroup(
+          title: t.settings.languageAndRegion,
+          initiallyExpanded: true,
+          children: [_languageSelector(context)],
+        ),
 
         SettingsGroup(
           title: t.settings.startup,

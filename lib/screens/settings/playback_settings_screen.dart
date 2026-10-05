@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../cgflix/cgflix_defaults.dart';
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -65,13 +66,14 @@ class PlaybackSettingsScreen extends StatelessWidget {
 
         return SettingsPage(
           title: Text(t.settings.videoPlayback),
+          collapsible: true, // CGFLIX
           children: [
             SettingsGroup(
               title: t.settings.player,
               children: [
                 if (Platform.isAndroid) _playerBackendSelector(),
                 if (PlatformDetector.supportsExternalPlayers()) _externalPlayerTile(),
-                if (!exoActive) _mpvConfigTile(),
+                if (!exoActive && !cgflixMpvConfigOnlyInAdvanced) _mpvConfigTile(), // CGFLIX: vai para Avançado
                 _hardwareDecodingTile(),
                 if (exoActive) _playbackBufferTile(),
                 if (exoActive) _tunneledPlaybackTile(),
@@ -100,6 +102,7 @@ class PlaybackSettingsScreen extends StatelessWidget {
             ),
 
             SettingsGroup(
+              initiallyExpanded: true,
               title: t.settings.audio,
               children: [
                 if (PlatformDetector.supportsAudioPassthrough()) _audioPassthroughTile(),
@@ -131,6 +134,7 @@ class PlaybackSettingsScreen extends StatelessWidget {
             ),
 
             SettingsGroup(
+              initiallyExpanded: true,
               title: t.settings.subtitles,
               children: [
                 SettingNavigationTile(

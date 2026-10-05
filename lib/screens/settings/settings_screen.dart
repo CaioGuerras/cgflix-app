@@ -9,6 +9,8 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../cgflix/cgflix_advanced.dart';
+import '../../cgflix/cgflix_collapsible.dart';
 import '../../focus/focus_memory_tracker.dart';
 import '../../focus/focusable_text_field.dart';
 import '../../focus/input_mode_tracker.dart';
@@ -188,56 +190,70 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
     return Scaffold(
       body: Focus(
         onKeyEvent: _handleKeyEvent,
-        child: CustomScrollView(
-          primary: false,
-          slivers: [
-            ExcludeFocus(child: CustomAppBar(title: Text(t.settings.title), pinned: true)),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                const SizedBox(height: 8),
-                SettingsGroup(
-                  children: [
-                    if (DonationService.isEnabled) _buildDonateTile(),
-                    _buildGeneralTile(),
-                    _buildAppearanceTile(),
-                    _buildPlaybackTile(),
-                    if (hasLibraries) _buildManageLibrariesTile(sheetContext),
-                    _buildServicesTile(),
-                  ],
-                ),
+        child: CgflixCollapsibleScope(
+          child: CustomScrollView(
+            primary: false,
+            slivers: [
+              ExcludeFocus(child: CustomAppBar(title: Text(t.settings.title), pinned: true)),
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 8),
+                  SettingsGroup(
+                    children: [
+                      if (DonationService.isEnabled) _buildDonateTile(),
+                      _buildGeneralTile(),
+                      _buildAppearanceTile(),
+                      _buildPlaybackTile(),
+                      if (hasLibraries) _buildManageLibrariesTile(sheetContext),
+                      _buildServicesTile(),
+                    ],
+                  ),
 
-                _buildConnectionsSection(sheetContext),
+                  _buildConnectionsSection(sheetContext),
 
-                if (!PlatformDetector.isAppleTV()) _buildDownloadsSection(),
+                  if (!PlatformDetector.isAppleTV()) _buildDownloadsSection(),
 
-                if (_keyboardShortcutsSupported || PlatformDetector.shouldActAsRemoteHost(sheetContext))
-                  _buildControlsSection(sheetContext),
+                  if (UpdateService.isUpdateCheckAvailable) ...[_buildUpdateSection()],
 
-                _buildAdvancedSection(),
+                  // Hidden on Android TV / tvOS (no document picker); desktop in
+                  // force-TV mode keeps it — FilePickerService works there.
+                  if (!PlatformDetector.isTV() || PlatformDetector.isDesktopOS()) _buildBackupSection(),
 
-                if (UpdateService.isUpdateCheckAvailable) ...[_buildUpdateSection()],
-
-                // Hidden on Android TV / tvOS (no document picker); desktop in
-                // force-TV mode keeps it — FilePickerService works there.
-                if (!PlatformDetector.isTV() || PlatformDetector.isDesktopOS()) _buildBackupSection(),
-
-                const SizedBox(height: 24),
-                SettingsGroup(
-                  children: [
-                    SettingNavigationTile(
-                      focusNode: _focusTracker.get(_kAbout),
-                      icon: Symbols.info_rounded,
-                      title: t.settings.about,
-                      subtitle: t.settings.aboutDescription,
-                      destinationBuilder: (context) => const AboutScreen(),
+                  // CGFLIX: tudo que o usuário comum não precisa fica aqui dentro, fechado.
+                  CgflixCollapsibleCard(
+                    title: t.settings.advanced,
+                    child: CgflixCollapsibleScope(
+                      enabled: false,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const CgflixAdvancedFeatures(),
+                          if (_keyboardShortcutsSupported || PlatformDetector.shouldActAsRemoteHost(sheetContext))
+                            _buildControlsSection(sheetContext),
+                          _buildAdvancedSection(),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-              ]),
-            ),
-            const SliverSystemBottomInset(),
-          ],
+                  ),
+
+                  const SizedBox(height: 24),
+                  SettingsGroup(
+                    children: [
+                      SettingNavigationTile(
+                        focusNode: _focusTracker.get(_kAbout),
+                        icon: Symbols.info_rounded,
+                        title: t.settings.about,
+                        subtitle: t.settings.aboutDescription,
+                        destinationBuilder: (context) => const AboutScreen(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                ]),
+              ),
+              const SliverSystemBottomInset(),
+            ],
+          ),
         ),
       ),
     );
@@ -335,6 +351,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
         : t.connections.addConnectionSubtitleScoped(displayName: active.displayName);
 
     return SettingsGroup(
+      initiallyExpanded: true, // CGFLIX
       title: t.connections.sectionTitle,
       children: [
         // Connections are managed per-profile (via the Profiles section
@@ -528,8 +545,8 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
 
   Widget _buildAdvancedSection() {
     return SettingsGroup(
-      title: t.settings.advanced,
       children: [
+        // CGFLIX: sem título (já está dentro do cartão Avançado)
         SettingNavigationTile(
           focusNode: _focusTracker.get(_kWatchTogetherRelay),
           icon: Symbols.dns_rounded,

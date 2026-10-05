@@ -617,7 +617,7 @@ class SettingsService extends BaseSharedPreferencesService {
 
   /// Episode advance follows the server's per-episode audio/subtitle
   /// selections instead of carrying the current choice over (#1717).
-  static const followServerTrackSelections = BoolPref('follow_server_track_selections');
+  static const followServerTrackSelections = BoolPref('follow_server_track_selections', defaultValue: true); // CGFLIX
   static const showChapterMarkersOnTimeline = BoolPref('show_chapter_markers_on_timeline', defaultValue: true);
   static const clickVideoTogglesPlayback = BoolPref('click_video_toggles_playback');
   static const skipIntroMode = _SkipMarkerModePref('skip_intro_mode', legacyKey: _legacyAutoSkipIntroKey);
@@ -885,7 +885,7 @@ class SettingsService extends BaseSharedPreferencesService {
   );
   static final displaySwitchDelay = IntPref('display_switch_delay', transform: (v) => v.clamp(0, 10));
 
-  static ThemeMode _tvAwareThemeModeDefault() => PlatformDetector.isTV() ? ThemeMode.oled : ThemeMode.system;
+  static ThemeMode _tvAwareThemeModeDefault() => ThemeMode.oled; // CGFLIX: tema escuro OLED em todos os aparelhos
   static const themeMode = EnumPref<ThemeMode>(
     'theme_mode',
     values: ThemeMode.values,

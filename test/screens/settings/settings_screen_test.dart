@@ -42,12 +42,17 @@ import 'package:plezy/widgets/dialog_action_button.dart';
 import 'package:plezy/widgets/focusable_list_tile.dart';
 import 'package:plezy/widgets/loading_indicator_box.dart';
 import 'package:plezy/widgets/setting_tile.dart';
+import 'package:plezy/cgflix/cgflix_collapsible.dart';
 import 'package:provider/provider.dart';
 
 import '../../test_helpers/io_fakes.dart';
 import '../../test_helpers/prefs.dart';
 
 void main() {
+  // CGFLIX: as seções das Configurações começam fechadas; estes testes olham as opções por dentro.
+  setUpAll(() => CgflixCollapsibleCard.debugExpandAll = true);
+  tearDownAll(() => CgflixCollapsibleCard.debugExpandAll = false);
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late PathProviderPlatform originalPathProvider;

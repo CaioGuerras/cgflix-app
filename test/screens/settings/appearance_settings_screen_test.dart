@@ -5,11 +5,16 @@ import 'package:plezy/providers/theme_provider.dart';
 import 'package:plezy/screens/settings/appearance_settings_screen.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
+import 'package:plezy/cgflix/cgflix_collapsible.dart';
 import 'package:provider/provider.dart';
 
 import '../../test_helpers/prefs.dart';
 
 void main() {
+  // CGFLIX: as seções das Configurações começam fechadas; estes testes olham as opções por dentro.
+  setUpAll(() => CgflixCollapsibleCard.debugExpandAll = true);
+  tearDownAll(() => CgflixCollapsibleCard.debugExpandAll = false);
+
   setUp(() async {
     resetSharedPreferencesForTest();
     SettingsService.resetForTesting();
