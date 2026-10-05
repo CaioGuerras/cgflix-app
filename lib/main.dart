@@ -11,7 +11,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'connection/connection.dart';
 import 'connection/connection_bootstrap.dart';
@@ -86,6 +85,7 @@ import 'utils/media_server_http_client.dart';
 import 'utils/media_server_timeouts.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
+import 'cgflix/cgflix_logo.dart';
 import 'i18n/app_locale_utils.dart';
 import 'i18n/strings.g.dart';
 import 'widgets/app_icon.dart';
@@ -2367,7 +2367,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SvgPicture.asset('assets/plezy_adaptive_foreground.svg', width: 160, height: 160),
+                  const CgflixEmblem(size: 160),
                   _buildStatusText(context),
                   const SizedBox(height: 16),
                   Center(
@@ -2390,7 +2390,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Stack(
         children: [
-          Center(child: SvgPicture.asset('assets/plezy_adaptive_foreground.svg', width: 288, height: 288)),
+          Center(child: const CgflixEmblem(size: 288)),
           Positioned(left: 0, right: 0, bottom: height * 0.5 - 170, child: _buildStatusText(context)),
           Positioned(
             left: 0,
