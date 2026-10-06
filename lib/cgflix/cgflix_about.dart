@@ -1,5 +1,8 @@
 // Peças da tela "Sobre" que são só do CGFLIX (dedicatória e créditos ao Plezy).
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
+import '../widgets/app_icon.dart';
 
 /// Dedicatória, centralizada abaixo da versão: coração roxo e coração verde.
 class CgflixDedication extends StatelessWidget {
@@ -16,9 +19,9 @@ class CgflixDedication extends StatelessWidget {
         const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.favorite, color: Color(0xFFA855F7), size: 22),
+            AppIcon(Symbols.favorite_rounded, fill: 1, color: Color(0xFFA855F7), size: 22),
             SizedBox(width: 8),
-            Icon(Icons.favorite, color: Color(0xFF22C55E), size: 22),
+            AppIcon(Symbols.favorite_rounded, fill: 1, color: Color(0xFF22C55E), size: 22),
           ],
         ),
       ],
