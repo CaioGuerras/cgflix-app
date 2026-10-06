@@ -381,7 +381,23 @@ class _AuthScreenState extends State<AuthScreen> {
               label: Text(t.auth.connectToMediaBrowser(product: jellyfinDialect.productName)),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  t.auth.or,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+              ),
+              Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
+            ],
+          ),
+          const SizedBox(height: 16),
           FocusableButton(
             onPressed: busy ? null : () => setState(() => _plexChoice = true),
             child: OutlinedButton.icon(
