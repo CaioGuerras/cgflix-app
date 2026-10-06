@@ -15,7 +15,7 @@ quer assistir. O avançado existe, mas fica escondido.
 | Assunto | Padrão |
 |---|---|
 | Tema | escuro **OLED** (preto `#07060a`) em todos os aparelhos |
-| Idioma | **português (Brasil)** em qualquer aparelho |
+| Idioma | **português (Brasil)**; aparelho em outro idioma traduzido (ex.: espanhol) é respeitado, inglês vira português |
 | Reprodução | **direta** (qualidade original; o servidor não transcodifica vídeo) |
 | Player | **mpv** (necessário para legenda ASS com estilo) |
 | Áudio e legenda | **seguem a preferência do usuário no servidor** (`por`), também ao trocar de episódio |
