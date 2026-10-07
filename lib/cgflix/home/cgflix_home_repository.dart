@@ -38,7 +38,11 @@ class CgflixHomeRepository {
 
   /// "Puxar para atualizar": esquece a memória (o cache em disco continua valendo
   /// para a tela não ficar vazia enquanto a rede responde).
-  void forgetMemory() => _memory.clear();
+  void forgetMemory() {
+    _memory.clear();
+    _continueMemory.clear();
+  }
+
   Future<void>? _cacheLoad;
   Timer? _saveTimer;
 
@@ -156,49 +160,65 @@ class CgflixHomeRepository {
   );
 
   /// Em alta no Brasil: emalta.json do servidor; se falhar, a coleção "Em alta no Brasil";
-  /// se nenhum, linha vazia (some). Vale por 1 h no aparelho. Com [filter], só os títulos
-  /// do ranking que estão na biblioteca escolhida (mesma ordem).
+  /// se nenhum, linha vazia (some). Vale por 1 h no aparelho. Com [filter], o ranking da
+  /// própria categoria (ver [CgflixTrending.idsFor]); com menos de 3 títulos, some.
   Stream<CgflixRowData> watchTrending({CgflixHomeFilter? filter}) => _cachedThenNetwork(
     'trending${filter?.cacheSuffix ?? ''}',
     filter == null ? _fetchTrending : () => _fetchTrendingIn(filter),
     maxAge: cgflixTrendingCacheTtl,
   );
 
+  static const _noRow = (raw: <Map<String, dynamic>>[], title: null);
+
+  Future<CgflixTrending?> _readTrending() async {
+    try {
+      return CgflixTrending.parse(await client.cgflixGetJson(cgflixTrendingPath));
+    } catch (e) {
+      appLogger.i('CGFLIX: emalta.json indisponível', error: e);
+      return null;
+    }
+  }
+
+  /// Etapa 1E: antes o filtro pedia `Ids` + `ParentId`, mas o Jellyfin ignora o `ParentId`
+  /// quando recebe `Ids`, e o tipo "Series" serve para Séries e Animes: Animes mostrava as
+  /// séries em alta. Agora a categoria vem do próprio ranking, nunca do tipo do item.
   Future<({List<Map<String, dynamic>> raw, String? title})> _fetchTrendingIn(CgflixHomeFilter filter) async {
-    final all = await _fetchTrending();
-    final ids = [for (final r in all.raw) '${r['Id']}'];
-    if (ids.isEmpty) return all;
-    final inLibrary = await client.cgflixFetchRawItems({
-      'Ids': ids.join(','),
-      'ParentId': filter.libraryId,
-      'Limit': '${ids.length}',
-    });
-    // O tipo confere de novo: se o servidor ignorar o ParentId junto com Ids, pelo menos
-    // Filmes mostra só filmes e Séries/Animes só séries.
-    final ofType = inLibrary.where((r) => r['Type'] == filter.itemType).toList();
-    return (raw: cgflixOrderByIds(ofType, ids, (r) => '${r['Id']}'), title: all.title);
+    final trending = await _readTrending();
+    if (trending == null) {
+      // Sem o arquivo: só Filmes ainda dá para separar (pela coleção, só os filmes).
+      if (!filter.isMovies) return _noRow;
+      final fallback = await _fetchTrendingCollection();
+      final movies = fallback.raw.where((r) => r['Type'] == 'Movie').toList();
+      return movies.length < cgflixTrendingMinItems ? _noRow : (raw: movies, title: fallback.title);
+    }
+    final ids = trending.idsFor(filter.kind);
+    if (ids == null) return _noRow;
+    final raw = await client.cgflixFetchRawItems({'Ids': ids.join(','), 'Limit': '${ids.length}'});
+    // Filme é sempre "Movie"; Séries e Animes são sempre "Series" (o ranking já separou as duas).
+    final ofType = raw.where((r) => r['Type'] == filter.itemType).toList();
+    final ordered = cgflixOrderByIds(ofType, ids, (r) => '${r['Id']}');
+    return ordered.length < cgflixTrendingMinItems ? _noRow : (raw: ordered, title: trending.title);
   }
 
   Future<({List<Map<String, dynamic>> raw, String? title})> _fetchTrending() async {
-    CgflixTrending? trending;
-    try {
-      trending = CgflixTrending.parse(await client.cgflixGetJson(cgflixTrendingPath));
-    } catch (e) {
-      appLogger.i('CGFLIX: emalta.json indisponível, tentando a coleção', error: e);
-    }
-    if (trending != null) {
+    final trending = await _readTrending();
+    if (trending != null && trending.ids.isNotEmpty) {
       final raw = await client.cgflixFetchRawItems({'Ids': trending.ids.join(','), 'Limit': '${trending.ids.length}'});
       final ordered = cgflixOrderByIds(raw, trending.ids, (r) => '${r['Id']}');
       if (ordered.isNotEmpty) return (raw: ordered, title: trending.title);
     }
-    // Plano B: coleção do Jellyfin com esse nome.
+    return _fetchTrendingCollection();
+  }
+
+  /// Plano B: coleção do Jellyfin chamada "Em alta no Brasil".
+  Future<({List<Map<String, dynamic>> raw, String? title})> _fetchTrendingCollection() async {
     final collections = await client.cgflixFetchRawItems({
       'IncludeItemTypes': 'BoxSet',
       'SearchTerm': cgflixTrendingTitle,
       'Limit': '5',
     });
     final match = collections.where((c) => cgflixNormalize('${c['Name']}') == cgflixNormalize(cgflixTrendingTitle));
-    if (match.isEmpty) return (raw: const <Map<String, dynamic>>[], title: null);
+    if (match.isEmpty) return _noRow;
     final items = await client.cgflixFetchRawItems({
       'ParentId': '${match.first['Id']}',
       'IncludeItemTypes': 'Movie,Series',
@@ -206,6 +226,22 @@ class CgflixHomeRepository {
     });
     return (raw: items.take(10).toList(), title: cgflixTrendingTitle);
   }
+
+  /// Continuar assistindo de uma categoria, pedido ao servidor com o `ParentId` da biblioteca
+  /// (os itens do "Continuar" geral não dizem a biblioteca: Séries mostrava os animes).
+  /// Guardado 1 min na memória para trocar de chip sem ir à rede toda hora.
+  Future<List<MediaItem>> continueWatchingIn(CgflixHomeFilter filter, {bool fresh = false}) async {
+    final key = 'continue${filter.cacheSuffix}';
+    final remembered = _continueMemory[key];
+    if (!fresh && remembered != null && DateTime.now().difference(remembered.at) < const Duration(minutes: 1)) {
+      return remembered.items;
+    }
+    final items = await client.cgflixFetchContinueWatchingIn(filter.libraryId).timeout(cgflixRowTimeout);
+    _continueMemory[key] = (items: items, at: DateTime.now());
+    return items;
+  }
+
+  final _continueMemory = <String, ({List<MediaItem> items, DateTime at})>{};
 
   /// Gêneros que viram linhas (cache primeiro). Com [filter], só os da biblioteca escolhida.
   Stream<List<String>> watchGenres({CgflixHomeFilter? filter}) async* {

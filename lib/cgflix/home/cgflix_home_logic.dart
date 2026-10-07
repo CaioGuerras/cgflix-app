@@ -150,27 +150,57 @@ Map<String, String> cgflixHeroQuery({CgflixHomeFilter? filter}) => {
 // Em alta no Brasil
 
 class CgflixTrendingEntry {
-  const CgflixTrendingEntry({required this.id, this.name, this.type});
+  const CgflixTrendingEntry({required this.id, this.name, this.type, this.library});
   final String id;
   final String? name;
   final String? type;
+
+  /// Biblioteca do título no ranking ("filmes", "series" ou "animes"), quando o arquivo diz.
+  final String? library;
 }
 
+/// Mínimo de títulos para a linha "Em alta" de uma categoria aparecer.
+const cgflixTrendingMinItems = 3;
+
 class CgflixTrending {
-  const CgflixTrending({required this.title, required this.entries});
+  const CgflixTrending({required this.title, required this.entries, this.byLibrary});
   final String title;
 
-  /// Já na ordem do ranking.
+  /// Já na ordem do ranking (geral, usado na Início).
   final List<CgflixTrendingEntry> entries;
+
+  /// Ranking de cada categoria (`porBiblioteca` do emalta.json, desde 07/10); null se o arquivo
+  /// não tiver o campo.
+  final Map<CgflixChipKind, List<CgflixTrendingEntry>>? byLibrary;
 
   List<String> get ids => [for (final e in entries) e.id];
 
-  /// Lê `{"titulo","itens":[{"id","nome","tipo"}]}`. Tolerante: ignora itens sem id e
-  /// ids repetidos; devolve `null` se não houver nenhum item aproveitável.
+  /// Lê `{"titulo","itens":[{"id","nome","tipo","biblioteca"}],"porBiblioteca":{"filmes":[...],
+  /// "series":[...],"animes":[...]}}`. Tolerante: ignora itens sem id e ids repetidos; devolve
+  /// `null` se não houver nenhum item aproveitável (nem no geral nem por categoria).
   static CgflixTrending? parse(Object? json) {
     if (json is! Map) return null;
-    final rawItems = json['itens'];
-    if (rawItems is! List) return null;
+    final entries = _parseEntries(json['itens']);
+    Map<CgflixChipKind, List<CgflixTrendingEntry>>? byLibrary;
+    final rawByLibrary = json['porBiblioteca'];
+    if (rawByLibrary is Map) {
+      byLibrary = {};
+      for (final MapEntry(:key, :value) in rawByLibrary.entries) {
+        final kind = cgflixTrendingLibraryKind('$key');
+        if (kind != null) byLibrary[kind] = _parseEntries(value);
+      }
+    }
+    if (entries.isEmpty && (byLibrary == null || byLibrary.values.every((l) => l.isEmpty))) return null;
+    final title = json['titulo'];
+    return CgflixTrending(
+      title: title is String && title.trim().isNotEmpty ? title.trim() : cgflixTrendingTitle,
+      entries: entries,
+      byLibrary: byLibrary,
+    );
+  }
+
+  static List<CgflixTrendingEntry> _parseEntries(Object? rawItems) {
+    if (rawItems is! List) return const [];
     final seen = <String>{};
     final entries = <CgflixTrendingEntry>[];
     for (final raw in rawItems) {
@@ -178,15 +208,57 @@ class CgflixTrending {
       final id = raw['id'];
       final idText = id is String ? id.trim() : (id is num ? '$id' : '');
       if (idText.isEmpty || !seen.add(idText)) continue;
-      entries.add(CgflixTrendingEntry(id: idText, name: raw['nome'] as String?, type: raw['tipo'] as String?));
+      final library = raw['biblioteca'];
+      entries.add(
+        CgflixTrendingEntry(
+          id: idText,
+          name: raw['nome'] is String ? raw['nome'] as String : null,
+          type: raw['tipo'] is String ? raw['tipo'] as String : null,
+          library: library is String && library.trim().isNotEmpty ? library.trim() : null,
+        ),
+      );
     }
-    if (entries.isEmpty) return null;
-    final title = json['titulo'];
-    return CgflixTrending(
-      title: title is String && title.trim().isNotEmpty ? title.trim() : cgflixTrendingTitle,
-      entries: entries,
-    );
+    return entries;
   }
+
+  /// Ids do "Em alta" de uma categoria, na ordem do ranking; `null` = esconder a linha.
+  ///
+  /// 1. `porBiblioteca` (o certo): a lista da categoria;
+  /// 2. sem ele, os `itens` cuja `biblioteca` é a da categoria;
+  /// 3. sem nenhum dos dois, Filmes ainda separa pelo tipo (filme é sempre filme), mas Séries e
+  ///    Animes não têm como (as duas bibliotecas guardam "Series"): a linha some.
+  /// Com menos de [cgflixTrendingMinItems] títulos a linha também some.
+  List<String>? idsFor(CgflixChipKind kind) {
+    final List<CgflixTrendingEntry> picked;
+    final byLibrary = this.byLibrary;
+    if (byLibrary != null) {
+      picked = byLibrary[kind] ?? const [];
+    } else if (entries.any((e) => e.library != null)) {
+      picked = [
+        for (final e in entries)
+          if (cgflixTrendingLibraryKind(e.library) == kind) e,
+      ];
+    } else if (kind == CgflixChipKind.movies) {
+      picked = [
+        for (final e in entries)
+          if (e.type == null || e.type == 'Movie') e,
+      ];
+    } else {
+      return null;
+    }
+    final ids = [for (final e in picked.take(10)) e.id];
+    return ids.length < cgflixTrendingMinItems ? null : ids;
+  }
+}
+
+/// Categoria de um nome de biblioteca do emalta.json ("filmes", "Séries", "animes"...).
+CgflixChipKind? cgflixTrendingLibraryKind(String? raw) {
+  if (raw == null) return null;
+  final name = cgflixNormalize(raw);
+  if (name.startsWith('film') || name == 'movies' || name == 'movie') return CgflixChipKind.movies;
+  if (name.startsWith('anime')) return CgflixChipKind.animes;
+  if (name.startsWith('serie') || name == 'shows' || name == 'tvshows') return CgflixChipKind.shows;
+  return null;
 }
 
 /// Reordena [items] pela ordem de [ids] (o `/Items?Ids=` do Jellyfin não garante ordem).

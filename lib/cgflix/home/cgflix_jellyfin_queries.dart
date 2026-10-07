@@ -22,6 +22,20 @@ extension CgflixJellyfinQueries on JellyfinClient {
     return _itemsArray(response.data);
   }
 
+  /// Continuar assistindo + Próximos episódios só da biblioteca [libraryId] (Etapa 1E). Usa as
+  /// mesmas consultas do upstream (`Resume` e `/Shows/NextUp` com `ParentId`) e a mesma junção.
+  Future<List<MediaItem>> cgflixFetchContinueWatchingIn(String libraryId, {int count = 20}) async {
+    var libraries = _loadedLibraryViews;
+    if (libraries == null) {
+      libraries = await _fetchLibraries();
+      _loadedLibraryViews ??= libraries;
+    }
+    final library = libraries.where((l) => l.id == libraryId).firstOrNull;
+    if (library == null) return const [];
+    final rows = await _continueWatchingRows(count: count, library: library);
+    return _mergeContinueWatchingAndNextUp(resume: rows.resume, nextUp: rows.nextUp, limit: count);
+  }
+
   List<MediaItem> cgflixMapItems(Iterable<Map<String, dynamic>> raw) => _mapItems(raw);
 
   /// Gêneros de filmes e séries do usuário (já vêm em português do servidor).

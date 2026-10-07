@@ -14,7 +14,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../media/media_item.dart';
-import '../../media/media_kind.dart';
 import '../../mixins/refreshable.dart';
 import '../../mixins/tab_visibility_aware.dart';
 import '../../providers/discover_provider.dart';
@@ -259,7 +258,12 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
         ),
       ),
       SliverToBoxAdapter(
-        child: _ContinueWatchingRow(discover: _discover, filter: filter),
+        child: _ContinueWatchingRow(
+          key: ValueKey('continue:$key'),
+          discover: _discover,
+          repository: repository,
+          filter: filter,
+        ),
       ),
       SliverToBoxAdapter(
         child: _StreamSection<CgflixRowData>(
@@ -433,10 +437,51 @@ class _Top10Row extends StatelessWidget {
 
 /// Continuar assistindo: vem do DiscoverProvider do upstream (mesma regra de "próximo
 /// episódio" e de atualização). Tocar = continua direto; segurar = remover da linha.
-class _ContinueWatchingRow extends StatelessWidget {
-  const _ContinueWatchingRow({required this.discover, this.filter});
+/// Etapa 1E: com chip ativo, a lista vem do servidor só daquela biblioteca (ParentId) e é
+/// pedida de novo sempre que o "Continuar" geral muda (assistiu algo, removeu um item).
+class _ContinueWatchingRow extends StatefulWidget {
+  const _ContinueWatchingRow({super.key, required this.discover, required this.repository, this.filter});
   final DiscoverProvider discover;
+  final CgflixHomeRepository repository;
   final CgflixHomeFilter? filter;
+
+  @override
+  State<_ContinueWatchingRow> createState() => _ContinueWatchingRowState();
+}
+
+class _ContinueWatchingRowState extends State<_ContinueWatchingRow> {
+  List<MediaItem>? _scoped;
+  List<MediaItem>? _seenOnDeck;
+  int _request = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshScoped(fresh: false);
+  }
+
+  @override
+  void didUpdateWidget(_ContinueWatchingRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // O "Continuar" geral mudou (o DiscoverProvider troca a lista inteira): pede de novo.
+    if (widget.filter != null && !identical(widget.discover.onDeck, _seenOnDeck)) _refreshScoped(fresh: true);
+  }
+
+  void _refreshScoped({required bool fresh}) {
+    final filter = widget.filter;
+    _seenOnDeck = widget.discover.onDeck;
+    if (filter == null) return;
+    final request = ++_request;
+    widget.repository
+        .continueWatchingIn(filter, fresh: fresh)
+        .then((items) {
+          if (mounted && request == _request) setState(() => _scoped = items);
+        })
+        .catchError((Object e) {
+          appLogger.w('CGFLIX: Continuar assistindo da categoria falhou', error: e);
+          if (mounted && request == _request) setState(() => _scoped ??= const []);
+        });
+  }
 
   Future<void> _confirmRemove(BuildContext context, MediaItem item) async {
     final remove = await showModalBottomSheet<bool>(
@@ -481,19 +526,14 @@ class _ContinueWatchingRow extends StatelessWidget {
     }
   }
 
-  /// Com chip ativo, só o que é daquela biblioteca (pelo id dela; sem id, pelo tipo).
-  static bool _matches(MediaItem item, CgflixHomeFilter filter) {
-    final libraryId = item.libraryId;
-    if (libraryId != null) return libraryId == filter.libraryId;
-    return filter.isMovies ? item.kind == MediaKind.movie : item.kind != MediaKind.movie;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final filter = this.filter;
-    final items = filter == null ? discover.onDeck : discover.onDeck.where((i) => _matches(i, filter)).toList();
+    final filter = widget.filter;
+    final discover = widget.discover;
+    final items = filter == null ? discover.onDeck : (_scoped ?? const <MediaItem>[]);
+    final loading = filter == null ? discover.isLoading : _scoped == null;
     final Widget child;
-    if (items.isEmpty && discover.isLoading) {
+    if (items.isEmpty && loading) {
       child = const CgflixSkeletonRow(key: ValueKey('loading'), wide: true);
     } else if (items.isEmpty) {
       child = const SizedBox.shrink(key: ValueKey('empty'));
