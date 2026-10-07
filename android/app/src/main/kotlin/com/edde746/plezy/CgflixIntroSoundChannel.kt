@@ -38,7 +38,7 @@ internal object CgflixIntroSoundChannel {
           .setUsage(AudioAttributes.USAGE_MEDIA)
           .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
           .build(),
-        audio.generateAudioSessionId(),
+        audio.generateAudioSessionId()
       ) ?: return false
       player.setOnCompletionListener { it.release() }
       player.start()
