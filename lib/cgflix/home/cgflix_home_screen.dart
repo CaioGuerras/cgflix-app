@@ -24,6 +24,7 @@ import '../../services/jellyfin_client.dart';
 import '../../services/watch_actions.dart';
 import '../../utils/app_logger.dart';
 import '../../widgets/app_icon.dart';
+import '../cgflix_layout.dart';
 import '../cgflix_logo.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
@@ -207,7 +208,7 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
     if (_useFallback) return DiscoverScreen(key: _fallbackKey);
     final repository = _repository;
     final media = MediaQuery.of(context);
-    final heroHeight = (media.size.width * 1.15).clamp(360.0, media.size.height * 0.68);
+    final heroHeight = cgflixHeroHeight(media.size);
 
     return Scaffold(
       backgroundColor: CgflixColors.background,

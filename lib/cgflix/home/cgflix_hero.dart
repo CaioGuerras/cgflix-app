@@ -9,6 +9,7 @@ import '../../media/media_item.dart';
 import '../../utils/media_image_helper.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/optimized_media_image.dart';
+import '../cgflix_layout.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 import 'cgflix_home_logic.dart';
@@ -66,7 +67,12 @@ class _CgflixHeroState extends State<CgflixHero> {
     if (widget.items.isEmpty) return SizedBox(height: widget.height);
     final item = widget.items[_index % widget.items.length];
     final client = cgflixClientFor(context, item);
-    final width = MediaQuery.sizeOf(context).width;
+    final size = MediaQuery.sizeOf(context);
+    final width = size.width;
+    // Deitado: informação à esquerda, numa coluna estreita, para não cobrir a arte toda.
+    final compact = cgflixHeroCompact(size);
+    final padding = MediaQuery.paddingOf(context);
+    final infoWidth = compact ? (width * 0.45).clamp(280.0, 440.0) : width - 32;
     final art = item.heroArtCandidates(containerAspectRatio: width / widget.height);
 
     return GestureDetector(
@@ -119,9 +125,10 @@ class _CgflixHeroState extends State<CgflixHero> {
               ),
             ),
             Positioned(
-              left: 16,
-              right: 16,
-              bottom: 12,
+              left: compact ? 24 + padding.left : 16,
+              right: compact ? null : 16,
+              width: compact ? infoWidth : null,
+              bottom: compact ? 20 : 12,
               child: AnimatedSwitcher(
                 duration: CgflixMotion.slow,
                 switchInCurve: CgflixMotion.curve,
@@ -132,7 +139,12 @@ class _CgflixHeroState extends State<CgflixHero> {
                     child: child,
                   ),
                 ),
-                child: _HeroInfo(key: ValueKey('info:${item.globalKey}'), item: item, width: width - 32),
+                child: _HeroInfo(
+                  key: ValueKey('info:${item.globalKey}'),
+                  item: item,
+                  width: infoWidth,
+                  compact: compact,
+                ),
               ),
             ),
           ],
@@ -143,9 +155,10 @@ class _CgflixHeroState extends State<CgflixHero> {
 }
 
 class _HeroInfo extends StatelessWidget {
-  const _HeroInfo({super.key, required this.item, required this.width});
+  const _HeroInfo({super.key, required this.item, required this.width, this.compact = false});
   final MediaItem item;
   final double width;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -153,23 +166,25 @@ class _HeroInfo extends StatelessWidget {
     final client = cgflixClientFor(context, item);
     final genres = (item.genres ?? const <String>[]).take(3).join(' • ');
     final logoWidth = (width * 0.7).clamp(160.0, 340.0);
+    final align = compact ? Alignment.bottomLeft : Alignment.bottomCenter;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: compact ? CrossAxisAlignment.start : CrossAxisAlignment.center,
       children: [
         ClearLogoImage(
           client: client,
           logoPath: item.clearLogoPath,
           width: logoWidth,
-          height: 96,
+          height: compact ? 64 : 96,
           fallbackWidth: width,
-          alignment: Alignment.bottomCenter,
+          alignment: align,
           fadeInDuration: CgflixMotion.medium,
           fallbackBuilder: (context) => Align(
-            alignment: Alignment.bottomCenter,
+            alignment: align,
             child: Text(
               item.displayTitle,
-              textAlign: TextAlign.center,
+              textAlign: compact ? TextAlign.start : TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900),
@@ -182,7 +197,7 @@ class _HeroInfo extends StatelessWidget {
         ],
         const SizedBox(height: 14),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: compact ? MainAxisAlignment.start : MainAxisAlignment.center,
           children: [
             FilledButton.icon(
               style: FilledButton.styleFrom(
