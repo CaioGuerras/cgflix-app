@@ -1,5 +1,6 @@
 import '../cgflix/cgflix_navigation.dart';
 import '../cgflix/cgflix_you_screen.dart';
+import '../cgflix/home/cgflix_home_screen.dart';
 import 'dart:async';
 import '../media/ids.dart';
 import '../media/media_server_client.dart';
@@ -1254,7 +1255,10 @@ class _MainScreenState extends State<MainScreen>
     if (!_mountedTabs.contains(tab)) return const SizedBox.shrink();
 
     return switch (tab) {
-      NavigationTabId.discover => DiscoverScreen(key: _screenKeys[tab]),
+      NavigationTabId.discover =>
+        cgflixUseYouTab(context) // CGFLIX: no celular a Início é a do CGFLIX
+            ? CgflixHomeScreen(key: _screenKeys[tab])
+            : DiscoverScreen(key: _screenKeys[tab]),
       NavigationTabId.explore => ExploreScreen(key: _screenKeys[tab]),
       NavigationTabId.libraries => LibrariesScreen(
         key: _screenKeys[tab],

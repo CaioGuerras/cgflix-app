@@ -1953,8 +1953,12 @@ void main() {
       }
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('S1E2'), findsOneWidget, reason: 'fallback survives a settled empty on-deck');
-      expect(find.text('S1E1'), findsNothing);
+      expect(
+        find.text('Continuar S01E02') /* CGFLIX: rótulo do botão */,
+        findsOneWidget,
+        reason: 'fallback survives a settled empty on-deck',
+      );
+      expect(find.text('Assistir S01E01') /* CGFLIX: rótulo do botão */, findsNothing);
     });
 
     testWidgets('returning from playback refreshes watch state without the full-screen loader', (tester) async {
@@ -1977,7 +1981,11 @@ void main() {
 
       await pumpPhoneDetail(tester, client, show, observer: observer);
 
-      expect(find.text('S1E1'), findsOneWidget, reason: 'play button targets the on-deck episode');
+      expect(
+        find.text('Assistir S01E01') /* CGFLIX: rótulo do botão */,
+        findsOneWidget,
+        reason: 'play button targets the on-deck episode',
+      );
       expect(find.text('1. Episode S1E1'), findsOneWidget);
       final childrenCallsBeforePlayback = client.childrenPageCalls.length;
       observer.pushedRouteNames.clear();
@@ -2009,7 +2017,7 @@ void main() {
 
       expect(observer.pushedRouteNames, contains(kVideoPlayerRouteName));
       // Watch state did refresh: the play button now targets the next episode.
-      expect(find.text('S1E2'), findsOneWidget);
+      expect(find.text('Continuar S01E02') /* CGFLIX: rótulo do botão */, findsOneWidget);
       // The lightweight refresh fetches the item + on-deck only — no season
       // or episode page refetch, no early-paint (both are full-loader work).
       expect(client.childrenPageCalls.length, childrenCallsBeforePlayback);

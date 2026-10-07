@@ -1,3 +1,4 @@
+import '../cgflix/cgflix_detail.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import '../media/ids.dart';
@@ -4597,19 +4598,23 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                     final heroArtPaths = metadata.heroArtCandidates(containerAspectRatio: containerAspect);
                     if (heroArtPaths.isEmpty) return const PlaceholderContainer();
 
-                    return blurArtwork(
-                      CyclingMediaBackdrop(
-                        mediaKey: metadata.globalKey,
-                        imagePaths: metadata.heroRotationPaths(containerAspectRatio: containerAspect),
-                        fallbackImagePaths: heroArtPaths,
-                        client: _getArtworkMediaClient(context),
-                        localArtworkPathResolver: widget.isOffline
-                            ? (path) => _offlineArtworkCandidatePath(context, path)
-                            : null,
-                        allowNetwork: !widget.isOffline,
-                        width: size.width,
-                        height: artHeight,
-                        fallbackColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    return cgflixDetailHero(
+                      metadata,
+                      blurArtwork(
+                        // CGFLIX: Hero do pôster
+                        CyclingMediaBackdrop(
+                          mediaKey: metadata.globalKey,
+                          imagePaths: metadata.heroRotationPaths(containerAspectRatio: containerAspect),
+                          fallbackImagePaths: heroArtPaths,
+                          client: _getArtworkMediaClient(context),
+                          localArtworkPathResolver: widget.isOffline
+                              ? (path) => _offlineArtworkCandidatePath(context, path)
+                              : null,
+                          allowNetwork: !widget.isOffline,
+                          width: size.width,
+                          height: artHeight,
+                          fallbackColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        ),
                       ),
                     );
                   },
@@ -4686,7 +4691,10 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
         // wrapping onto a second run the height clip below would hide.
         final chips = _buildFittedHeroChips(context, metadata, constraints.maxWidth);
         // Genres render on their own line below the metadata chips.
-        final genreChips = [for (final genre in metadata.genres ?? const <String>[]) _buildMetadataChip(genre)];
+        final genreChips = [
+          ...cgflixLanguageBadges(metadata.isShow ? _showPlayEpisode() : metadata), // CGFLIX: Dublado/Legendado
+          for (final genre in metadata.genres ?? const <String>[]) _buildMetadataChip(genre),
+        ];
 
         final showActions = availableHeight >= actionHeight;
         final remainingAfterActions = availableHeight - (showActions ? actionHeight : 0);
@@ -4929,7 +4937,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   Widget _buildInfoRow(String label, String value) {
     final theme = Theme.of(context);
     return Row(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: .baseline, // CGFLIX: valor alinhado ao rótulo
+      textBaseline: TextBaseline.alphabetic,
       children: [
         SizedBox(
           width: 120,
@@ -4949,6 +4958,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   MediaItem? _showPlayEpisode() => _tvDetailFocusedEpisode.value ?? _onDeckEpisode;
 
   String _getPlayButtonLabel(MediaItem metadata) {
+    if (!PlatformDetector.isTV()) return cgflixPlayButtonLabel(metadata, _showPlayEpisode(), _fresh); // CGFLIX
     // For TV shows - use compact S1E1 format
     if (metadata.isShow) {
       final episode = _showPlayEpisode();
