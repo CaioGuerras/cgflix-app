@@ -222,6 +222,16 @@ void main() {
     expect(approvedCodes, isEmpty);
   });
 
+  test('Seerr fora do ar: a busca seguinte nem vai à rede por 2 minutos', () async {
+    seerr.up = false;
+    final api = backend();
+    await expectLater(api.search('duna'), throwsA(isA<CgflixRequestsUnavailable>()));
+    final calls = seerr.calls.length;
+    seerr.up = true;
+    await expectLater(api.search('dun'), throwsA(isA<CgflixRequestsUnavailable>()));
+    expect(seerr.calls.length, calls, reason: 'aviso na hora, sem esperar a rede de novo');
+  });
+
   test('Quick Connect desligado no Jellyfin: CgflixRequestsUnavailable, nunca login', () async {
     final noQc = CgflixSeerrRequests(
       jellyfinBaseUrl: 'https://netflix.docaio.com.br',

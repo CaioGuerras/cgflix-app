@@ -261,12 +261,20 @@ class CgflixSeerrRequests implements CgflixRequestsBackend {
   _Session? _session;
   Future<_Session>? _signingIn;
 
+  /// Última vez que a entrada falhou: por [_retryAfter] a busca nem tenta (mostra o aviso na hora).
+  DateTime? _failedAt;
+  static const _retryAfter = Duration(minutes: 2);
+
   String get _storeKey => 'seerr_session:$accountKey';
 
   /// Sessão pronta (memória → armazenamento seguro → entrada pelo Quick Connect).
   Future<_Session> _ensureSession() async {
     final current = _session;
     if (current != null) return current;
+    final failedAt = _failedAt;
+    if (failedAt != null && DateTime.now().difference(failedAt) < _retryAfter) {
+      throw const CgflixRequestsUnavailable('falhou há pouco; tenta de novo daqui a pouco');
+    }
     return _signingIn ??= _loadOrSignIn().whenComplete(() => _signingIn = null);
   }
 
@@ -288,6 +296,17 @@ class CgflixSeerrRequests implements CgflixRequestsBackend {
   }
 
   Future<_Session> _signIn({String? preferredUrl}) async {
+    try {
+      final session = await _signInOnce(preferredUrl);
+      _failedAt = null;
+      return session;
+    } on CgflixRequestsUnavailable {
+      _failedAt = DateTime.now();
+      rethrow;
+    }
+  }
+
+  Future<_Session> _signInOnce(String? preferredUrl) async {
     final baseUrl = await _discover(preferredUrl);
     try {
       final initiation = await _auth.initiateQuickConnect(baseUrl);
@@ -311,16 +330,15 @@ class CgflixSeerrRequests implements CgflixRequestsBackend {
     }
   }
 
-  /// Primeiro endereço que responde como um Seerr pronto.
+  /// Primeiro endereço (na ordem de preferência) que responde como um Seerr pronto. Testa todos
+  /// juntos (cada um tem prazo de 8 s) para a busca não esperar um por um.
   Future<String> _discover(String? preferred) async {
     final candidates = [?preferred, ...cgflixSeerrCandidates(jellyfinBaseUrl).where((c) => c != preferred)];
-    for (final candidate in candidates) {
-      try {
-        await _auth.probe(candidate);
-        return candidate;
-      } catch (_) {
-        // Tenta o próximo nome.
-      }
+    final answered = await Future.wait([
+      for (final candidate in candidates) _auth.probe(candidate).then((_) => true, onError: (Object _) => false),
+    ]);
+    for (final (index, ok) in answered.indexed) {
+      if (ok) return candidates[index];
     }
     throw const CgflixRequestsUnavailable('Seerr não encontrado ao lado do servidor');
   }
