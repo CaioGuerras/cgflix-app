@@ -73,6 +73,36 @@ Tudo novo fica em `lib/cgflix/`; os arquivos do upstream recebem só ganchos mar
 `{"titulo": "...", "itens": [{"id": "<id do Jellyfin>", "nome": "...", "tipo": "Movie|Series"}]}` (já ordenado). Se o arquivo
 não existir, usa a coleção do Jellyfin chamada "Em alta no Brasil"; se nenhum dos dois existir, a linha some. Vale 1 h no aparelho.
 
+## Etapa 1C — remodelagem (versão 1.1.0, versionCode 300)
+
+Pedido do dono depois do 1.0.0 (200) no motorola edge 70: busca sem repetição, navegação sem nada duplicado e visual
+mais polido e integrado ao Android. Ordem de serviço em `docs/ORDEM_1C.md`.
+
+| Arquivo | Mudança |
+|---|---|
+| `pubspec.yaml` | `version: 1.1.0+300`; fonte **Inter** (pesos 400–800) |
+| `assets/fonts/Inter-*.ttf`, `Inter-LICENSE.txt` (novos) | Inter 4.1 (licença OFL, igual ao site) |
+| `lib/cgflix/search/cgflix_search_grouping.dart` (novo) | agrupa a busca: títulos por tmdb/imdb/tvdb/guid `plex://` ou título normalizado + ano + tipo (IDs conflitantes nunca juntam); pessoas pelo nome; fonte preferida = CGFLIX → progresso → resolução → ordem; ordem Títulos → Pessoas → Coleções |
+| `lib/cgflix/search/cgflix_sources.dart` (novo) | seletor "Disponível em N servidores" na página do título; filmografia da pessoa juntando todos os servidores |
+| `lib/cgflix/search/cgflix_search_extras.dart` (novo) | buscas recentes, "Pedir" (Seerr) quando não acha nada, esqueleto no lugar do círculo |
+| `lib/screens/search_screen.dart` | ganchos: resultado unificado, sem nome de servidor, histórico, Pedir, esqueleto, sem barra de título no celular |
+| `lib/services/jellyfin_client/parts/browse.dart` | busca pede `ProviderIds` (1 linha) |
+| `lib/screens/media_detail_screen.dart` | 1 linha: seletor de servidor acima da sinopse |
+| `lib/screens/actor_media_screen.dart` | gancho: filmografia de todos os servidores |
+| `lib/screens/catalog_search_screen.dart` | `initialQuery` (o "Pedir" abre com o termo) |
+| `lib/cgflix/cgflix_navigation.dart` | barra compacta só com ícones (60 dp, sem rótulos, TalkBack/dica com o nome), translúcida com desfoque, indicador roxo, háptico; `CgflixAboveNavBar` |
+| `lib/screens/main_screen.dart` | ganchos: `extendBody` e a barra do CGFLIX no celular; Baixados termina acima da barra |
+| `lib/cgflix/home/cgflix_home_screen.dart` | sem avatar; chips filtram a própria Início (× volta a Tudo, troca de 300 ms); topo some ao rolar para baixo, sobre gradiente |
+| `lib/cgflix/home/cgflix_home_logic.dart`, `cgflix_home_repository.dart`, `cgflix_jellyfin_queries.dart` | consultas com filtro de biblioteca (`ParentId`), cache separado por filtro |
+| `lib/cgflix/cgflix_you_screen.dart` | respeita a barra translúcida |
+| `lib/cgflix/cgflix_theme.dart` (novo), `lib/theme/mono_theme.dart` (1 linha), `lib/main.dart` (1 linha) | Inter, cores do site no modo OLED (`#07060a`/`#120e1a`), transições 300/250 ms ease-out no Android, barras do sistema transparentes (ponta a ponta) |
+| `lib/cgflix/home/cgflix_actions.dart` | háptico leve ao tocar "Assistir" |
+| `test/cgflix/*`, `test/providers/theme_provider_test.dart` | testes do agrupamento, do filtro, da barra e do histórico; fundo OLED = `#07060a` |
+
+**Voltar preditivo**: as transições já acompanham o gesto quando ele for ligado, mas o `android:enableOnBackInvokedCallback`
+ficou **desligado**: com ele, o Android deixa de entregar a tecla VOLTAR do controle remoto como tecla, e a navegação da TV
+do upstream depende disso. Fica para a 1D, com teste numa TV box.
+
 ## Como gerar o APK
 
 - **No GitHub**: aba *Actions* → "CGFLIX Android" → artifact `cgflix-apk` (`cgflix-arm64-v8a.apk` serve para quase todos os celulares e TV box atuais; `armeabi-v7a` para aparelhos antigos de 32 bits).
