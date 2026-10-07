@@ -45,6 +45,34 @@ O servidor **não** vem mais pré-preenchido (segurança): o campo do Jellyfin c
 
 Ao sincronizar com o upstream, os conflitos novos esperados estão nesses arquivos; conferir `grep -rn "CGFLIX" lib`.
 
+## Etapa 1B — redesenho (versão 1.0.0, versionCode 200)
+
+Tudo novo fica em `lib/cgflix/`; os arquivos do upstream recebem só ganchos marcados com `// CGFLIX`.
+
+| Arquivo | Mudança |
+|---|---|
+| `pubspec.yaml` | `version: 1.0.0+200` (a Play já tinha o 152 da 1A) |
+| `lib/cgflix/cgflix_version.dart`, `lib/screens/settings/about_screen.dart` | Sobre mostra "CGFLIX 1.0.0" (a chave `about.versionLabel` segue no leitor de tela) |
+| `lib/cgflix/cgflix_style.dart` (novo) | cores e movimento (250–350 ms, ease-out) das telas novas |
+| `lib/cgflix/cgflix_navigation.dart`, `lib/cgflix/cgflix_you_screen.dart` (novos) | barra do celular **Início · Buscar · Baixados · Você**; "Você" = perfil, Configurações, Sobre |
+| `lib/screens/main_screen.dart` | ganchos: abas do celular, aba "Você" e Início do CGFLIX (só celular; TV/computador iguais ao upstream) |
+| `lib/cgflix/home/` (novos) | Início "só o nosso acervo": destaque, Continuar, Em alta (Top 10), Lançamentos, Novos episódios, Novidades, gêneros, chips Filmes/Séries/Animes, prévia em painel, cache no aparelho |
+| `lib/services/jellyfin_client.dart` | 1 linha: `part` de `lib/cgflix/home/cgflix_jellyfin_queries.dart` (consultas da Início) |
+| `lib/services/jellyfin_client/parts/images_downloads.dart` | imagens dimensionadas pedem `quality=80` |
+| `lib/cgflix/cgflix_detail.dart` (novo), `lib/screens/media_detail_screen.dart` | página do título: Hero do pôster, botão "Assistir"/"Continuar S02E05", selos Dublado/Legendado, rótulos alinhados |
+| `lib/i18n/pt.i18n.json` + `strings_pt.g.dart` | "Mais como este" |
+| `test/screens/media_detail_screen_test.dart` | 4 expectativas do rótulo do botão (S1E2 → "Continuar S01E02") |
+| `lib/cgflix/cgflix_intro.dart` (novo), `lib/main.dart` | abertura animada (~1,4 s) no splash do Flutter; espera a animação antes da Início; pula em aberturas < 30 s |
+| `lib/screens/settings/settings_screen.dart` | chave "Som da abertura" (Android) |
+| `android/.../res/drawable/splash_icon.xml`, `values-v31/styles.xml`, `values-night-v31/styles.xml` | ícone animado da Splash Screen API (Android 12+) |
+| `android/.../CgflixIntroSoundChannel.kt` (novo), `MainActivity.kt` (1 linha), `res/raw/cgflix_intro.wav` | "tum" da abertura, só fora do silencioso/vibrar |
+| `cgflix-brand/som/gerar_tum.py` (novo) | gera o `cgflix_intro.wav` (som procedural, sem direitos de terceiros) |
+| `docs/prints/` | quadros da abertura |
+
+**Em alta no Brasil**: o app lê `GET <servidor>/cgflix/emalta.json` no formato
+`{"titulo": "...", "itens": [{"id": "<id do Jellyfin>", "nome": "...", "tipo": "Movie|Series"}]}` (já ordenado). Se o arquivo
+não existir, usa a coleção do Jellyfin chamada "Em alta no Brasil"; se nenhum dos dois existir, a linha some. Vale 1 h no aparelho.
+
 ## Como gerar o APK
 
 - **No GitHub**: aba *Actions* → "CGFLIX Android" → artifact `cgflix-apk` (`cgflix-arm64-v8a.apk` serve para quase todos os celulares e TV box atuais; `armeabi-v7a` para aparelhos antigos de 32 bits).
