@@ -33,6 +33,7 @@
 
     <application
         android:label="CGFLIX"
+        android:allowBackup="false"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/tv_banner"
@@ -69,14 +70,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- CGFLIX: sem BROWSABLE, uma página da web não dispara o play (gasta uma das 2 telas) -->
                 <data android:scheme="plezy" android:host="play"/>
             </intent-filter>
             <!-- Deep link for tuning a live TV channel: plezy://live?channel=...&start=beginning|live -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- CGFLIX: sem BROWSABLE (só o launcher da TV e o adb abrem) -->
                 <data android:scheme="plezy" android:host="live"/>
             </intent-filter>
         </activity>

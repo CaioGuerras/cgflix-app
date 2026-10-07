@@ -33,3 +33,7 @@ const int cgflixSearchResultLimit = 40;
 /// Busca unificada (Etapa 1C): um cartão por título/pessoa, sem nome de servidor.
 /// Mude para `false` para voltar à lista do upstream (uma linha por servidor).
 const bool cgflixUnifiedSearch = true;
+
+/// Logs: o botão "Enviar logs" do upstream manda o diagnóstico para o servidor do Plezy
+/// (ice.plezy.app). Desligado: sem telemetria para terceiros. Copiar os logs continua.
+const bool cgflixAllowLogUpload = false;
