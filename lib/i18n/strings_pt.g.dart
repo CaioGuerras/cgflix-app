@@ -1234,7 +1234,7 @@ class _Translations$discover$pt extends Translations$discover$en {
 	@override String get cast => 'Elenco';
 	@override String get extras => 'Trailers e extras';
 	@override String get studio => 'Estúdio';
-	@override String get rating => 'Avaliação';
+	@override String get rating => 'Classificação indicativa';
 	@override String get director => 'Diretor';
 	@override String get directors => 'Diretores';
 	@override String get movie => 'Filme';
@@ -4109,7 +4109,7 @@ extension on TranslationsPt {
 			'discover.cast' => 'Elenco',
 			'discover.extras' => 'Trailers e extras',
 			'discover.studio' => 'Estúdio',
-			'discover.rating' => 'Avaliação',
+			'discover.rating' => 'Classificação indicativa',
 			'discover.director' => 'Diretor',
 			'discover.directors' => 'Diretores',
 			'discover.movie' => 'Filme',

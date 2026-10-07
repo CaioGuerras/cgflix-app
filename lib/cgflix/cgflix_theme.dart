@@ -50,6 +50,8 @@ class CgflixPageTransitionsBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
+    // "Remover animações" do Android: troca de página seca, sem deslizar.
+    if (MediaQuery.disableAnimationsOf(context)) return child;
     final enter = CurvedAnimation(parent: animation, curve: CgflixMotion.curve, reverseCurve: Curves.easeInCubic);
     final under = CurvedAnimation(parent: secondaryAnimation, curve: CgflixMotion.curve);
     return SlideTransition(

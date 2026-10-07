@@ -15,7 +15,7 @@ Widget cgflixDetailHero(MediaItem item, Widget child) {
   return Hero(tag: tag, transitionOnUserGestures: true, child: child);
 }
 
-/// Texto do botão principal: "Assistir"/"Continuar" e, em séries, o episódio ("Continuar S02E05").
+/// Texto do botão principal: "Assistir"/"Continuar" e, em séries, o episódio ("Continuar T2:E5").
 /// [episode] é o episódio que o botão toca (séries); [fresh] devolve o estado de exibição atual.
 String cgflixPlayButtonLabel(MediaItem metadata, MediaItem? episode, MediaItem Function(MediaItem) fresh) {
   if (metadata.kind == MediaKind.show) {

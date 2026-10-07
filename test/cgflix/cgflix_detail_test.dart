@@ -35,11 +35,8 @@ void main() {
     expect(cgflixPlayButtonLabel(_item(offset: 1000), null, same), 'Continuar');
     final show = _item(kind: MediaKind.show);
     expect(cgflixPlayButtonLabel(show, null, same), 'Assistir');
-    expect(cgflixPlayButtonLabel(show, _item(kind: MediaKind.episode, season: 1, episode: 1), same), 'Assistir S01E01');
-    expect(
-      cgflixPlayButtonLabel(show, _item(kind: MediaKind.episode, season: 2, episode: 5), same),
-      'Continuar S02E05',
-    );
+    expect(cgflixPlayButtonLabel(show, _item(kind: MediaKind.episode, season: 1, episode: 1), same), 'Assistir T1:E1');
+    expect(cgflixPlayButtonLabel(show, _item(kind: MediaKind.episode, season: 2, episode: 5), same), 'Continuar T2:E5');
   });
 
   test('selos: Dublado pelo áudio por, Legendado pela legenda por/pob', () {

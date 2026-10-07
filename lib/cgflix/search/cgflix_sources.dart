@@ -42,8 +42,9 @@ class CgflixSourcePicker extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
           onTap: () => _choose(context, sources),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
+          // Alvo de toque de 48 dp (o texto é pequeno, o toque não).
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

@@ -23,14 +23,8 @@ String cgflixEpisodeLabel(MediaItem item) {
   return 'T$season:E$episode';
 }
 
-/// "S02E05", como no botão "Continuar S02E05".
-String cgflixEpisodeCode(MediaItem item) {
-  final season = item.parentIndex;
-  final episode = item.index;
-  if (season == null || episode == null) return '';
-  String two(int n) => n.toString().padLeft(2, '0');
-  return 'S${two(season)}E${two(episode)}';
-}
+/// "T2:E5", como no botão "Continuar T2:E5" (Etapa 1D: mesmo padrão dos cartões; antes "S02E05").
+String cgflixEpisodeCode(MediaItem item) => cgflixEpisodeLabel(item);
 
 /// Pôster que representa o item num cartão (episódio usa o da série).
 String? cgflixPosterPath(MediaItem item) => switch (item.kind) {
