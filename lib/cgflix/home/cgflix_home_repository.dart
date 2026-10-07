@@ -97,6 +97,9 @@ class CgflixHomeRepository {
     unawaited(_flush());
   }
 
+  /// Tempo máximo de uma linha da Início na rede.
+  static const cgflixRowTimeout = Duration(seconds: 30);
+
   /// Cache primeiro (se houver), depois a rede. Se a rede falhar e havia cache, fica o cache.
   /// [maxAge]: se o cache for mais novo que isso, nem vai à rede.
   Stream<CgflixRowData> _cachedThenNetwork(
@@ -116,14 +119,18 @@ class CgflixHomeRepository {
       if (maxAge != null && DateTime.now().difference(cached.savedAt) < maxAge) return;
     }
     try {
-      final fresh = await fetch();
+      // Teto de espera: sem ele, servidor que aceita a conexão e não responde deixava a linha
+      // no esqueleto para sempre.
+      final fresh = await fetch().timeout(cgflixRowTimeout);
       _store(key, fresh.raw, title: fresh.title);
       final data = CgflixRowData(items: client.cgflixMapItems(fresh.raw), title: fresh.title);
       _memory[key] = (data: data, at: DateTime.now());
       yield data;
     } catch (e) {
       appLogger.w('CGFLIX: linha "$key" falhou', error: e);
-      if (cached == null) yield const CgflixRowData(items: []);
+      // Nada foi mostrado ainda (sem cache, ou cache salvo vazio): emite vazio para a linha sair
+      // do esqueleto (some). Antes, cache vazio + rede fora = esqueleto para sempre.
+      if (cached == null || cached.raw.isEmpty) yield const CgflixRowData(items: []);
     }
   }
 

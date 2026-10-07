@@ -202,6 +202,38 @@ void main() {
     });
   });
 
+  // CGFLIX 1D (auditoria H, alto): linha salva vazia no cache + rede fora = esqueleto para sempre.
+  test('linha salva vazia e rede fora: emite vazio (sai do esqueleto)', () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    JellyfinApiCache.initialize(db);
+    final tmp = Directory.systemTemp.createTempSync('cgflix_home_empty');
+    addTearDown(() async {
+      await db.close();
+      tmp.deleteSync(recursive: true);
+    });
+    var online = true;
+    final client = testJellyfinClient(
+      httpClient: MockClient((request) async {
+        if (!online) throw Exception('sem rede');
+        return jsonResponse({'Items': <Map<String, dynamic>>[]});
+      }),
+    );
+    addTearDown(client.close);
+
+    final first = CgflixHomeRepository(client, cacheDir: () async => tmp);
+    final saved = await first.watchRow(CgflixRowKind.newMovies).toList();
+    expect(saved.single.items, isEmpty);
+    first.dispose();
+    await Future<void>.delayed(const Duration(milliseconds: 200)); // gravação do cache
+
+    online = false;
+    final second = CgflixHomeRepository(client, cacheDir: () async => tmp);
+    final rows = await second.watchRow(CgflixRowKind.newMovies).toList();
+    second.dispose();
+    expect(rows, isNotEmpty, reason: 'sem nenhuma emissão a linha fica no esqueleto');
+    expect(rows.last.items, isEmpty);
+  });
+
   group('chips filtram a Início', () {
     const movies = CgflixHomeFilter(CgflixChipKind.movies, 'lib-filmes');
     const animes = CgflixHomeFilter(CgflixChipKind.animes, 'lib-animes');

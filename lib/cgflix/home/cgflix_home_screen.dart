@@ -315,13 +315,21 @@ class _StreamSection<T> extends StatefulWidget {
 class _StreamSectionState<T> extends State<_StreamSection<T>> {
   StreamSubscription<T>? _subscription;
   T? _data;
+  bool _failed = false;
 
   @override
   void initState() {
     super.initState();
-    _subscription = widget.stream().listen((data) {
-      if (mounted) setState(() => _data = data);
-    }, onError: (Object e) => appLogger.w('CGFLIX: linha da Início falhou', error: e));
+    _subscription = widget.stream().listen(
+      (data) {
+        if (mounted) setState(() => _data = data);
+      },
+      onError: (Object e) {
+        appLogger.w('CGFLIX: linha da Início falhou', error: e);
+        // Erro antes de qualquer dado: a linha some em vez de ficar no esqueleto para sempre.
+        if (mounted && _data == null) setState(() => _failed = true);
+      },
+    );
   }
 
   @override
@@ -333,6 +341,7 @@ class _StreamSectionState<T> extends State<_StreamSection<T>> {
   @override
   Widget build(BuildContext context) {
     final data = _data;
+    if (_failed) return const SizedBox.shrink();
     return AnimatedSize(
       duration: CgflixMotion.medium,
       curve: CgflixMotion.curve,

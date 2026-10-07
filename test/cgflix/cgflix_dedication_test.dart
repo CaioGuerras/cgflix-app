@@ -13,7 +13,11 @@ void main() {
     final service = await SettingsService.getInstance();
     expect(service.read(cgflixShowDedicationPref), isTrue, reason: 'padrão ligado');
 
-    await tester.pumpWidget(const MaterialApp(home: Scaffold(body: Center(child: CgflixIntroDedication()))));
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: Center(child: CgflixIntroDedication())),
+      ),
+    );
     await tester.pump(const Duration(seconds: 1));
     expect(find.text(cgflixDedicationText), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('Isis e Heitor')), findsOneWidget);
