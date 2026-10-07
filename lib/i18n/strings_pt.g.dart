@@ -981,14 +981,14 @@ class _Translations$messages$pt extends Translations$messages$en {
 	@override String get failedToCreatePlayQueueNoItems => 'Falha ao criar a fila de reprodução — nenhum item';
 	@override String failedPlayback({required Object action, required Object error}) => 'Falha ao ${action}: ${error}';
 	@override String get switchingToCompatiblePlayer => 'Alternando para um reprodutor compatível...';
-	@override String get serverLimitTitle => 'Falha na reprodução';
-	@override String get serverLimitBody => 'Erro do servidor (HTTP 500). Um limite de largura de banda ou transcodificação provavelmente rejeitou esta sessão. Peça ao proprietário do servidor para ajustá-lo.';
+	@override String get serverLimitTitle => 'Não deu para tocar agora';
+	@override String get serverLimitBody => 'O servidor recusou este play. O mais comum é o limite de 2 telas ao mesmo tempo: feche o CGFLIX em outro aparelho (ou espere um minuto) e tente de novo. Se continuar, avise o Caio.';
 	@override String get mediaUnreadableTitle => 'Arquivo indisponível';
 	@override String get mediaUnreadableBody => 'O servidor encontrou este item, mas não conseguiu ler o arquivo (HTTP 404). O arquivo provavelmente foi movido, excluído ou o armazenamento está offline. Peça ao responsável pelo servidor para verificar o arquivo e reexaminar a biblioteca.';
 	@override String get serverBusyTitle => 'Transmissão indisponível';
 	@override String get serverBusyBody => 'O servidor continuou se recusando a transmitir este arquivo (HTTP 503). Ele pode estar reiniciando ou ocupado, ou o armazenamento do arquivo pode estar offline. Tente novamente em instantes — se isso continuar acontecendo, peça ao proprietário do servidor para verificar o servidor e o armazenamento do arquivo.';
-	@override String get playbackNotAllowedTitle => 'Reprodução não permitida';
-	@override String get playbackNotAllowedBody => 'O servidor se recusou a transmitir este item (HTTP 403). Sua conta pode não ter permissão para reproduzi-lo, ou o servidor pode permitir a reprodução apenas na própria rede local.';
+	@override String get playbackNotAllowedTitle => 'Limite de telas ou sem permissão';
+	@override String get playbackNotAllowedBody => 'O servidor não deixou tocar este título. Cada conta assiste em até 2 telas ao mesmo tempo: feche o CGFLIX em outro aparelho e tente de novo. Se não for isso, sua conta pode não ter acesso a este título.';
 	@override String get logsUploaded => 'Logs enviados';
 	@override String get logsUploadFailed => 'Falha ao enviar logs';
 	@override String get logId => 'ID do log';
@@ -3896,14 +3896,14 @@ extension on TranslationsPt {
 			'messages.failedToCreatePlayQueueNoItems' => 'Falha ao criar a fila de reprodução — nenhum item',
 			'messages.failedPlayback' => ({required Object action, required Object error}) => 'Falha ao ${action}: ${error}',
 			'messages.switchingToCompatiblePlayer' => 'Alternando para um reprodutor compatível...',
-			'messages.serverLimitTitle' => 'Falha na reprodução',
-			'messages.serverLimitBody' => 'Erro do servidor (HTTP 500). Um limite de largura de banda ou transcodificação provavelmente rejeitou esta sessão. Peça ao proprietário do servidor para ajustá-lo.',
+			'messages.serverLimitTitle' => 'Não deu para tocar agora',
+			'messages.serverLimitBody' => 'O servidor recusou este play. O mais comum é o limite de 2 telas ao mesmo tempo: feche o CGFLIX em outro aparelho (ou espere um minuto) e tente de novo. Se continuar, avise o Caio.',
 			'messages.mediaUnreadableTitle' => 'Arquivo indisponível',
 			'messages.mediaUnreadableBody' => 'O servidor encontrou este item, mas não conseguiu ler o arquivo (HTTP 404). O arquivo provavelmente foi movido, excluído ou o armazenamento está offline. Peça ao responsável pelo servidor para verificar o arquivo e reexaminar a biblioteca.',
 			'messages.serverBusyTitle' => 'Transmissão indisponível',
 			'messages.serverBusyBody' => 'O servidor continuou se recusando a transmitir este arquivo (HTTP 503). Ele pode estar reiniciando ou ocupado, ou o armazenamento do arquivo pode estar offline. Tente novamente em instantes — se isso continuar acontecendo, peça ao proprietário do servidor para verificar o servidor e o armazenamento do arquivo.',
-			'messages.playbackNotAllowedTitle' => 'Reprodução não permitida',
-			'messages.playbackNotAllowedBody' => 'O servidor se recusou a transmitir este item (HTTP 403). Sua conta pode não ter permissão para reproduzi-lo, ou o servidor pode permitir a reprodução apenas na própria rede local.',
+			'messages.playbackNotAllowedTitle' => 'Limite de telas ou sem permissão',
+			'messages.playbackNotAllowedBody' => 'O servidor não deixou tocar este título. Cada conta assiste em até 2 telas ao mesmo tempo: feche o CGFLIX em outro aparelho e tente de novo. Se não for isso, sua conta pode não ter acesso a este título.',
 			'messages.logsUploaded' => 'Logs enviados',
 			'messages.logsUploadFailed' => 'Falha ao enviar logs',
 			'messages.logId' => 'ID do log',
