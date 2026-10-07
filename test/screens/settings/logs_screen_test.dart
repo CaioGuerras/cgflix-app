@@ -17,6 +17,7 @@ import 'package:plezy/screens/settings/logs_screen.dart';
 import 'package:plezy/services/log_upload_service.dart';
 import 'package:plezy/services/startup_diagnostics.dart';
 import 'package:plezy/utils/app_logger.dart';
+import 'package:plezy/cgflix/cgflix_defaults.dart';
 import 'package:plezy/utils/media_server_http_client.dart';
 import 'package:plezy/utils/platform_detector.dart';
 import 'package:plezy/widgets/app_bar_back_button.dart';
@@ -28,10 +29,21 @@ void main() {
 
   setUp(() {
     MemoryLogOutput.clearLogs();
+    cgflixAllowLogUpload = true; // CGFLIX: o envio fica desligado no app; aqui testa o upstream
   });
 
   tearDown(() {
     MemoryLogOutput.clearLogs();
+    cgflixAllowLogUpload = false;
+  });
+
+  // CGFLIX: sem telemetria — no app o botão de enviar logs não aparece.
+  testWidgets('CGFLIX: sem botão de enviar logs por padrão', (tester) async {
+    cgflixAllowLogUpload = false;
+    await tester.pumpWidget(const MaterialApp(home: LogsScreen()));
+    await tester.pump();
+    expect(find.byTooltip(t.logs.uploadLogs), findsNothing);
+    expect(find.byTooltip(t.logs.copyLogs), findsOneWidget);
   });
   test('log upload payload preserves the header and newest complete lines', () {
     const header = 'Plezy test device\n---\n';

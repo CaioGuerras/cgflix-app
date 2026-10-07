@@ -36,4 +36,5 @@ const bool cgflixUnifiedSearch = true;
 
 /// Logs: o botão "Enviar logs" do upstream manda o diagnóstico para o servidor do Plezy
 /// (ice.plezy.app). Desligado: sem telemetria para terceiros. Copiar os logs continua.
-const bool cgflixAllowLogUpload = false;
+/// Variável (não const) só para os testes do upstream exercitarem o envio.
+bool cgflixAllowLogUpload = false;
