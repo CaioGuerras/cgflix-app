@@ -1,4 +1,5 @@
 import '../cgflix/cgflix_detail.dart';
+import '../cgflix/search/cgflix_sources.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import '../media/ids.dart';
@@ -3460,6 +3461,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                           child: Column(
                             crossAxisAlignment: .start,
                             children: [
+                              if (!isTv) CgflixSourcePicker(item: metadata), // CGFLIX: "Disponível em N servidores"
                               // Summary
                               if (!isTv && metadata.summary != null && metadata.summary!.isNotEmpty) ...[
                                 Text(key: _overviewSectionKey, t.discover.overview, style: sectionTitleStyle),

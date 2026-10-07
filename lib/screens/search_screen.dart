@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../cgflix/cgflix_defaults.dart';
+import '../cgflix/search/cgflix_search_grouping.dart';
 import '../exceptions/media_server_exceptions.dart';
 import '../focus/focusable_text_field.dart';
 import '../i18n/strings.g.dart';
@@ -152,8 +154,9 @@ class _SearchScreenState extends State<SearchScreen>
           message: 'Search was cancelled before any server completed',
         );
       }
-      _pendingSearchOutcome = (query: query, result: result);
-      return result.hits;
+      final unified = cgflixUnifySearchResult(result, query); // CGFLIX: um cartão por título/pessoa
+      _pendingSearchOutcome = (query: query, result: unified);
+      return unified.hits;
     } finally {
       if (identical(_activeSearchAbort, abort)) _activeSearchAbort = null;
     }
@@ -501,7 +504,7 @@ class _SearchScreenState extends State<SearchScreen>
   Widget _buildResultsList(BuildContext context) {
     final multiServer = context.watch<MultiServerProvider>();
     final libraries = context.watch<LibrariesProvider>();
-    final showServerName = multiServer.totalServerCount > 1;
+    final showServerName = !cgflixUnifiedSearch && multiServer.totalServerCount > 1; // CGFLIX
     final showChips = _showFilterChips;
     final visible = _visibleResults;
     return buildResultsSliver(

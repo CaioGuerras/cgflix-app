@@ -29,3 +29,7 @@ const int cgflixSearchPeopleLimit = 5;
 
 /// Busca: máximo de resultados por tipo e por biblioteca (antes 100).
 const int cgflixSearchResultLimit = 40;
+
+/// Busca unificada (Etapa 1C): um cartão por título/pessoa, sem nome de servidor.
+/// Mude para `false` para voltar à lista do upstream (uma linha por servidor).
+const bool cgflixUnifiedSearch = true;

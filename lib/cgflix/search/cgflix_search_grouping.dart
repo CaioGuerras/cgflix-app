@@ -12,6 +12,7 @@
 import 'package:unorm_dart/unorm_dart.dart' as unorm;
 
 import '../../media/media_backend.dart';
+import '../cgflix_defaults.dart';
 import '../../media/media_item.dart';
 import '../../media/media_kind.dart';
 import '../../media/media_person.dart';
@@ -277,6 +278,7 @@ abstract final class CgflixSourceRegistry {
 /// por pessoa, na ordem Títulos → Pessoas → Coleções. Os grupos ficam lembrados no
 /// [CgflixSourceRegistry] para a página do título e a da pessoa.
 SearchAggregationResult cgflixUnifySearchResult(SearchAggregationResult result, String query) {
+  if (!cgflixUnifiedSearch) return result;
   final titleGroups = cgflixGroupTitles(result.candidates);
   final peopleGroups = cgflixGroupPeople(result.people);
   CgflixSourceRegistry.rememberTitles(titleGroups);
