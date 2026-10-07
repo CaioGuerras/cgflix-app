@@ -163,6 +163,7 @@ void main() {
       final repository = CgflixHomeRepository(client, cacheDir: () async => tmp);
       final rows = await repository.watchTrending().toList();
       repository.dispose();
+      await repository.flushed;
       expect(rows.last.items.map((i) => i.id), ['m2', 'm1']);
       expect(rows.last.title, 'Em alta no Brasil');
     });
@@ -199,6 +200,7 @@ void main() {
       expect(none.last.items, isEmpty);
       repository.dispose();
       empty.dispose();
+      await Future.wait([repository.flushed, empty.flushed]);
     });
   });
 
@@ -224,12 +226,13 @@ void main() {
     final saved = await first.watchRow(CgflixRowKind.newMovies).toList();
     expect(saved.single.items, isEmpty);
     first.dispose();
-    await Future<void>.delayed(const Duration(milliseconds: 200)); // gravação do cache
+    await first.flushed; // gravação do cache
 
     online = false;
     final second = CgflixHomeRepository(client, cacheDir: () async => tmp);
     final rows = await second.watchRow(CgflixRowKind.newMovies).toList();
     second.dispose();
+    await second.flushed; // senão o tearDown apaga a pasta no meio da gravação
     expect(rows, isNotEmpty, reason: 'sem nenhuma emissão a linha fica no esqueleto');
     expect(rows.last.items, isEmpty);
   });

@@ -92,9 +92,14 @@ class CgflixHomeRepository {
     }
   }
 
+  /// Última gravação pedida pelo [dispose] (os testes esperam por ela antes de apagar a pasta).
+  Future<void> _lastFlush = Future<void>.value();
+  Future<void> get flushed => _lastFlush;
+
   void dispose() {
     _saveTimer?.cancel();
-    unawaited(_flush());
+    _lastFlush = _flush();
+    unawaited(_lastFlush);
   }
 
   /// Tempo máximo de uma linha da Início na rede.
