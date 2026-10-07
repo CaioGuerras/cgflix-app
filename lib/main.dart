@@ -84,7 +84,6 @@ import 'utils/media_server_http_client.dart';
 import 'utils/media_server_timeouts.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
-import 'cgflix/cgflix_about.dart';
 import 'cgflix/cgflix_intro.dart';
 import 'cgflix/cgflix_style.dart';
 import 'cgflix/cgflix_theme.dart';
@@ -2385,8 +2384,6 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
                           )
                         : _buildServerStatusList(context),
                   ),
-                  const SizedBox(height: 24),
-                  const CgflixIntroDedication(), // CGFLIX: dedicatória na abertura
                 ],
               ),
             ),
@@ -2399,12 +2396,6 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       child: Stack(
         children: [
           Center(child: const CgflixIntroEmblem(size: 288)), // CGFLIX: abertura animada
-          const Positioned(
-            left: 0,
-            right: 0,
-            bottom: 32,
-            child: SafeArea(top: false, child: CgflixIntroDedication()), // CGFLIX: dedicatória na abertura
-          ),
           Positioned(left: 0, right: 0, bottom: height * 0.5 - 170, child: _buildStatusText(context)),
           Positioned(
             left: 0,

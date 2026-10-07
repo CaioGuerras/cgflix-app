@@ -13,7 +13,6 @@ import '../screens/profile/profile_teardown.dart';
 import '../screens/settings/about_screen.dart';
 import '../utils/dialogs.dart';
 import '../widgets/app_icon.dart';
-import 'cgflix_about.dart';
 import 'cgflix_navigation.dart';
 import 'cgflix_style.dart';
 
@@ -95,8 +94,6 @@ class CgflixUserMenuSheet extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
-                        const CgflixDedicationLine(),
                       ],
                     ),
                   ),

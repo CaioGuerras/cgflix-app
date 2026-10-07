@@ -1,33 +1,27 @@
-// Etapa 1D (G): dedicatória em destaque e o interruptor "Mostrar dedicatória" (Avançado).
+// Etapa 1E (D): a dedicatória fica somente no Sobre (com os dois corações); sai o interruptor
+// "Mostrar dedicatória" do Avançado.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/cgflix/cgflix_about.dart';
-import 'package:plezy/services/settings_service.dart';
-
-import '../test_helpers/prefs.dart';
+import 'package:plezy/cgflix/cgflix_advanced.dart';
+import 'package:plezy/cgflix/cgflix_theme.dart';
+import 'package:plezy/widgets/app_icon.dart';
 
 void main() {
-  setUp(resetSharedPreferencesForTest);
-
-  testWidgets('abertura mostra a dedicatória e "Mostrar dedicatória" esconde', (tester) async {
-    final service = await SettingsService.getInstance();
-    expect(service.read(cgflixShowDedicationPref), isTrue, reason: 'padrão ligado');
-
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(body: Center(child: CgflixIntroDedication())),
-      ),
-    );
-    await tester.pump(const Duration(seconds: 1));
-    expect(find.text(cgflixDedicationText), findsOneWidget);
-    expect(find.bySemanticsLabel(RegExp('Isis e Heitor')), findsOneWidget);
-
-    await service.write(cgflixShowDedicationPref, false);
-    await tester.pump();
-    expect(find.text(cgflixDedicationText), findsNothing);
-
-    // No Sobre ela continua sempre.
+  testWidgets('Sobre mostra a dedicatória com o coração roxo e o verde', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: Scaffold(body: CgflixDedication())));
     expect(find.text(cgflixDedicationText), findsOneWidget);
+    expect(find.descendant(of: find.byType(CgflixDedicationHearts), matching: find.byType(AppIcon)), findsNWidgets(2));
+  });
+
+  testWidgets('Avançado não tem mais "Mostrar dedicatória"', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: cgflixAppTheme(),
+        home: const Scaffold(body: SingleChildScrollView(child: CgflixAdvancedFeatures())),
+      ),
+    );
+    expect(find.text('Mostrar dedicatória'), findsNothing);
+    expect(find.text(cgflixDedicationText), findsNothing);
   });
 }

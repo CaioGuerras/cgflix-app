@@ -214,7 +214,8 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('cgflix-top-menu')));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(find.text('Feito com amor, para Isis e Heitor'), findsOneWidget);
+      // Etapa 1E: a dedicatória saiu do menu (fica só no Sobre).
+      expect(find.text('Feito com amor, para Isis e Heitor'), findsNothing);
     });
   });
 

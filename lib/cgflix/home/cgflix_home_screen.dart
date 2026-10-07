@@ -24,7 +24,6 @@ import '../../services/watch_actions.dart';
 import '../../utils/app_logger.dart';
 import '../../widgets/app_icon.dart';
 import '../cgflix_layout.dart';
-import '../cgflix_about.dart';
 import '../cgflix_navigation.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
@@ -289,13 +288,8 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
             ),
           ),
       _GenreRows(key: ValueKey('genres:$key'), repository: repository, filter: filter),
-      // Rodapé: a dedicatória, discreta (Configurações › Avançado › Mostrar dedicatória).
-      SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(24, 32, 24, MediaQuery.paddingOf(context).bottom + 24),
-          child: const CgflixDedicationLine(center: true),
-        ),
-      ),
+      // Folga no fim para a última linha não colar na borda.
+      SliverToBoxAdapter(child: SizedBox(height: MediaQuery.paddingOf(context).bottom + 32)),
     ];
   }
 }
