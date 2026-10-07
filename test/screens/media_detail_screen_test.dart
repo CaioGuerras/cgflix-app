@@ -1797,10 +1797,11 @@ void main() {
       String? initialEpisodeId,
       NavigatorObserver? observer,
       ThemeData? theme,
+      Size size = const Size(1100, 2400), // CGFLIX: paisagem
     }) async {
       TvDetectionService.debugSetAppleTVOverride(false);
       await SettingsService.getInstance();
-      tester.view.physicalSize = const Size(1100, 2400);
+      tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -1909,6 +1910,20 @@ void main() {
       expect(shadow, isNotNull);
       expect(shadow!.color.computeLuminance(), greaterThan(0.5), reason: 'light theme halos with a light shadow');
     });
+
+    // CGFLIX (1D): celular deitado (edge 70 e 360 dp) e com fonte grande, sem exceção/overflow.
+    for (final size in const [Size(914, 412), Size(760, 360)]) {
+      testWidgets('CGFLIX: página do título deitada em ${size.width.toInt()}×${size.height.toInt()}', (tester) async {
+        final show = buildShow();
+        await pumpPhoneDetail(tester, singleSeasonClient(show), show, size: size);
+        for (var i = 0; i < 6; i++) {
+          await tester.pump();
+        }
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(tester.takeException(), isNull);
+        expect(find.byType(FittingTitleText), findsWidgets);
+      });
+    }
 
     testWidgets('paints the item before the on-deck lookup settles', (tester) async {
       // Jellyfin needs a second round trip for on-deck; the phone/desktop

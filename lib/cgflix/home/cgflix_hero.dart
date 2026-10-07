@@ -196,8 +196,11 @@ class _HeroInfo extends StatelessWidget {
           Text(genres, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white70)),
         ],
         const SizedBox(height: 14),
-        Row(
-          mainAxisAlignment: compact ? MainAxisAlignment.start : MainAxisAlignment.center,
+        // Wrap: com fonte grande (até 200%) os botões descem de linha em vez de cortar.
+        Wrap(
+          alignment: compact ? WrapAlignment.start : WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 8,
           children: [
             FilledButton.icon(
               style: FilledButton.styleFrom(
@@ -209,7 +212,6 @@ class _HeroInfo extends StatelessWidget {
               icon: const AppIcon(Symbols.play_arrow_rounded, fill: 1),
               label: const Text('Assistir'),
             ),
-            const SizedBox(width: 12),
             FilledButton.tonalIcon(
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0x33FFFFFF),
