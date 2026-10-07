@@ -1,6 +1,9 @@
 // Ações dos cartões do CGFLIX: tocar direto, abrir a página do título, Minha lista.
 // Usa os fluxos do upstream (player, detalhes, favoritos) sem duplicar regra nenhuma.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../media/ids.dart';
 import '../../media/media_item.dart';
@@ -73,6 +76,7 @@ Future<void> cgflixOpenDetails(BuildContext context, MediaItem item, {String? he
 /// "Assistir": filme e episódio tocam direto; série toca o próximo episódio quando o
 /// servidor sabe qual é, senão abre a página (para escolher a temporada).
 Future<void> cgflixPlay(BuildContext context, MediaItem item) async {
+  unawaited(HapticFeedback.lightImpact());
   if (item.kind == MediaKind.movie || item.kind == MediaKind.episode || item.kind == MediaKind.clip) {
     await navigateToVideoPlayer(context, metadata: item);
     return;

@@ -14,6 +14,7 @@ import '../../screens/catalog_search_screen.dart';
 import '../../utils/app_logger.dart';
 import '../../widgets/app_icon.dart';
 import '../cgflix_style.dart';
+import '../home/cgflix_cards.dart';
 
 // ---------------------------------------------------------------------------
 // Histórico
@@ -185,6 +186,50 @@ class CgflixRequestPrompt extends StatelessWidget {
                 ),
         ),
       ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Carregando
+
+/// Esqueleto da lista de resultados (no lugar do círculo girando).
+class CgflixSearchSkeleton extends StatelessWidget {
+  const CgflixSearchSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      sliver: SliverList.list(
+        children: [
+          for (var i = 0; i < 6; i++)
+            CgflixShimmer(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  children: [
+                    const CgflixSkeletonBox(width: 64, height: 96),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FractionallySizedBox(
+                            widthFactor: i.isEven ? 0.7 : 0.5,
+                            child: const CgflixSkeletonBox(width: double.infinity, height: 16, radius: 4),
+                          ),
+                          const SizedBox(height: 8),
+                          const CgflixSkeletonBox(width: 80, height: 12, radius: 4),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

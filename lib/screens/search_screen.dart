@@ -552,7 +552,8 @@ class _SearchScreenState extends State<SearchScreen>
         child: CustomScrollView(
           primary: false,
           slivers: [
-            DesktopSliverAppBar(title: Text(t.common.search), floating: true),
+            if (!PlatformDetector.isMobile(context)) // CGFLIX: no celular o campo já é o topo
+              DesktopSliverAppBar(title: Text(t.common.search), floating: true),
             SliverToBoxAdapter(
               child: SearchInputField(
                 controller: searchController,
@@ -575,7 +576,10 @@ class _SearchScreenState extends State<SearchScreen>
               ),
             ),
             if (isSearching)
-              LoadingIndicatorBox.sliver
+              PlatformDetector.isMobile(context)
+                  ? const CgflixSearchSkeleton()
+                  : LoadingIndicatorBox
+                        .sliver // CGFLIX
             else if (!hasSearched)
               SliverFillRemaining(
                 // CGFLIX: buscas recentes no celular
