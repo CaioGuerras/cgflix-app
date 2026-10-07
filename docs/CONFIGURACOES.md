@@ -25,7 +25,7 @@ quer assistir. O avançado existe, mas fica escondido.
 
 | Item | Onde fica | Estado inicial |
 |---|---|---|
-| Geral, Aparência, Reprodução, Bibliotecas, Serviços | lista básica no topo | sempre visível |
+| Geral, Aparência, Reprodução, Bibliotecas, Serviços | lista básica no topo | sempre visível; **Serviços** só aparece quando o build tem o Trakt do CGFLIX (Etapa 1E) |
 | Conexões (servidores e perfis) | cartão | **aberto** |
 | Downloads | cartão | fechado |
 | Atualizações (se disponível) | cartão | fechado |
@@ -40,6 +40,7 @@ quer assistir. O avançado existe, mas fica escondido.
 | Assistir juntos | Assistir ao mesmo título ao mesmo tempo que outra pessoa, cada um no seu aparelho | — (antes ficava na Início) |
 | Controle remoto | Controla **outro** aparelho com o CGFLIX aberto, na mesma rede Wi-Fi e na mesma conta. Não reconhece TV comum | — (antes ficava na Início) |
 | Opções do mpv | Ajustes técnicos do player (arquivo de configuração do mpv) | vazio (antes ficava em Reprodução) |
+| Som de abertura (Android) | Um "tum" curto ao abrir o app; fica mudo no silencioso e no vibrar | **ligado** (Etapa 1E: saiu da lista principal) |
 | Controles (atalhos de teclado, navegação do player, servidor do controle remoto) | só aparecem quando o aparelho suporta | depende do aparelho |
 | Relay do Assistir juntos (rede) | Endereço do servidor de retransmissão | padrão do app |
 | Relatório de falhas | Opção de enviar relatórios de erro | marcada, mas **inócua**: este build é compilado sem Sentry (\`ENABLE_SENTRY\` desligado), então nada é enviado |
@@ -234,3 +235,12 @@ valor padrão é o do Plezy (sem alteração do CGFLIX).
 | Deslize para volume | Deslize para cima ou para baixo na borda direita para ajustar o volume | ligado |
 | Pinça para zoom | Pince o vídeo para ampliar ou reduzir | ligado |
 
+## Serviços (Etapa 1E)
+
+| Item | Situação |
+|---|---|
+| Trakt | único serviço na tela; usa o app **CGFLIX** do trakt.tv (secrets do CI). Sem os secrets, o item Serviços some |
+| MyAnimeList, AniList, Simkl, MDBList | fora da interface (o código do upstream fica; as chaves do Plezy saíram) |
+| Seerr (pedidos) | fora dos Serviços: a busca entra sozinha pelo Quick Connect ("Disponível para pedir"); "Meus pedidos" fica no menu do usuário |
+
+A dedicatória ("Feito com amor, para Isis e Heitor") fica **somente no Sobre**; o interruptor "Mostrar dedicatória" saiu.

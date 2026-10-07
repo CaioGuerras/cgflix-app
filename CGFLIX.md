@@ -135,6 +135,63 @@ upstream em paisagem também não conhecia as abas do CGFLIX.
 | `test/cgflix/*`, `test/screens/...` | barra do topo em 360/412/800 dp em pé e deitado, menu, Voltar, Pedir, destaque, dedicatória, tema; testes do upstream olham as Configurações completas |
 | `docs/cgflix/AUDITORIA_GOOGLE_1D.md`, `REVISAO_TELAS_1D.md`, `AUDITORIA_CODIGO_1D.md` (novos) | relatórios E, F e H |
 
+## Etapa 1E — busca com pedidos embutidos, categorias certas e limpeza (versão 1.3.0, versionCode 500)
+
+Pedido do dono depois do 1.2.0 (400): pedidos dentro da busca sem tela de login, Filmes/Séries/Animes
+sem misturar, dedicatória só no Sobre, som de abertura no Avançado, Serviços só com o Trakt e sem
+"Plezy", e a Início sem "Novos episódios". Ordem de serviço em `docs/ORDEM_1E.md`.
+
+**Por que os Pedidos caíam no login do Seerr**: o ícone "Pedir" da 1C/1D abria a tela de conectar do
+upstream (`SeerrConnectScreen`) sempre que não havia sessão salva; não existia entrada automática.
+Agora o app acha o Seerr ao lado do Jellyfin (troca o primeiro nome do domínio: `netflix.docaio.com.br` →
+`pedidos.docaio.com.br`; tenta também `seerr.`, `jellyseerr.`, `requests.`, `overseerr.`), chama
+`POST /api/v1/auth/jellyfin/quickconnect/initiate`, aprova o código no Jellyfin com o token da própria
+pessoa (`POST /QuickConnect/Authorize`) e troca o secret pelo cookie `connect.sid`
+(`.../quickconnect/authenticate`). Nada de servidor pré-preenchido no código.
+
+**Por que as categorias trocavam**: "Em alta" da categoria pedia `/Items?Ids=...&ParentId=<biblioteca>`, mas o
+Jellyfin ignora o `ParentId` quando recebe `Ids`; o filtro de reserva era pelo tipo do item, e "Series"
+serve para Séries e Animes. O "Continuar assistindo" filtrava pelo tipo porque os itens do Jellyfin não
+trazem a biblioteca. Agora tudo é pela biblioteca (`ParentId`) e o "Em alta" vem do ranking da categoria.
+
+| Arquivo | Mudança |
+|---|---|
+| `pubspec.yaml`, `lib/cgflix/cgflix_version.dart`, `test/cgflix/cgflix_version_test.dart` | `version: 1.3.0+500` |
+| `lib/cgflix/requests/cgflix_seerr.dart` (novo) | Seerr sem login: acha o endereço, Quick Connect automático, cookie no armazenamento seguro, renova em 401/403; busca (status 1/ausente = pedir, 2 = "Pedido", 3 = "Baixando", 4/5 não repetem), temporadas, pedido, "Meus pedidos" |
+| `lib/cgflix/requests/cgflix_requests_ui.dart` (novo) | seção "Disponível para pedir", escolha de temporadas (padrão: todas), confirmação "Pedido feito. Avisamos quando chegar.", aviso "Pedidos indisponíveis agora", tela "Meus pedidos" |
+| `lib/cgflix/requests/cgflix_secure_store.dart` (novo), `android/.../CgflixSecureStoreChannel.kt` (novo), `MainActivity.kt` (1 linha) | armazenamento seguro: AES-GCM com chave do Android Keystore (sem dependência nova); fora do Android, só memória |
+| `lib/cgflix/home/cgflix_jellyfin_queries.dart` | `cgflixAuthorizeQuickConnect`, `cgflixBaseUrl`, `cgflixFetchContinueWatchingIn` (Resume + NextUp com `ParentId`) |
+| `lib/cgflix/search/cgflix_search_extras.dart`, `lib/screens/search_screen.dart` (1 linha) | "Disponível para pedir" abaixo dos resultados e no "nada encontrado"; sem botão de conectar |
+| `lib/cgflix/cgflix_navigation.dart` | barra: emblema · Filmes · Séries · Animes · Busca (sai o "Pedir"); `cgflixOpenMyRequests`; medida dos chips conta a borda |
+| `lib/cgflix/cgflix_user_menu.dart` | "Meus pedidos" no menu; sem a dedicatória |
+| `lib/cgflix/home/cgflix_home_logic.dart`, `cgflix_home_repository.dart`, `cgflix_home_screen.dart` | `porBiblioteca` do emalta.json; "Em alta" por categoria (some com menos de 3); Continuar da categoria pelo servidor; sem "Novos episódios"; sem a dedicatória no rodapé |
+| `lib/cgflix/cgflix_about.dart`, `cgflix_advanced.dart`, `lib/main.dart` | dedicatória só no Sobre; saem o interruptor e a preferência `cgflix_show_dedication` |
+| `lib/cgflix/cgflix_intro.dart`, `cgflix_advanced.dart`, `settings/settings_screen.dart`, `CgflixIntroSoundChannel.kt` | "Som de abertura" no Avançado; `MediaPlayer.create` fora da thread de UI |
+| `lib/cgflix/cgflix_trakt.dart` (novo) | credenciais do Trakt por `--dart-define`; só o Trakt nos Serviços; comentários do Trakt na página do título |
+| `lib/services/trackers/trakt/trakt_constants.dart` | client id/secret = os do build (sem o do Plezy) |
+| `lib/services/trackers/{mal,mdblist,simkl}/*_constants.dart` | chaves do Plezy removidas (serviços escondidos) |
+| `lib/screens/settings/tracker_service_info.dart`, `services_settings_screen.dart`, `settings_screen.dart`, `lib/screens/media_detail_screen.dart` | 1 gancho cada: lista filtrada, sem a linha do Seerr, item Serviços só com o Trakt, comentários |
+| `.github/workflows/cgflix-android.yml`, `cgflix-release.yml` | `--dart-define=TRAKT_CLIENT_ID/TRAKT_CLIENT_SECRET` a partir dos secrets `CGFLIX_TRAKT_CLIENT_ID`/`CGFLIX_TRAKT_CLIENT_SECRET`; nome do passo do roteiro |
+| `test/cgflix/emulador/app_navegacao.dart`, `scripts/cgflix/emulador_navegacao.py` | roteiro: barra sem "Pedir", Filmes/Séries/Animes, busca com "Disponível para pedir" (Seerr falso), Pedir, Meus pedidos |
+| `test/cgflix/cgflix_seerr_test.dart`, `cgflix_request_section_test.dart`, `cgflix_categorias_test.dart`, `cgflix_trakt_test.dart` (novos) e testes ajustados | Seerr de mentira (disponível, pedido, baixando, fora do ar, 401 que renova), telas, 3 bibliotecas falsas, Trakt sem secrets; `settings_screen_test`/`rating_bottom_sheet_test` do upstream ligam `cgflixDebugShowAllServices` |
+| `docs/CONFIGURACOES.md`, `docs/ORDEM_1E.md` | Serviços, som de abertura, dedicatória; ordem de serviço |
+
+**Em alta por categoria**: o `emalta.json` pode trazer `"porBiblioteca": {"filmes": [...], "series": [...], "animes": [...]}`
+(até 10 itens `{"id","nome","tipo","biblioteca"}` cada, na ordem do ranking). Sem esse campo, o app filtra os `itens`
+pelo campo `biblioteca`; sem nenhum dos dois, Filmes separa pelo tipo e Séries/Animes escondem a linha.
+
+### Trakt: o que o dono precisa fazer (uma vez)
+
+1. Entrar em <https://trakt.tv/oauth/applications> com a conta do CGFLIX e clicar em **New Application**.
+2. **Name**: `CGFLIX`. **Description**: "App do CGFLIX (servidor de família)". Ícone: `cgflix-brand/cgflix-icone-512.png`.
+3. **Redirect uri**: `urn:ietf:wg:oauth:2.0:oob` (o app entra pelo código de aparelho em `trakt.tv/activate`; não abre
+   navegador de volta para o app). Deixe **Javascript (cors) origins** vazio e marque só o necessário (`/checkin` e `/scrobble`).
+4. Salvar e copiar o **Client ID** e o **Client Secret**.
+5. No GitHub: repositório `cgflix-app` › Settings › Secrets and variables › Actions › **New repository secret**:
+   `CGFLIX_TRAKT_CLIENT_ID` = Client ID e `CGFLIX_TRAKT_CLIENT_SECRET` = Client Secret.
+6. Rodar de novo o workflow "CGFLIX Android" (ou fazer um push): o APK novo mostra **Configurações › Serviços › Trakt**.
+   Sem os secrets, o Trakt fica escondido (o app nunca usa a chave do Plezy).
+
 ## Como gerar o APK
 
 - **No GitHub**: aba *Actions* → "CGFLIX Android" → artifact `cgflix-apk` (`cgflix-arm64-v8a.apk` serve para quase todos os celulares e TV box atuais; `armeabi-v7a` para aparelhos antigos de 32 bits).
@@ -159,7 +216,8 @@ Ao resolver, conferir `grep -rn "CGFLIX" lib android .github`.
 
 1. Nome "CGFLIX" também dentro do app (título, tela "Sobre") e logo na tela de entrada; textos em PT para o que ainda estiver em inglês.
 2. Selos **Dublado / Legendado** nos cartões e na tela de detalhes (a partir das faixas de áudio/legenda).
-3. **Pedidos (Seerr)** com login por Quick Connect.
-4. Aviso claro em PT quando o servidor recusar o play por limite de **2 telas** (StreamLimiter).
+3. ~~**Pedidos (Seerr)** com login por Quick Connect~~ (feito na 1E: dentro da busca, sem tela de login).
+4. ~~Aviso claro em PT quando o servidor recusar o play por limite de **2 telas**~~ (feito na 1D).
+4b. Selo "Novo episódio" nas capas de "Novidades em séries e animes" (a 1E só tirou a linha de episódios soltos).
 5. **Atualização do app pelo nosso servidor** (o verificador de atualização do upstream fica desligado: não definimos `ENABLE_UPDATE_CHECK`).
 6. Keystore próprio nos secrets; build do Windows a partir do mesmo código; iPhone depois.
