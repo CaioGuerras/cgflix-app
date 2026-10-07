@@ -1083,7 +1083,7 @@
     "movie": "Filme",
     "tvShow": "Série de TV",
     "minutesLeft": "${minutes} min restantes",
-    "moreLikeThis": "Títulos semelhantes",
+    "moreLikeThis": "Mais como este",
     "titleCount": {
       "one": "${n} título",
       "other": "${n} títulos"

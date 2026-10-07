@@ -1228,7 +1228,7 @@ class _Translations$discover$pt extends Translations$discover$en {
 	@override String get movie => 'Filme';
 	@override String get tvShow => 'Série de TV';
 	@override String minutesLeft({required Object minutes}) => '${minutes} min restantes';
-	@override String get moreLikeThis => 'Títulos semelhantes';
+	@override String get moreLikeThis => 'Mais como este';
 	@override String titleCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
 		one: '${n} título',
 		other: '${n} títulos',
@@ -4034,7 +4034,7 @@ extension on TranslationsPt {
 			'discover.movie' => 'Filme',
 			'discover.tvShow' => 'Série de TV',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} min restantes',
-			'discover.moreLikeThis' => 'Títulos semelhantes',
+			'discover.moreLikeThis' => 'Mais como este',
 			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${n} título', other: '${n} títulos', ), 
 			'errors.searchFailed' => ({required Object error}) => 'Falha na busca: ${error}',
 			'errors.searchUnavailable' => 'A busca não conseguiu alcançar nenhum servidor de mídia.',
