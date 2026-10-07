@@ -1,3 +1,5 @@
+import '../cgflix/cgflix_navigation.dart';
+import '../cgflix/cgflix_you_screen.dart';
 import 'dart:async';
 import '../media/ids.dart';
 import '../media/media_server_client.dart';
@@ -1262,7 +1264,10 @@ class _MainScreenState extends State<MainScreen>
       NavigationTabId.liveTv => LiveTvScreen(key: _screenKeys[tab]),
       NavigationTabId.search => SearchScreen(key: _screenKeys[tab]),
       NavigationTabId.downloads => DownloadsScreen(key: _screenKeys[tab]),
-      NavigationTabId.settings => SettingsScreen(key: _screenKeys[tab]),
+      NavigationTabId.settings =>
+        cgflixUseYouTab(context) // CGFLIX: no celular a aba é "Você"
+            ? CgflixYouScreen(key: _screenKeys[tab])
+            : SettingsScreen(key: _screenKeys[tab]),
     };
   }
 
@@ -1952,6 +1957,7 @@ class _MainScreenState extends State<MainScreen>
   }
 
   List<NavigationTab> _getBottomNavigationTabs(BuildContext context) {
+    if (PlatformDetector.isMobile(context)) return cgflixMobileTabs(_getVisibleTabs(_isOffline)); // CGFLIX
     return mainScreenBottomNavigationTabs(
       visibleTabs: _getVisibleTabs(_isOffline),
       isMobile: PlatformDetector.isMobile(context),
