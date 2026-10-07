@@ -14,7 +14,7 @@ import '../services/settings_service.dart';
 import '../widgets/setting_tile.dart';
 import 'cgflix_logo.dart';
 
-/// Chave "Som da abertura" (Configurações). Padrão: ligado.
+/// Chave "Som de abertura" (Configurações › Avançado). Padrão: ligado.
 const cgflixIntroSoundPref = BoolPref('cgflix_intro_sound', defaultValue: true);
 const _lastOpenPref = IntPref('cgflix_last_open_ms');
 
@@ -244,7 +244,7 @@ class CgflixIntroPainter extends CustomPainter {
   bool shouldRepaint(CgflixIntroPainter oldDelegate) => oldDelegate.animation != animation;
 }
 
-/// Chave "Som da abertura" nas Configurações (só no Android, onde o som existe).
+/// Chave "Som de abertura" em Configurações › Avançado (só no Android, onde o som existe).
 class CgflixIntroSoundTile extends StatelessWidget {
   const CgflixIntroSoundTile({super.key});
 
@@ -252,7 +252,7 @@ class CgflixIntroSoundTile extends StatelessWidget {
   Widget build(BuildContext context) => const SettingSwitchTile(
     pref: cgflixIntroSoundPref,
     icon: Symbols.music_note_rounded,
-    title: 'Som da abertura',
+    title: 'Som de abertura',
     subtitle: 'Um "tum" curto ao abrir o app (fica mudo no silencioso e no vibrar)',
   );
 }

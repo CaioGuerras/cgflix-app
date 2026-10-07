@@ -1,5 +1,7 @@
 // Itens que saíram da tela principal e ficam em Configurações > Avançado:
-// Assistir juntos, Controle remoto e as opções do mpv.
+// Assistir juntos, Controle remoto, as opções do mpv e o som de abertura (Etapa 1E).
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -10,6 +12,7 @@ import '../watch_together/watch_together.dart';
 import '../widgets/companion_remote/remote_session_dialog.dart';
 import '../widgets/setting_tile.dart';
 import '../widgets/settings_section.dart';
+import 'cgflix_intro.dart';
 
 /// Grupo com os recursos avançados que não aparecem mais na Início.
 class CgflixAdvancedFeatures extends StatelessWidget {
@@ -49,6 +52,8 @@ class CgflixAdvancedFeatures extends StatelessWidget {
           subtitle: 'Ajustes técnicos do player. Só mexa se souber o que está fazendo.',
           destinationBuilder: (_) => const MpvConfigScreen(),
         ),
+        // Só no Android, onde o som existe.
+        if (Platform.isAndroid) const CgflixIntroSoundTile(),
       ],
     );
   }

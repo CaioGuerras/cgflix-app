@@ -4,14 +4,20 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
+import kotlin.concurrent.thread
 
 /**
  * CGFLIX: toca o "tum" curto da abertura (res/raw/cgflix_intro.wav, gerado por
  * cgflix-brand/som/gerar_tum.py). Só toca com o aparelho no modo normal: no silencioso ou
  * no vibrar fica quieto. Responde `true` quando tocou.
+ *
+ * Etapa 1E: o `MediaPlayer.create` (lê e prepara o arquivo, síncrono) roda numa thread
+ * própria, fora da thread de UI (pendência da auditoria 1D); a resposta volta na principal.
  */
 internal object CgflixIntroSoundChannel {
   private const val TAG = "CgflixIntroSound"
@@ -21,7 +27,13 @@ internal object CgflixIntroSoundChannel {
     val appContext = context.applicationContext
     MethodChannel(messenger, CHANNEL).setMethodCallHandler { call, result ->
       when (call.method) {
-        "play" -> result.success(play(appContext))
+        "play" -> {
+          val main = Handler(Looper.getMainLooper())
+          thread(name = "cgflix-intro-sound") {
+            val played = play(appContext)
+            main.post { result.success(played) }
+          }
+        }
         else -> result.notImplemented()
       }
     }
