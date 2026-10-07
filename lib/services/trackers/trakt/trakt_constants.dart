@@ -1,3 +1,5 @@
+import '../../../cgflix/cgflix_trakt.dart';
+
 /// Bundled Trakt API credentials and base URLs.
 ///
 /// The client_id/client_secret are extractable from the binary; this is
@@ -10,8 +12,9 @@ class TraktConstants {
   // SharedPreferences — extractable from the binary, but acceptable for a
   // native client app. To rotate, update the registration at
   // https://trakt.tv/oauth/applications.
-  static const String clientId = '9861e686e95c13409dd321736f903973cb9b8e5c6abd0634bec8962f52ea30f4';
-  static const String clientSecret = 'acfa17b9d77fabd7e51175b7da6631aea69423530a6d49b3b3c38cd107cbd207';
+  // CGFLIX: credenciais próprias do build (--dart-define), nunca as do Plezy; vazio = Trakt escondido.
+  static const String clientId = cgflixTraktClientId;
+  static const String clientSecret = cgflixTraktClientSecret;
 
   static const String apiBase = 'https://api.trakt.tv';
   static const String apiVersion = '2';

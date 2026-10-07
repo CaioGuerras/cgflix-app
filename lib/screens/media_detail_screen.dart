@@ -1,4 +1,5 @@
 import '../cgflix/cgflix_detail.dart';
+import '../cgflix/cgflix_trakt.dart';
 import '../cgflix/search/cgflix_sources.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -3486,7 +3487,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
                                 ),
                                 const SizedBox(height: 12),
                               ],
-
+                              if (!isTv) CgflixTraktComments(item: metadata), // CGFLIX: comentários do Trakt
                               // Seasons / Episodes (for TV shows and seasons)
                               if (isShow && !_showEpisodesDirectly) ...[
                                 // Season tabs + inline episodes

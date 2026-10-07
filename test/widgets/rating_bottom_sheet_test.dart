@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/cgflix/cgflix_trakt.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_backend.dart';
@@ -35,6 +36,8 @@ import '../test_helpers/theme.dart';
 /// itself capped at 720 on a desktop OS). Every test drives the real host so
 /// the cap under test is the production one.
 void main() {
+  setUpAll(() => cgflixDebugShowAllServices = true); // CGFLIX: todos os serviços, como no Plezy
+  tearDownAll(() => cgflixDebugShowAllServices = false);
   setUp(() {
     resetSharedPreferencesForTest();
     LocaleSettings.setLocaleSync(AppLocale.en);

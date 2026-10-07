@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../cgflix/cgflix_advanced.dart';
 import '../../cgflix/cgflix_collapsible.dart';
+import '../../cgflix/cgflix_trakt.dart';
 import '../../focus/focus_memory_tracker.dart';
 import '../../focus/focusable_text_field.dart';
 import '../../focus/input_mode_tracker.dart';
@@ -205,7 +206,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                       _buildAppearanceTile(),
                       _buildPlaybackTile(),
                       if (hasLibraries) _buildManageLibrariesTile(sheetContext),
-                      _buildServicesTile(),
+                      if (cgflixShowsServicesTile) _buildServicesTile(), // CGFLIX: só com o Trakt do CGFLIX
                     ],
                   ),
 
