@@ -360,7 +360,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get resetSettings => 'Redefinir Configurações';
 	@override String get resetSettingsDescription => 'Restaurar configurações padrão. Não pode ser desfeito.';
 	@override String get resetSettingsSuccess => 'Configurações redefinidas com sucesso';
-	@override String get backup => 'Backup';
+	@override String get backup => 'Cópia de segurança';
 	@override String get exportSettings => 'Exportar Configurações';
 	@override String get exportSettingsDescription => 'Salvar suas preferências em um arquivo';
 	@override String get exportSettingsSuccess => 'Configurações exportadas';
@@ -371,6 +371,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get importSettingsInvalidFile => 'Este arquivo não é uma exportação válida do CGFLIX';
 	@override String get importSettingsNoUser => 'Entre na conta antes de importar as configurações';
 	@override String get shortcutsReset => 'Atalhos redefinidos para o padrão';
+	@override String get resetShortcutsConfirm => 'Isto troca os seus atalhos personalizados pelos padrões. Continuar?';
 	@override String get about => 'Sobre';
 	@override String get aboutDescription => 'Informações do app e licenças';
 	@override String get updates => 'Atualizações';
@@ -456,6 +457,14 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get audioPassthroughDescription => 'Enviar o áudio Dolby/DTS ao receptor ou à TV sem recodificação, preservando o som surround. Desative se não houver som.';
 	@override String get audioPassthroughDescriptionAppleTv => 'Usar o decodificador Dolby nativo da Apple para Dolby Digital Plus, incluindo Atmos. DTS e TrueHD continuam sendo reproduzidos como PCM multicanal. Desative se não houver som.';
 	@override String get audioPassthroughOverriddenByNormalization => 'Desativada enquanto a normalização de intensidade sonora estiver ativa';
+	@override String get audioChannelLimit => 'Canais de áudio';
+	@override String get audioChannelLimitDescription => 'Mistura o áudio para caixas de som, fones ou sistemas HDMI que não tocam todos os canais';
+	@override String get audioChannelLimitOriginal => 'Original';
+	@override String get audioChannelLimitOriginalDescription => 'Toca todos os canais da faixa';
+	@override String get audioChannelLimitSurround51 => 'Até 5.1';
+	@override String get audioChannelLimitSurround51Description => 'Mistura 7.1 em 5.1 para TVs e receivers que só aceitam PCM 5.1. A passagem direta não muda.';
+	@override String get audioChannelLimitStereo => 'Estéreo';
+	@override String get audioChannelLimitStereoDescription => 'Mistura em dois canais para caixas de som estéreo ou fones. Desliga a passagem direta.';
 	@override String get downmixCenterBoost => 'Reforço do canal central';
 	@override String downmixCenterBoostValue({required Object db}) => '${db} dB';
 	@override String get downmixCenterBoostLabel => 'Reforço (dB)';
@@ -552,6 +561,7 @@ class _Translations$search$pt extends Translations$search$en {
 	@override String get tryDifferentTerm => 'Tente um termo de busca diferente';
 	@override String get searchYourMedia => 'Buscar suas mídias';
 	@override String get enterTitleActorOrKeyword => 'Insira um título, ator ou palavra-chave';
+	@override String get people => 'Pessoas';
 }
 
 // Path: hotkeys
@@ -1080,6 +1090,8 @@ class _Translations$profiles$pt extends Translations$profiles$en {
 	@override String get signOut => 'Sair';
 	@override String get signOutPlexTitle => 'Sair do Plex?';
 	@override String signOutPlexMessage({required Object displayName}) => 'Remover ${displayName} e todos os usuários do Plex Home? Você pode entrar novamente quando quiser.';
+	@override String get signOutPlexDeleteDownloads => 'Apagar também os baixados';
+	@override String get signOutPlexDeleteDownloadsDescription => 'Se não apagar, eles ficam neste aparelho e voltam quando você entrar de novo nesta conta.';
 	@override String get signedOutPlex => 'Saiu do Plex.';
 	@override String get signOutFailed => 'Falha ao sair.';
 	@override String get sectionTitle => 'Perfis';
@@ -1315,6 +1327,7 @@ class _Translations$libraries$pt extends Translations$libraries$en {
 	@override late final _Translations$libraries$groupings$pt groupings = _Translations$libraries$groupings$pt._(_root);
 	@override late final _Translations$libraries$filterCategories$pt filterCategories = _Translations$libraries$filterCategories$pt._(_root);
 	@override late final _Translations$libraries$sortLabels$pt sortLabels = _Translations$libraries$sortLabels$pt._(_root);
+	@override late final _Translations$libraries$advancedFilters$pt advancedFilters = _Translations$libraries$advancedFilters$pt._(_root);
 }
 
 // Path: about
@@ -1429,7 +1442,7 @@ class _Translations$navigation$pt extends Translations$navigation$en {
 
 	// Translations
 	@override String get libraries => 'Bibliotecas';
-	@override String get downloads => 'Downloads';
+	@override String get downloads => 'Baixados';
 	@override String get liveTv => 'TV ao Vivo';
 	@override String get explore => 'Explorar';
 }
@@ -1774,7 +1787,7 @@ class _Translations$downloads$pt extends Translations$downloads$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Downloads';
+	@override String get title => 'Baixados';
 	@override String get manage => 'Gerenciar';
 	@override String get tvShows => 'Séries de TV';
 	@override String get movies => 'Filmes';
@@ -1966,6 +1979,13 @@ class _Translations$performanceOverlay$pt extends Translations$performanceOverla
 	@override String get rotation => 'Rotação';
 	@override String get dvSource => 'Fonte DV';
 	@override String get dvPath => 'Caminho DV';
+	@override String get dvRouteDecoder => 'Decodificador Dolby Vision';
+	@override String get dvRouteDecoderP81 => 'Decodificador Dolby Vision (P7→8.1)';
+	@override String get dvRouteBaseLayer => 'Camada base';
+	@override String get dvRouteBaseLayerHdr10 => 'Camada base HDR10';
+	@override String get dvRouteBaseLayerHlg => 'Camada base HLG';
+	@override String get dvRouteBaseLayerSdr => 'Camada base SDR';
+	@override String get dvRouteReshaped => 'RPU remodelada (gpu-next)';
 	@override String get p7Conversion => 'Conv. P7';
 	@override String get sampleRate => 'Taxa de amostragem';
 	@override String get pixelFormat => 'Formato de pixel';
@@ -2239,6 +2259,7 @@ class _Translations$services$pt extends Translations$services$en {
 	@override String disconnectConfirmBody({required Object service}) => 'O CGFLIX deixará de atualizar ${service}. Reconecte quando quiser.';
 	@override String connectFailed({required Object service}) => 'Não foi possível conectar ao ${service}. Tente novamente.';
 	@override late final _Translations$services$names$pt names = _Translations$services$names$pt._(_root);
+	@override late final _Translations$services$simklReconnect$pt simklReconnect = _Translations$services$simklReconnect$pt._(_root);
 	@override late final _Translations$services$deviceCode$pt deviceCode = _Translations$services$deviceCode$pt._(_root);
 	@override late final _Translations$services$oauthProxy$pt oauthProxy = _Translations$services$oauthProxy$pt._(_root);
 	@override late final _Translations$services$pendingAuth$pt pendingAuth = _Translations$services$pendingAuth$pt._(_root);
@@ -2522,6 +2543,7 @@ class _Translations$libraries$filterCategories$pt extends Translations$libraries
 	@override String get unwatched => 'Não assistidos';
 	@override String get unplayed => 'Não reproduzidos';
 	@override String get favorites => 'Favoritos';
+	@override String get filePath => 'Caminho do arquivo';
 }
 
 // Path: libraries.sortLabels
@@ -2554,6 +2576,41 @@ class _Translations$libraries$sortLabels$pt extends Translations$libraries$sortL
 	@override String get dateDownloaded => 'Data de download';
 	@override String get size => 'Tamanho';
 	@override String get library => 'Biblioteca';
+}
+
+// Path: libraries.advancedFilters
+class _Translations$libraries$advancedFilters$pt extends Translations$libraries$advancedFilters$en {
+	_Translations$libraries$advancedFilters$pt._(TranslationsPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get include => 'Incluir';
+	@override String get exclude => 'Excluir';
+	@override String get any => 'Qualquer';
+	@override String get yes => 'Sim';
+	@override String get no => 'Não';
+	@override String not({required Object value}) => 'Não ${value}';
+	@override String valueCount({required Object count}) => '${count} selecionados';
+	@override String valueCountExcluded({required Object count}) => '${count} excluídos';
+	@override String get searchValues => 'Buscar valores';
+	@override String get noValues => 'Nenhum valor';
+	@override String get matchContains => 'Contém';
+	@override String get matchNotContains => 'Não contém';
+	@override String get matchIs => 'É';
+	@override String get matchIsNot => 'Não é';
+	@override String get matchBeginsWith => 'Começa com';
+	@override String get matchEndsWith => 'Termina com';
+	@override String get textHint => 'Digite para filtrar';
+	@override String get from => 'De';
+	@override String get to => 'Até';
+	@override String range({required Object from, required Object to}) => '${from} a ${to}';
+	@override String atLeast({required Object value}) => '${value} ou mais';
+	@override String atMost({required Object value}) => 'Até ${value}';
+	@override String dateLastDays({required Object count}) => 'Últimos ${count} dias';
+	@override String get dateLastYear => 'Último ano';
+	@override String dateOlderThanDays({required Object count}) => 'Há mais de ${count} dias';
+	@override String get dateOlderThanYear => 'Há mais de um ano';
 }
 
 // Path: explore.rows
@@ -2705,6 +2762,7 @@ class _Translations$explore$creditRole$pt extends Translations$explore$creditRol
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
+	@override String get actor => 'Ator/Atriz';
 	@override String get director => 'Diretor';
 	@override String get writer => 'Roteirista';
 	@override String get producer => 'Produtor';
@@ -2969,6 +3027,17 @@ class _Translations$services$names$pt extends Translations$services$names$en {
 	@override String get simkl => 'Simkl';
 	@override String get seerr => 'Seerr';
 	@override String get mdblist => 'MDBList';
+}
+
+// Path: services.simklReconnect
+class _Translations$services$simklReconnect$pt extends Translations$services$simklReconnect$en {
+	_Translations$services$simklReconnect$pt._(TranslationsPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Reconectar o Simkl';
+	@override String get subtitle => 'O Simkl vai desativar o tipo de login desta conexão. Reconectar abre o simkl.com para você autorizar o CGFLIX — o CGFLIX nunca vê a sua senha. Seu histórico continua no Simkl.';
 }
 
 // Path: services.deviceCode
@@ -3275,7 +3344,7 @@ extension on TranslationsPt {
 			'settings.resetSettings' => 'Redefinir Configurações',
 			'settings.resetSettingsDescription' => 'Restaurar configurações padrão. Não pode ser desfeito.',
 			'settings.resetSettingsSuccess' => 'Configurações redefinidas com sucesso',
-			'settings.backup' => 'Backup',
+			'settings.backup' => 'Cópia de segurança',
 			'settings.exportSettings' => 'Exportar Configurações',
 			'settings.exportSettingsDescription' => 'Salvar suas preferências em um arquivo',
 			'settings.exportSettingsSuccess' => 'Configurações exportadas',
@@ -3286,6 +3355,7 @@ extension on TranslationsPt {
 			'settings.importSettingsInvalidFile' => 'Este arquivo não é uma exportação válida do CGFLIX',
 			'settings.importSettingsNoUser' => 'Entre na conta antes de importar as configurações',
 			'settings.shortcutsReset' => 'Atalhos redefinidos para o padrão',
+			'settings.resetShortcutsConfirm' => 'Isto troca os seus atalhos personalizados pelos padrões. Continuar?',
 			'settings.about' => 'Sobre',
 			'settings.aboutDescription' => 'Informações do app e licenças',
 			'settings.updates' => 'Atualizações',
@@ -3371,6 +3441,14 @@ extension on TranslationsPt {
 			'settings.audioPassthroughDescription' => 'Enviar o áudio Dolby/DTS ao receptor ou à TV sem recodificação, preservando o som surround. Desative se não houver som.',
 			'settings.audioPassthroughDescriptionAppleTv' => 'Usar o decodificador Dolby nativo da Apple para Dolby Digital Plus, incluindo Atmos. DTS e TrueHD continuam sendo reproduzidos como PCM multicanal. Desative se não houver som.',
 			'settings.audioPassthroughOverriddenByNormalization' => 'Desativada enquanto a normalização de intensidade sonora estiver ativa',
+			'settings.audioChannelLimit' => 'Canais de áudio',
+			'settings.audioChannelLimitDescription' => 'Mistura o áudio para caixas de som, fones ou sistemas HDMI que não tocam todos os canais',
+			'settings.audioChannelLimitOriginal' => 'Original',
+			'settings.audioChannelLimitOriginalDescription' => 'Toca todos os canais da faixa',
+			'settings.audioChannelLimitSurround51' => 'Até 5.1',
+			'settings.audioChannelLimitSurround51Description' => 'Mistura 7.1 em 5.1 para TVs e receivers que só aceitam PCM 5.1. A passagem direta não muda.',
+			'settings.audioChannelLimitStereo' => 'Estéreo',
+			'settings.audioChannelLimitStereoDescription' => 'Mistura em dois canais para caixas de som estéreo ou fones. Desliga a passagem direta.',
 			'settings.downmixCenterBoost' => 'Reforço do canal central',
 			'settings.downmixCenterBoostValue' => ({required Object db}) => '${db} dB',
 			'settings.downmixCenterBoostLabel' => 'Reforço (dB)',
@@ -3458,6 +3536,7 @@ extension on TranslationsPt {
 			'search.tryDifferentTerm' => 'Tente um termo de busca diferente',
 			'search.searchYourMedia' => 'Buscar suas mídias',
 			'search.enterTitleActorOrKeyword' => 'Insira um título, ator ou palavra-chave',
+			'search.people' => 'Pessoas',
 			'hotkeys.setShortcutFor' => ({required Object actionName}) => 'Definir Atalho para ${actionName}',
 			'hotkeys.clearShortcut' => 'Limpar atalho',
 			'hotkeys.noShortcutSet' => 'Nenhum atalho definido',
@@ -3540,6 +3619,8 @@ extension on TranslationsPt {
 			'fileInfo.dolbyVision' => 'Dolby Vision',
 			'fileInfo.dolbyVisionLevel' => 'Nível Dolby Vision',
 			'fileInfo.dolbyVisionVersion' => 'Versão Dolby Vision',
+			_ => null,
+		} ?? switch (path) {
 			'fileInfo.dolbyVisionLayers' => 'Camadas Dolby Vision',
 			'fileInfo.baseLayerCompatibility' => 'Compatibilidade da camada base',
 			'fileInfo.avcBitstream' => 'Bitstream AVC',
@@ -3550,8 +3631,6 @@ extension on TranslationsPt {
 			'fileInfo.streamId' => 'ID do fluxo',
 			'fileInfo.language' => 'Idioma',
 			'fileInfo.languageCode' => 'Código do idioma',
-			_ => null,
-		} ?? switch (path) {
 			'fileInfo.streamTitle' => 'Título da faixa',
 			'fileInfo.channels' => 'Canais',
 			'fileInfo.sampleRate' => 'Taxa de amostragem',
@@ -3890,6 +3969,8 @@ extension on TranslationsPt {
 			'profiles.signOut' => 'Sair',
 			'profiles.signOutPlexTitle' => 'Sair do Plex?',
 			'profiles.signOutPlexMessage' => ({required Object displayName}) => 'Remover ${displayName} e todos os usuários do Plex Home? Você pode entrar novamente quando quiser.',
+			'profiles.signOutPlexDeleteDownloads' => 'Apagar também os baixados',
+			'profiles.signOutPlexDeleteDownloadsDescription' => 'Se não apagar, eles ficam neste aparelho e voltam quando você entrar de novo nesta conta.',
 			'profiles.signedOutPlex' => 'Saiu do Plex.',
 			'profiles.signOutFailed' => 'Falha ao sair.',
 			'profiles.sectionTitle' => 'Perfis',
@@ -4052,6 +4133,8 @@ extension on TranslationsPt {
 			'errors.reasonUnreachable' => 'não foi possível alcançar o servidor',
 			'errors.reasonRefused' => 'o servidor recusou a solicitação',
 			'errors.reasonNotFound' => 'o item não está mais no servidor',
+			_ => null,
+		} ?? switch (path) {
 			'errors.reasonServerError' => 'o servidor relatou um erro',
 			'errors.reasonCancelled' => 'a solicitação foi cancelada',
 			'errors.reasonUnexpected' => 'ocorreu um erro inesperado',
@@ -4064,8 +4147,6 @@ extension on TranslationsPt {
 			'libraries.refreshMetadata' => 'Atualizar Metadados',
 			'libraries.emptyTrash' => 'Esvaziar Lixeira',
 			'libraries.emptyingTrash' => ({required Object title}) => 'Esvaziando lixeira de "${title}"...',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.trashEmptied' => ({required Object title}) => 'Lixeira esvaziada de "${title}"',
 			'libraries.failedToEmptyTrash' => ({required Object error}) => 'Falha ao esvaziar lixeira: ${error}',
 			'libraries.analyzing' => ({required Object title}) => 'Analisando "${title}"...',
@@ -4119,6 +4200,7 @@ extension on TranslationsPt {
 			'libraries.filterCategories.unwatched' => 'Não assistidos',
 			'libraries.filterCategories.unplayed' => 'Não reproduzidos',
 			'libraries.filterCategories.favorites' => 'Favoritos',
+			'libraries.filterCategories.filePath' => 'Caminho do arquivo',
 			'libraries.sortLabels.title' => 'Título',
 			'libraries.sortLabels.dateAdded' => 'Data de adição',
 			'libraries.sortLabels.releaseDate' => 'Data de lançamento',
@@ -4142,6 +4224,32 @@ extension on TranslationsPt {
 			'libraries.sortLabels.dateDownloaded' => 'Data de download',
 			'libraries.sortLabels.size' => 'Tamanho',
 			'libraries.sortLabels.library' => 'Biblioteca',
+			'libraries.advancedFilters.include' => 'Incluir',
+			'libraries.advancedFilters.exclude' => 'Excluir',
+			'libraries.advancedFilters.any' => 'Qualquer',
+			'libraries.advancedFilters.yes' => 'Sim',
+			'libraries.advancedFilters.no' => 'Não',
+			'libraries.advancedFilters.not' => ({required Object value}) => 'Não ${value}',
+			'libraries.advancedFilters.valueCount' => ({required Object count}) => '${count} selecionados',
+			'libraries.advancedFilters.valueCountExcluded' => ({required Object count}) => '${count} excluídos',
+			'libraries.advancedFilters.searchValues' => 'Buscar valores',
+			'libraries.advancedFilters.noValues' => 'Nenhum valor',
+			'libraries.advancedFilters.matchContains' => 'Contém',
+			'libraries.advancedFilters.matchNotContains' => 'Não contém',
+			'libraries.advancedFilters.matchIs' => 'É',
+			'libraries.advancedFilters.matchIsNot' => 'Não é',
+			'libraries.advancedFilters.matchBeginsWith' => 'Começa com',
+			'libraries.advancedFilters.matchEndsWith' => 'Termina com',
+			'libraries.advancedFilters.textHint' => 'Digite para filtrar',
+			'libraries.advancedFilters.from' => 'De',
+			'libraries.advancedFilters.to' => 'Até',
+			'libraries.advancedFilters.range' => ({required Object from, required Object to}) => '${from} a ${to}',
+			'libraries.advancedFilters.atLeast' => ({required Object value}) => '${value} ou mais',
+			'libraries.advancedFilters.atMost' => ({required Object value}) => 'Até ${value}',
+			'libraries.advancedFilters.dateLastDays' => ({required Object count}) => 'Últimos ${count} dias',
+			'libraries.advancedFilters.dateLastYear' => 'Último ano',
+			'libraries.advancedFilters.dateOlderThanDays' => ({required Object count}) => 'Há mais de ${count} dias',
+			'libraries.advancedFilters.dateOlderThanYear' => 'Há mais de um ano',
 			'about.title' => 'Sobre',
 			'about.openSourceLicenses' => 'Licenças de código aberto',
 			'about.versionLabel' => ({required Object version}) => 'Versão ${version}',
@@ -4193,7 +4301,7 @@ extension on TranslationsPt {
 			'licenses.licenseNumber' => ({required Object number}) => 'Licença ${number}',
 			'licenses.licensesCount' => ({required Object count}) => '${count} licenças',
 			'navigation.libraries' => 'Bibliotecas',
-			'navigation.downloads' => 'Downloads',
+			'navigation.downloads' => 'Baixados',
 			'navigation.liveTv' => 'TV ao Vivo',
 			'navigation.explore' => 'Explorar',
 			'explore.title' => 'Explorar',
@@ -4293,6 +4401,7 @@ extension on TranslationsPt {
 			'explore.sourceMaterial.webComic' => 'Webcomic',
 			'explore.sourceMaterial.musicRelease' => 'Música',
 			'explore.sourceMaterial.otherMedia' => 'Outro',
+			'explore.creditRole.actor' => 'Ator/Atriz',
 			'explore.creditRole.director' => 'Diretor',
 			'explore.creditRole.writer' => 'Roteirista',
 			'explore.creditRole.producer' => 'Produtor',
@@ -4538,6 +4647,8 @@ extension on TranslationsPt {
 			'watchTogether.hostTransferFailed' => ({required Object name}) => 'Não foi possível tornar ${name} o anfitrião',
 			'watchTogether.watchingWithOthers' => 'Assistindo com outras pessoas',
 			'watchTogether.endSession' => 'Encerrar sessão',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.leaveSession' => 'Sair da sessão',
 			'watchTogether.endSessionQuestion' => 'Encerrar sessão?',
 			'watchTogether.leaveSessionQuestion' => 'Sair da sessão?',
@@ -4578,8 +4689,6 @@ extension on TranslationsPt {
 			'watchTogether.renameRoom' => 'Renomear sala',
 			'watchTogether.removeRoom' => 'Remover',
 			'watchTogether.guestSwitchUnavailable' => 'Não foi possível trocar — servidor indisponível para sincronização',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.guestSwitchFailed' => 'Não foi possível trocar — conteúdo não encontrado neste servidor',
 			'watchTogether.defaultDisplayName' => 'Usuário',
 			'watchTogether.errors.timedOut' => 'O servidor de retransmissão não respondeu a tempo',
@@ -4587,7 +4696,7 @@ extension on TranslationsPt {
 			'watchTogether.errors.invalidRelayResponse' => 'O servidor de retransmissão enviou uma resposta inesperada',
 			'watchTogether.errors.sessionEnded' => 'O anfitrião encerrou a sessão',
 			'watchTogether.errors.sessionUnavailable' => 'Não foi possível retomar esta sessão. Entre em uma sala ou crie uma para continuar.',
-			'downloads.title' => 'Downloads',
+			'downloads.title' => 'Baixados',
 			'downloads.manage' => 'Gerenciar',
 			'downloads.tvShows' => 'Séries de TV',
 			'downloads.movies' => 'Filmes',
@@ -4826,6 +4935,13 @@ extension on TranslationsPt {
 			'performanceOverlay.rotation' => 'Rotação',
 			'performanceOverlay.dvSource' => 'Fonte DV',
 			'performanceOverlay.dvPath' => 'Caminho DV',
+			'performanceOverlay.dvRouteDecoder' => 'Decodificador Dolby Vision',
+			'performanceOverlay.dvRouteDecoderP81' => 'Decodificador Dolby Vision (P7→8.1)',
+			'performanceOverlay.dvRouteBaseLayer' => 'Camada base',
+			'performanceOverlay.dvRouteBaseLayerHdr10' => 'Camada base HDR10',
+			'performanceOverlay.dvRouteBaseLayerHlg' => 'Camada base HLG',
+			'performanceOverlay.dvRouteBaseLayerSdr' => 'Camada base SDR',
+			'performanceOverlay.dvRouteReshaped' => 'RPU remodelada (gpu-next)',
 			'performanceOverlay.p7Conversion' => 'Conv. P7',
 			'performanceOverlay.sampleRate' => 'Taxa de amostragem',
 			'performanceOverlay.pixelFormat' => 'Formato de pixel',
@@ -5040,9 +5156,13 @@ extension on TranslationsPt {
 			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
+			'services.simklReconnect.title' => 'Reconectar o Simkl',
+			'services.simklReconnect.subtitle' => 'O Simkl vai desativar o tipo de login desta conexão. Reconectar abre o simkl.com para você autorizar o CGFLIX — o CGFLIX nunca vê a sua senha. Seu histórico continua no Simkl.',
 			'services.deviceCode.title' => ({required Object service}) => 'Ativar o CGFLIX no ${service}',
 			'services.deviceCode.instructions' => 'Leia o código QR ou acesse o endereço abaixo e insira este código:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Abrir ${service} para ativar',
+			_ => null,
+		} ?? switch (path) {
 			'services.deviceCode.copyCode' => 'Copiar código de ativação',
 			'services.deviceCode.waitingForAuthorization' => 'Aguardando autorização…',
 			'services.deviceCode.codeCopied' => 'Código copiado',
@@ -5092,8 +5212,6 @@ extension on TranslationsPt {
 			'addServer.borrowFromAnotherProfile' => 'Pegar emprestado de outro perfil',
 			'addServer.borrowFromAnotherProfileSubtitle' => 'Reutilize a conexão de outro perfil. Perfis protegidos por PIN exigem PIN.',
 			'addServer.invalidCredentials' => 'Usuário ou senha inválidos',
-			_ => null,
-		} ?? switch (path) {
 			'addServer.authResponseNotJson' => 'A resposta de autenticação não era um JSON válido',
 			'addServer.authResponseIncomplete' => 'A resposta de login do servidor estava incompleta',
 			'addServer.quickConnectRejected' => 'O Quick Connect foi rejeitado pelo servidor',

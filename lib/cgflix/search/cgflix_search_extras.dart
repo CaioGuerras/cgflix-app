@@ -13,6 +13,7 @@ import '../../providers/catalog_sources_provider.dart';
 import '../../screens/catalog_search_screen.dart';
 import '../../utils/app_logger.dart';
 import '../../widgets/app_icon.dart';
+import '../cgflix_navigation.dart';
 import '../cgflix_style.dart';
 import '../home/cgflix_cards.dart';
 
@@ -156,36 +157,53 @@ class CgflixRequestPrompt extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!enabled) return child;
     final seerr = context.watch<CatalogSourcesProvider?>()?.seerrSource;
-    return Column(
-      children: [
-        Expanded(child: child),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-          child: seerr == null
-              ? const Text(
-                  'Para pedir um título, conecte os Pedidos (Seerr) em Você › Configurações.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: CgflixColors.textMuted),
-                )
-              : FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: CgflixColors.accentPressed,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(200, 48),
+    final button = FilledButton.icon(
+      style: FilledButton.styleFrom(
+        backgroundColor: CgflixColors.accentPressed,
+        foregroundColor: Colors.white,
+        minimumSize: const Size(200, 48),
+      ),
+      icon: AppIcon(seerr == null ? Symbols.link_rounded : Symbols.add_circle_rounded, fill: 1, color: Colors.white),
+      // Sem os Pedidos conectados, o mesmo botão leva a conectar (login do Jellyfin ou Quick Connect).
+      label: Text(
+        seerr == null ? 'Conectar os Pedidos' : 'Pedir “$query”',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      onPressed: () {
+        HapticFeedback.lightImpact();
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) =>
+                seerr == null ? CgflixPages.requests(null) : CatalogSearchScreen(source: seerr, initialQuery: query),
+          ),
+        );
+      },
+    );
+    // Rola quando falta altura (celular deitado, teclado aberto) em vez de estourar.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(
+            child: Column(
+              children: [
+                Expanded(child: child),
+                if (seerr == null)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(24, 0, 24, 12),
+                    child: Text(
+                      'Não achou? Conecte os Pedidos para pedir o título.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: CgflixColors.textMuted),
+                    ),
                   ),
-                  icon: const AppIcon(Symbols.add_circle_rounded, fill: 1, color: Colors.white),
-                  label: Text('Pedir “$query”', maxLines: 1, overflow: TextOverflow.ellipsis),
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => CatalogSearchScreen(source: seerr, initialQuery: query),
-                      ),
-                    );
-                  },
-                ),
+                Padding(padding: const EdgeInsets.fromLTRB(24, 0, 24, 32), child: button),
+              ],
+            ),
+          ),
         ),
-      ],
+      ),
     );
   }
 }
