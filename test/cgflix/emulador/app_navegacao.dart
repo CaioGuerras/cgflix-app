@@ -1,25 +1,80 @@
-// App de teste do job "Emulador" do CI (Etapa 1D). NÃO vai para o APK de verdade: o CI compila
+// App de teste do job "Emulador" do CI (Etapa 1D/1E). NÃO vai para o APK de verdade: o CI compila
 // este arquivo como alvo (`flutter build apk --debug -t test/cgflix/emulador/app_navegacao.dart`).
 //
 // Usa as peças reais do CGFLIX (tema único, barra do topo, menu do usuário, contas de altura do
-// destaque, transições) com dados falsos: nada de login nem servidor. O roteiro em
-// scripts/cgflix/emulador_navegacao.py toca nos itens pelo nome (TalkBack/uiautomator), gira a
-// tela e tira as capturas.
+// destaque, transições, seção "Disponível para pedir" e "Meus pedidos") com dados falsos: nada de
+// login nem servidor. O roteiro em scripts/cgflix/emulador_navegacao.py toca nos itens pelo nome
+// (TalkBack/uiautomator), gira a tela e tira as capturas.
 import 'package:flutter/material.dart';
 
 import 'package:plezy/cgflix/cgflix_layout.dart';
 import 'package:plezy/cgflix/cgflix_navigation.dart';
 import 'package:plezy/cgflix/cgflix_style.dart';
 import 'package:plezy/cgflix/cgflix_theme.dart';
+import 'package:plezy/cgflix/requests/cgflix_requests_ui.dart';
+import 'package:plezy/cgflix/requests/cgflix_seerr.dart';
 
-const _titulos = [
-  'Duna',
-  'Ainda Estou Aqui',
-  'Cidade de Deus',
-  'Bacurau',
-  'O Auto da Compadecida',
-  'Central do Brasil',
-];
+/// Títulos falsos de cada categoria (Etapa 1E: cada chip só mostra os seus).
+const _porCategoria = {
+  null: ['Duna', 'Ainda Estou Aqui', 'Ruptura', 'Frieren', 'Cidade de Deus', 'Spy x Family'],
+  'Filmes': ['Duna', 'Bacurau', 'Ainda Estou Aqui', 'Cidade de Deus', 'O Auto da Compadecida', 'Central do Brasil'],
+  'Séries': ['Ruptura', 'Sintonia', 'Cangaço Novo', 'The Bear', 'Severance', 'Arcane'],
+  'Animes': ['Frieren', 'Jujutsu Kaisen', 'Spy x Family', 'One Piece', 'Dandadan', 'Solo Leveling'],
+};
+
+List<String> get _titulos => _porCategoria[null]!;
+
+/// Seerr falso: "Disponível para pedir" e "Meus pedidos" sem servidor.
+class _PedidosFalsos implements CgflixRequestsBackend {
+  @override
+  Future<List<CgflixRequestable>> search(String query) async => const [
+    CgflixRequestable(tmdbId: 1, isMovie: true, title: 'Duna: Parte Três', year: 2026),
+    CgflixRequestable(tmdbId: 2, isMovie: false, title: 'Duna: A Profecia', year: 2024),
+    CgflixRequestable(tmdbId: 3, isMovie: true, title: 'Duna (1984)', year: 1984, state: CgflixRequestState.requested),
+    CgflixRequestable(
+      tmdbId: 4,
+      isMovie: true,
+      title: 'Duna de Jodorowsky',
+      year: 2013,
+      state: CgflixRequestState.downloading,
+    ),
+  ];
+
+  @override
+  Future<List<CgflixSeasonChoice>> seasons(int tmdbId) async => const [
+    CgflixSeasonChoice(number: 1, name: 'Temporada 1', episodes: 6),
+    CgflixSeasonChoice(number: 2, name: 'Temporada 2', episodes: 6),
+  ];
+
+  @override
+  Future<void> request(CgflixRequestable item, {List<int>? seasons}) async {}
+
+  @override
+  Future<List<CgflixMyRequest>> myRequests() async => const [
+    CgflixMyRequest(
+      id: 1,
+      tmdbId: 2,
+      isMovie: false,
+      title: 'Duna: A Profecia',
+      year: 2024,
+      status: CgflixMyRequestStatus.waitingApproval,
+      seasons: [1, 2],
+    ),
+    CgflixMyRequest(
+      id: 2,
+      tmdbId: 5,
+      isMovie: true,
+      title: 'Ainda Estou Aqui',
+      year: 2024,
+      status: CgflixMyRequestStatus.available,
+    ),
+    CgflixMyRequest(id: 3, tmdbId: 6, isMovie: false, title: 'Frieren', status: CgflixMyRequestStatus.downloading),
+  ];
+
+  @override
+  Future<CgflixTitleInfo> titleInfo(int tmdbId, {required bool isMovie}) async =>
+      (title: 'Título $tmdbId', year: null, posterUrl: null);
+}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +84,7 @@ void main() {
   CgflixPages.settings = () => MaterialPageRoute<void>(
     builder: (_) => const _PaginaSimples(titulo: 'Configurações', texto: 'Configurações (falsas)'),
   );
-  CgflixPages.myRequests = (_) => const _PaginaSimples(titulo: 'Meus pedidos', texto: 'Pedidos (falsos)');
+  CgflixRequests.debugOverride = _PedidosFalsos();
   runApp(MaterialApp(debugShowCheckedModeBanner: false, theme: cgflixAppTheme(), home: const _InicioFalsa()));
 }
 
@@ -85,7 +140,9 @@ class _InicioFalsaState extends State<_InicioFalsa> {
                 ),
               ),
               for (final linha in ['Continuar assistindo', 'Em alta no Brasil', 'Lançamentos'])
-                SliverToBoxAdapter(child: _LinhaFalsa(titulo: linha)),
+                SliverToBoxAdapter(
+                  child: _LinhaFalsa(titulo: linha, titulos: _porCategoria[_filtro]!),
+                ),
               SliverToBoxAdapter(child: SizedBox(height: media.padding.bottom + 24)),
             ],
           ),
@@ -116,8 +173,9 @@ class _InicioFalsaState extends State<_InicioFalsa> {
 }
 
 class _LinhaFalsa extends StatelessWidget {
-  const _LinhaFalsa({required this.titulo});
+  const _LinhaFalsa({required this.titulo, required this.titulos});
   final String titulo;
+  final List<String> titulos;
 
   @override
   Widget build(BuildContext context) {
@@ -136,14 +194,14 @@ class _LinhaFalsa extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _titulos.length,
+              itemCount: titulos.length,
               separatorBuilder: (_, _) => const SizedBox(width: 8),
               itemBuilder: (context, i) => Container(
                 width: 120,
                 decoration: BoxDecoration(color: CgflixColors.surfaceHigh, borderRadius: BorderRadius.circular(8)),
                 alignment: Alignment.bottomLeft,
                 padding: const EdgeInsets.all(8),
-                child: Text(_titulos[i], maxLines: 2, overflow: TextOverflow.ellipsis),
+                child: Text(titulos[i], maxLines: 2, overflow: TextOverflow.ellipsis),
               ),
             ),
           ),
@@ -153,7 +211,8 @@ class _LinhaFalsa extends StatelessWidget {
   }
 }
 
-/// Busca falsa: campo com foco e um resultado que abre a página do título.
+/// Busca falsa: o que já temos (abre a página do título) e, logo abaixo, a seção real
+/// "Disponível para pedir" com o Seerr falso.
 class _BuscaFalsa extends StatelessWidget {
   const _BuscaFalsa();
 
@@ -164,14 +223,18 @@ class _BuscaFalsa extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const TextField(autofocus: false, decoration: InputDecoration(hintText: 'Títulos, pessoas...')),
+          TextField(
+            controller: TextEditingController(text: 'Duna'),
+            decoration: const InputDecoration(hintText: 'Títulos, pessoas...'),
+          ),
           const SizedBox(height: 16),
-          for (final t in _titulos.take(3))
+          for (final t in _titulos.take(1))
             ListTile(
               title: Text(t),
-              subtitle: const Text('Filme · 2024'),
+              subtitle: const Text('Filme · 2021'),
               onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => _TituloFalso(titulo: t))),
             ),
+          const CgflixRequestSection(query: 'Duna'),
         ],
       ),
     );

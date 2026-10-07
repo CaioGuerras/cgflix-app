@@ -210,7 +210,7 @@ jobs:
           adb shell wm size
           adb shell wm density
 
-      - name: Roteiro de navegação (Início → Séries → Busca → título → Voltar → menu → Baixados)
+      - name: Roteiro de navegação (Início → Filmes/Séries/Animes → Busca com pedidos → título → menu → Meus pedidos → Baixados)
         run: python3 scripts/cgflix/emulador_navegacao.py --apk build/app/outputs/flutter-apk/app-debug.apk --out build/cgflix-capturas
 
       - name: Publicar capturas (retrato e paisagem) e logcat

@@ -2,9 +2,10 @@
 """Roteiro de navegação do CGFLIX no emulador (job "Emulador" do workflow CGFLIX Android).
 
 Instala o APK de debug do app de teste (test/cgflix/emulador/app_navegacao.dart), percorre
-Início → chip Séries → Busca → título → Voltar → menu do usuário → Baixados, gira para paisagem e
-volta em cada tela e guarda as capturas (retrato e paisagem). Falha se aparecer tela preta,
-"RenderFlex overflowed" ou exceção no logcat.
+Início → Filmes → Séries → Animes → Busca (com "Disponível para pedir") → Pedir → título → Voltar →
+menu do usuário → Meus pedidos → Baixados, gira para paisagem e volta em cada tela e guarda as
+capturas (retrato e paisagem). Etapa 1E: a barra não tem mais o ícone "Pedir" (o roteiro confere).
+Falha se aparecer tela preta, "RenderFlex overflowed" ou exceção no logcat.
 
 Só usa a biblioteca padrão do Python e o adb do Android SDK.
 """
@@ -160,6 +161,13 @@ class Device:
             time.sleep(1)
         raise RuntimeError(f"não achei na tela: {pattern}")
 
+    def has(self, pattern: str) -> bool:
+        """A tela mostra agora algo com esse nome? (sem esperar)"""
+        regex = re.compile(pattern)
+        return any(
+            regex.search(f"{node.get('content-desc', '')}\n{node.get('text', '')}") for node in self.nodes()
+        )
+
     def tap(self, pattern: str) -> None:
         x, y = self.find(pattern)
         self.adb("shell", "input", "tap", str(x), str(y))
@@ -192,15 +200,35 @@ def run(apk: Path, out_dir: Path) -> int:
     dev.rotate(False)
     dev.adb("shell", "monkey", "-p", APP_ID, "-c", "android.intent.category.LAUNCHER", "1")
 
+    def sem_pedir_na_barra() -> None:
+        dev.find(r"^Menu do CGFLIX", timeout=90)
+        if dev.has(r"^Pedir um título"):
+            raise RuntimeError("a barra do topo ainda tem o ícone Pedir")
+
+    def categoria(nome: str, marca: str):
+        def acao() -> None:
+            if dev.has(r"^Voltar para Tudo"):
+                dev.tap(r"^Voltar para Tudo")
+            dev.tap(rf"^Mostrar só {nome}")
+            dev.find(marca)
+        return acao
+
     steps = [
-        ("01-inicio", lambda: dev.find(r"^Menu do CGFLIX", timeout=90)),
-        ("02-chip-series", lambda: dev.tap(r"^Mostrar só Séries")),
-        ("03-busca", lambda: dev.tap(r"^Buscar$")),
-        ("04-titulo", lambda: dev.tap(r"^Duna")),
-        ("05-voltar-inicio", lambda: (dev.back(), dev.back(), dev.find(r"^Menu do CGFLIX"))),
-        ("06-menu-usuario", lambda: dev.tap(r"^Menu do CGFLIX")),
-        ("07-baixados", lambda: dev.tap(r"^Baixados$")),
-        ("08-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
+        ("01-inicio", sem_pedir_na_barra),
+        ("02-filmes", categoria("Filmes", r"^Bacurau")),
+        ("03-series", categoria("Séries", r"^Sintonia")),
+        ("04-animes", categoria("Animes", r"^Jujutsu Kaisen")),
+        (
+            "05-busca-pedidos",
+            lambda: (dev.tap(r"^Voltar para Tudo"), dev.tap(r"^Buscar$"), dev.find(r"Disponível para pedir")),
+        ),
+        ("06-pedido-feito", lambda: (dev.tap(r"^Pedir Duna: Parte Três"), dev.find(r"Pedido feito"))),
+        ("07-titulo", lambda: dev.tap(r"^Duna\nFilme")),
+        ("08-voltar-inicio", lambda: (dev.back(), dev.back(), dev.find(r"^Menu do CGFLIX"))),
+        ("09-menu-usuario", lambda: dev.tap(r"^Menu do CGFLIX")),
+        ("10-meus-pedidos", lambda: (dev.tap(r"^Meus pedidos$"), dev.find(r"Aguardando aprovação"))),
+        ("11-baixados", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Baixados$"))),
+        ("12-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
     ]
     for name, action in steps:
         print(f"• {name}")
