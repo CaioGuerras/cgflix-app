@@ -79,7 +79,12 @@ jobs:
 
       # Sem Sentry nem verificação de atualização do upstream (não definimos esses flags).
       - name: Compilar APK
-        run: flutter build apk --release --split-per-abi --dart-define=GIT_COMMIT=${{ github.sha }}
+        # Etapa 1E: Trakt com o app "CGFLIX" do trakt.tv (secrets). Sem os secrets, os valores vão
+        # vazios e o Trakt fica escondido no app (nunca usa o client id do Plezy).
+        env:
+          TRAKT_CLIENT_ID: ${{ secrets.CGFLIX_TRAKT_CLIENT_ID }}
+          TRAKT_CLIENT_SECRET: ${{ secrets.CGFLIX_TRAKT_CLIENT_SECRET }}
+        run: flutter build apk --release --split-per-abi --dart-define=GIT_COMMIT=${{ github.sha }} --dart-define=TRAKT_CLIENT_ID="$TRAKT_CLIENT_ID" --dart-define=TRAKT_CLIENT_SECRET="$TRAKT_CLIENT_SECRET"
 
       - name: Nomear APKs
         run: |
@@ -98,7 +103,12 @@ jobs:
 
       # Play Store (07/10): mesmo build e mesma assinatura do APK, no formato que a Play aceita
       - name: Compilar AAB (Play Store)
-        run: flutter build appbundle --release --dart-define=GIT_COMMIT=${{ github.sha }}
+        # Etapa 1E: Trakt com o app "CGFLIX" do trakt.tv (secrets). Sem os secrets, os valores vão
+        # vazios e o Trakt fica escondido no app (nunca usa o client id do Plezy).
+        env:
+          TRAKT_CLIENT_ID: ${{ secrets.CGFLIX_TRAKT_CLIENT_ID }}
+          TRAKT_CLIENT_SECRET: ${{ secrets.CGFLIX_TRAKT_CLIENT_SECRET }}
+        run: flutter build appbundle --release --dart-define=GIT_COMMIT=${{ github.sha }} --dart-define=TRAKT_CLIENT_ID="$TRAKT_CLIENT_ID" --dart-define=TRAKT_CLIENT_SECRET="$TRAKT_CLIENT_SECRET"
 
       - name: Publicar artifact do AAB
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7

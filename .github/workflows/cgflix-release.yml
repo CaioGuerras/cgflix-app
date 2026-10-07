@@ -75,7 +75,12 @@ jobs:
 
       # Sem Sentry nem verificação de atualização do upstream (não definimos esses flags).
       - name: Compilar APK
-        run: flutter build apk --release --split-per-abi --dart-define=GIT_COMMIT=${{ github.sha }}
+        # Etapa 1E: Trakt com o app "CGFLIX" do trakt.tv (secrets). Sem os secrets, os valores vão
+        # vazios e o Trakt fica escondido no app (nunca usa o client id do Plezy).
+        env:
+          TRAKT_CLIENT_ID: ${{ secrets.CGFLIX_TRAKT_CLIENT_ID }}
+          TRAKT_CLIENT_SECRET: ${{ secrets.CGFLIX_TRAKT_CLIENT_SECRET }}
+        run: flutter build apk --release --split-per-abi --dart-define=GIT_COMMIT=${{ github.sha }} --dart-define=TRAKT_CLIENT_ID="$TRAKT_CLIENT_ID" --dart-define=TRAKT_CLIENT_SECRET="$TRAKT_CLIENT_SECRET"
 
       - name: Limpar keystore
         if: always()
