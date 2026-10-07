@@ -601,7 +601,7 @@ class _SearchScreenState extends State<SearchScreen>
               )
             else if (searchResults.isEmpty)
               SliverFillRemaining(
-                // CGFLIX: "Pedir" (Seerr) quando não acha nada
+                // CGFLIX: "Disponível para pedir" (Seerr) quando não acha nada
                 child: CgflixRequestPrompt(
                   enabled: PlatformDetector.isMobile(context),
                   query: lastSearchedQuery,
@@ -616,6 +616,7 @@ class _SearchScreenState extends State<SearchScreen>
             else ...[
               if (_showFilterChips) _buildFilterChips(),
               _buildResultsList(context),
+              cgflixRequestSliver(context, lastSearchedQuery), // CGFLIX: "Disponível para pedir"
             ],
           ],
         ),

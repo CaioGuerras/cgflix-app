@@ -36,6 +36,20 @@ extension CgflixJellyfinQueries on JellyfinClient {
     return _mergeContinueWatchingAndNextUp(resume: rows.resume, nextUp: rows.nextUp, limit: count);
   }
 
+  /// Endereço em uso do servidor (Etapa 1E: o Seerr é procurado ao lado dele).
+  String get cgflixBaseUrl => _http.baseUrl;
+
+  /// Aprova um código do Quick Connect com o token da própria pessoa (Etapa 1E: entrada
+  /// automática nos Pedidos, sem tela de login).
+  Future<void> cgflixAuthorizeQuickConnect(String code) async {
+    final response = await _http.post(
+      '/QuickConnect/Authorize',
+      queryParameters: {'code': code, 'userId': connection.userId},
+      timeout: const Duration(seconds: 10),
+    );
+    throwIfHttpError(response);
+  }
+
   List<MediaItem> cgflixMapItems(Iterable<Map<String, dynamic>> raw) => _mapItems(raw);
 
   /// Gêneros de filmes e séries do usuário (já vêm em português do servidor).

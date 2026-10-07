@@ -29,7 +29,7 @@ void main() {
   CgflixPages.settings = () => MaterialPageRoute<void>(
     builder: (_) => const _PaginaSimples(titulo: 'Configurações', texto: 'Configurações (falsas)'),
   );
-  CgflixPages.requests = (_) => const _PaginaSimples(titulo: 'Pedir', texto: 'Pedidos (falsos)');
+  CgflixPages.myRequests = (_) => const _PaginaSimples(titulo: 'Meus pedidos', texto: 'Pedidos (falsos)');
   runApp(MaterialApp(debugShowCheckedModeBanner: false, theme: cgflixAppTheme(), home: const _InicioFalsa()));
 }
 

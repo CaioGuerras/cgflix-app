@@ -1,24 +1,21 @@
 // Navegação do CGFLIX no celular (Etapa 1D): UMA barra no topo, sem barra inferior.
 //   - à esquerda, o emblema: abre o menu do usuário (perfil, Baixados, Configurações, Sobre, Sair);
-//   - ao centro: chips Filmes · Séries · Animes, lupa (Busca) e "Pedir" (Seerr).
-// A Início é a raiz; Busca, Baixados, Configurações e Pedir abrem como páginas por cima, com
-// Voltar (botão e gesto). TV e computador continuam com a navegação do upstream.
+//   - ao centro: chips Filmes · Séries · Animes e a lupa (Busca).
+// A Início é a raiz; Busca, Baixados, Configurações e Meus pedidos abrem como páginas por cima,
+// com Voltar (botão e gesto). TV e computador continuam com a navegação do upstream.
+// Etapa 1E: sai o ícone "Pedir": os pedidos ficam dentro da busca ("Disponível para pedir") e
+// "Meus pedidos" vai para o menu do usuário.
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 
 import '../i18n/strings.g.dart';
 import '../navigation/navigation_tabs.dart';
 import '../navigation/settings_shortcut.dart';
-import '../providers/catalog_sources_provider.dart';
-import '../screens/catalog_search_screen.dart';
-import '../services/catalog/seerr_catalog_source.dart';
 import '../screens/downloads/downloads_screen.dart';
 import '../screens/search_screen.dart';
-import '../screens/settings/seerr_connect_screen.dart';
 import '../services/settings_service.dart';
 import '../utils/platform_detector.dart';
 import '../widgets/settings_section.dart';
@@ -26,6 +23,7 @@ import '../widgets/app_icon.dart';
 import 'cgflix_logo.dart';
 import 'cgflix_style.dart';
 import 'cgflix_user_menu.dart';
+import 'requests/cgflix_requests_ui.dart';
 
 /// Celular e tablet usam a navegação do CGFLIX (TV e computador ficam como no upstream).
 bool cgflixUseYouTab(BuildContext context) => PlatformDetector.isMobile(context);
@@ -76,9 +74,8 @@ abstract final class CgflixPages {
   static WidgetBuilder downloads = (_) => const DownloadsScreen();
   static Route<void> Function() settings = buildSettingsRoute;
 
-  /// Com os Pedidos conectados, a busca do Seerr; sem, a tela de conectar.
-  static Widget Function(SeerrCatalogSource? seerr) requests = (seerr) =>
-      seerr == null ? const SeerrConnectScreen() : CatalogSearchScreen(source: seerr);
+  /// "Meus pedidos" (Seerr), em tela nativa.
+  static WidgetBuilder myRequests = (_) => const CgflixMyRequestsScreen();
 }
 
 /// Busca unificada (1C) como página por cima da Início; o campo já abre com foco.
@@ -102,23 +99,18 @@ Future<void> cgflixOpenDownloads(BuildContext context) => Navigator.of(context).
 
 Future<void> cgflixOpenSettings(BuildContext context) => Navigator.of(context).push(CgflixPages.settings());
 
-/// "Pedir" (Seerr): com os Pedidos conectados, abre a busca do Seerr (lá se pede o título);
-/// sem conexão, abre a tela de conectar, que entra com o login do Jellyfin ou Quick Connect.
-Future<void> cgflixOpenRequests(BuildContext context) {
-  HapticFeedback.selectionClick();
-  final seerr = context.read<CatalogSourcesProvider?>()?.seerrSource;
-  return Navigator.of(context).push(
-    MaterialPageRoute<void>(
-      settings: const RouteSettings(name: 'cgflix/pedir'),
-      builder: (_) => CgflixPages.requests(seerr),
-    ),
-  );
-}
+/// "Meus pedidos" (menu do usuário): o que a pessoa pediu no Seerr e a situação de cada um.
+Future<void> cgflixOpenMyRequests(BuildContext context) => Navigator.of(context).push(
+  MaterialPageRoute<void>(
+    settings: const RouteSettings(name: 'cgflix/meus-pedidos'),
+    builder: CgflixPages.myRequests,
+  ),
+);
 
 // ---------------------------------------------------------------------------
 // Barra do topo
 
-/// Altura da linha da barra (sem a barra de status). Chips, lupa e "Pedir" têm a mesma altura
+/// Altura da linha da barra (sem a barra de status). Chips e lupa têm a mesma altura
 /// visual (36 dp) e alvo de toque de 48 dp.
 const cgflixTopBarHeight = 56.0;
 const _itemHeight = 36.0;
@@ -131,9 +123,9 @@ class CgflixTopBarChip {
   final VoidCallback onPressed;
 }
 
-/// Barra única do topo: emblema à esquerda; chips, Busca e Pedir alinhados entre si e
-/// centralizados na TELA. Se não couber (celular estreito, fonte grande), só os chips rolam na
-/// horizontal: a lupa e o Pedir ficam sempre visíveis e o emblema nunca é empurrado.
+/// Barra única do topo: emblema à esquerda; chips e Busca alinhados entre si e centralizados
+/// na TELA. Se não couber (celular estreito, fonte grande), só os chips rolam na horizontal: a
+/// lupa fica sempre visível e o emblema nunca é empurrado.
 /// Transparente: quem chama põe o gradiente e o "some ao rolar".
 class CgflixTopBar extends StatelessWidget {
   const CgflixTopBar({super.key, this.chips = const [], this.onClearFilter, this.showActions = true});
@@ -143,7 +135,7 @@ class CgflixTopBar extends StatelessWidget {
   /// Com um chip ativo, aparece o "×" para voltar a Tudo.
   final VoidCallback? onClearFilter;
 
-  /// Busca e Pedir (some sem conexão).
+  /// Busca (some sem conexão).
   final bool showActions;
 
   /// Largura natural do grupo do centro (para decidir se dá para centralizar na tela).
@@ -152,16 +144,18 @@ class CgflixTopBar extends StatelessWidget {
     var width = 0.0;
     for (final chip in chips) {
       final painter = TextPainter(
-        text: TextSpan(text: chip.label, style: _chipTextStyle),
+        // Mesmo estilo que o Text do chip recebe (o tema soma espaçamento entre letras).
+        text: TextSpan(text: chip.label, style: DefaultTextStyle.of(context).style.merge(_chipTextStyle)),
         textDirection: TextDirection.ltr,
         textScaler: scaler,
         maxLines: 1,
       )..layout();
-      width += painter.width + 2 * (_chipPadding + _slotPadding);
+      // + a borda de 1 dp de cada lado (a decoração do chip soma a borda ao tamanho).
+      width += painter.width + 2 * (_chipPadding + _slotPadding + 1);
       painter.dispose();
     }
     if (onClearFilter != null) width += 48;
-    if (showActions) width += 2 * 48;
+    if (showActions) width += 48;
     return width;
   }
 
@@ -187,12 +181,6 @@ class CgflixTopBar extends StatelessWidget {
           icon: Symbols.search_rounded,
           label: 'Buscar',
           onPressed: () => cgflixOpenSearch(context),
-        ),
-        _RoundIconButton(
-          key: const ValueKey('cgflix-top-request'),
-          icon: Symbols.add_circle_rounded,
-          label: 'Pedir um título',
-          onPressed: () => cgflixOpenRequests(context),
         ),
       ],
     ];
@@ -344,7 +332,7 @@ class _TopChip extends StatelessWidget {
   }
 }
 
-/// Botão redondo da barra (lupa, Pedir, "×"): 36 dp desenhados, 48 dp de toque.
+/// Botão redondo da barra (lupa, "×"): 36 dp desenhados, 48 dp de toque.
 class _RoundIconButton extends StatelessWidget {
   const _RoundIconButton({super.key, required this.icon, required this.label, required this.onPressed});
   final IconData icon;

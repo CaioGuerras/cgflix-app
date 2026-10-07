@@ -1,21 +1,20 @@
-// Busca do celular (Etapa 1C): histórico das últimas buscas e "Pedir" (Seerr) quando nada
-// é achado. A tela de busca do upstream só envolve os estados vazios com estes widgets.
+// Busca do celular (Etapa 1C): histórico das últimas buscas e pedidos (Seerr). A tela de busca
+// do upstream só envolve os estados vazios com estes widgets e põe a seção de pedidos depois
+// dos resultados (Etapa 1E: "Disponível para pedir").
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../providers/catalog_sources_provider.dart';
-import '../../screens/catalog_search_screen.dart';
 import '../../utils/app_logger.dart';
+import '../../utils/platform_detector.dart';
 import '../../widgets/app_icon.dart';
-import '../cgflix_navigation.dart';
 import '../cgflix_style.dart';
 import '../home/cgflix_cards.dart';
+import '../requests/cgflix_requests_ui.dart';
 
 // ---------------------------------------------------------------------------
 // Histórico
@@ -145,8 +144,9 @@ class _CgflixSearchIdleState extends State<CgflixSearchIdle> {
 // ---------------------------------------------------------------------------
 // Pedir (Seerr)
 
-/// Nada achado: mostra [child] (a mensagem original) e, com o Seerr conectado, o botão
-/// "Pedir" que abre a busca do Seerr já com o termo (lá dá para fazer o pedido).
+/// Nada achado no nosso acervo: mostra [child] (a mensagem original, mais compacta) e, logo
+/// abaixo, "Disponível para pedir" com os resultados do Seerr (Etapa 1E: pedidos embutidos na
+/// busca, sem botão que leve a tela de login). Rola quando falta altura (deitado, teclado aberto).
 class CgflixRequestPrompt extends StatelessWidget {
   const CgflixRequestPrompt({super.key, required this.enabled, required this.query, required this.child});
   final bool enabled;
@@ -156,57 +156,22 @@ class CgflixRequestPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!enabled) return child;
-    final seerr = context.watch<CatalogSourcesProvider?>()?.seerrSource;
-    final button = FilledButton.icon(
-      style: FilledButton.styleFrom(
-        backgroundColor: CgflixColors.accentPressed,
-        foregroundColor: Colors.white,
-        minimumSize: const Size(200, 48),
-      ),
-      icon: AppIcon(seerr == null ? Symbols.link_rounded : Symbols.add_circle_rounded, fill: 1, color: Colors.white),
-      // Sem os Pedidos conectados, o mesmo botão leva a conectar (login do Jellyfin ou Quick Connect).
-      label: Text(
-        seerr == null ? 'Conectar os Pedidos' : 'Pedir “$query”',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      onPressed: () {
-        HapticFeedback.lightImpact();
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) =>
-                seerr == null ? CgflixPages.requests(null) : CatalogSearchScreen(source: seerr, initialQuery: query),
-          ),
-        );
-      },
-    );
-    // Rola quando falta altura (celular deitado, teclado aberto) em vez de estourar.
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: IntrinsicHeight(
-            child: Column(
-              children: [
-                Expanded(child: child),
-                if (seerr == null)
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(24, 0, 24, 12),
-                    child: Text(
-                      'Não achou? Conecte os Pedidos para pedir o título.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: CgflixColors.textMuted),
-                    ),
-                  ),
-                Padding(padding: const EdgeInsets.fromLTRB(24, 0, 24, 32), child: button),
-              ],
-            ),
-          ),
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(height: 260, child: child),
+          CgflixRequestSection(query: query),
+        ],
       ),
     );
   }
 }
+
+/// Com resultados no nosso acervo: "Disponível para pedir" vem logo depois deles (celular).
+Widget cgflixRequestSliver(BuildContext context, String query) => SliverToBoxAdapter(
+  child: CgflixRequestSection(query: query, enabled: PlatformDetector.isMobile(context)),
+);
 
 // ---------------------------------------------------------------------------
 // Carregando

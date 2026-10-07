@@ -1,5 +1,5 @@
 // Menu do usuário (Etapa 1D): abre ao tocar no emblema do topo. É o novo lugar do perfil:
-// quem está usando, trocar perfil/usuário, Baixados, Configurações, Sobre e Sair.
+// quem está usando, trocar perfil/usuário, Meus pedidos (1E), Baixados, Configurações, Sobre e Sair.
 // Folha inferior com rolagem: cabe também com o celular deitado.
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -17,7 +17,7 @@ import 'cgflix_navigation.dart';
 import 'cgflix_style.dart';
 
 /// Itens do menu, na ordem em que aparecem (os testes conferem esta lista).
-enum CgflixUserMenuItem { switchUser, downloads, settings, about, signOut }
+enum CgflixUserMenuItem { switchUser, myRequests, downloads, settings, about, signOut }
 
 Future<void> showCgflixUserMenu(BuildContext context) async {
   final picked = await showModalBottomSheet<CgflixUserMenuItem>(
@@ -37,6 +37,8 @@ Future<void> showCgflixUserMenu(BuildContext context) async {
         context,
         rootNavigator: true,
       ).push(MaterialPageRoute<void>(builder: (_) => const ProfileSwitchScreen()));
+    case CgflixUserMenuItem.myRequests:
+      await cgflixOpenMyRequests(context);
     case CgflixUserMenuItem.downloads:
       await cgflixOpenDownloads(context);
     case CgflixUserMenuItem.settings:
@@ -105,6 +107,12 @@ class CgflixUserMenuSheet extends StatelessWidget {
               icon: Symbols.switch_account_rounded,
               title: 'Trocar perfil ou usuário',
               onTap: () => pick(CgflixUserMenuItem.switchUser),
+            ),
+            _MenuTile(
+              key: const ValueKey('cgflix-menu-myRequests'),
+              icon: Symbols.playlist_add_check_rounded,
+              title: 'Meus pedidos',
+              onTap: () => pick(CgflixUserMenuItem.myRequests),
             ),
             _MenuTile(
               key: const ValueKey('cgflix-menu-downloads'),

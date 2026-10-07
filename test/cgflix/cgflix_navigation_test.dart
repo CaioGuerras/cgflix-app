@@ -68,7 +68,7 @@ void main() {
     CgflixPages.search = (_) => _fakePage('Busca');
     CgflixPages.downloads = (_) => _fakePage('Baixados');
     CgflixPages.settings = () => MaterialPageRoute<void>(builder: (_) => _fakePage('Configurações'));
-    CgflixPages.requests = (_) => _fakePage('Pedir');
+    CgflixPages.myRequests = (_) => _fakePage('Meus pedidos');
   });
 
   group('abas do celular', () {
@@ -91,22 +91,21 @@ void main() {
 
       final menu = find.byKey(const ValueKey('cgflix-top-menu'));
       final search = find.byKey(const ValueKey('cgflix-top-search'));
-      final request = find.byKey(const ValueKey('cgflix-top-request'));
       expect(menu, findsOneWidget);
       expect(search, findsOneWidget);
-      expect(request, findsOneWidget);
+      // Etapa 1E: uma lupa só; sem o ícone "Pedir" na barra.
+      expect(find.byKey(const ValueKey('cgflix-top-request')), findsNothing);
 
-      // Mesma linha: centro vertical de chips, lupa, Pedir e emblema é o mesmo.
+      // Mesma linha: centro vertical de chips, lupa e emblema é o mesmo.
       final centerY = tester.getCenter(search).dy;
       for (final label in ['Filmes', 'Séries', 'Animes']) {
         final chip = find.text(label);
         expect(chip, findsOneWidget);
         expect(tester.getCenter(chip).dy, moreOrLessEquals(centerY, epsilon: 0.5), reason: label);
       }
-      expect(tester.getCenter(request).dy, moreOrLessEquals(centerY, epsilon: 0.5));
       expect(tester.getCenter(menu).dy, moreOrLessEquals(centerY, epsilon: 0.5));
 
-      // Mesma altura visual: chips (36 dp) = lupa = Pedir.
+      // Mesma altura visual: chips (36 dp) = lupa.
       final chipBoxes = find.ancestor(of: find.text('Filmes'), matching: find.byType(AnimatedContainer));
       expect(tester.getSize(chipBoxes.first).height, 36);
       final searchCircle = find.descendant(of: search, matching: find.byType(Material));
@@ -126,7 +125,6 @@ void main() {
         for (final k in ['cgflix-top-chip-Filmes', 'cgflix-top-chip-Séries', 'cgflix-top-chip-Animes'])
           visual(find.byKey(ValueKey(k))),
         visual(search),
-        visual(request),
       ];
       final gaps = [for (var i = 1; i < xs.length; i++) xs[i].left - xs[i - 1].right];
       // A 360 dp os chips rolam por baixo da lupa (o espaçamento confere de 412 dp em diante).
@@ -136,10 +134,9 @@ void main() {
         }
       }
 
-      // Lupa e Pedir sempre inteiros na tela.
+      // Lupa sempre inteira na tela.
       final width = entry.value.width;
       expect(tester.getRect(search).right, lessThanOrEqualTo(width));
-      expect(tester.getRect(request).right, lessThanOrEqualTo(width));
       // Quando cabe: grupo do centro centralizado na TELA.
       final groupCenter = (xs.first.left + xs.last.right) / 2;
       if (width >= 600) expect(groupCenter, moreOrLessEquals(width / 2, epsilon: 2));
@@ -183,20 +180,20 @@ void main() {
       await openAndBack(tester, find.byKey(const ValueKey('cgflix-top-search')), 'Busca');
     });
 
-    testWidgets('Pedir → Seerr', (tester) async {
-      await openAndBack(tester, find.byKey(const ValueKey('cgflix-top-request')), 'Pedir');
-    });
-
     testWidgets('paisagem: lupa → Busca', (tester) async {
       await openAndBack(tester, find.byKey(const ValueKey('cgflix-top-search')), 'Busca', size: const Size(914, 412));
     });
 
-    for (final item in [(CgflixUserMenuItem.downloads, 'Baixados'), (CgflixUserMenuItem.settings, 'Configurações')]) {
+    for (final item in [
+      (CgflixUserMenuItem.myRequests, 'Meus pedidos'),
+      (CgflixUserMenuItem.downloads, 'Baixados'),
+      (CgflixUserMenuItem.settings, 'Configurações'),
+    ]) {
       testWidgets('emblema → menu do usuário → ${item.$2}', (tester) async {
         await _pumpBar(tester, const Size(412, 914));
         await tester.tap(find.byKey(const ValueKey('cgflix-top-menu')));
         await tester.pumpAndSettle();
-        // Menu: perfil, Baixados, Configurações, Sobre, Sair.
+        // Menu: perfil, Meus pedidos, Baixados, Configurações, Sobre, Sair.
         for (final i in CgflixUserMenuItem.values) {
           expect(find.byKey(ValueKey('cgflix-menu-${i.name}')), findsOneWidget, reason: i.name);
         }
@@ -223,7 +220,7 @@ void main() {
     final semantics = tester.ensureSemantics();
     await _pumpBar(tester, const Size(412, 914));
     expect(find.bySemanticsLabel('Buscar'), findsOneWidget);
-    expect(find.bySemanticsLabel('Pedir um título'), findsOneWidget);
+    expect(find.bySemanticsLabel('Pedir um título'), findsNothing);
     expect(find.bySemanticsLabel(RegExp('^Menu do CGFLIX')), findsOneWidget);
     expect(find.bySemanticsLabel('Mostrar só Filmes'), findsOneWidget);
     semantics.dispose();
