@@ -66,6 +66,8 @@ Future<void> cgflixOpenDetails(BuildContext context, MediaItem item, {String? he
     _pendingHeroTags.remove(item.globalKey);
   }
   await navigateToMediaItemDetails(context, item);
+  // Página fechada: a tag não vale mais (outra tela que abrir este título não "voa" de um cartão escondido).
+  if (_pendingHeroTags[item.globalKey] == heroTag) _pendingHeroTags.remove(item.globalKey);
 }
 
 /// "Assistir": filme e episódio tocam direto; série toca o próximo episódio quando o

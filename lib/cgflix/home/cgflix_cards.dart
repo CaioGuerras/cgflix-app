@@ -280,7 +280,7 @@ class CgflixWideCard extends StatelessWidget {
   final VoidCallback? onLongPress;
   final bool showProgress;
 
-  static const double titleBlockHeight = 40;
+  static const double titleBlockHeight = 50;
 
   double? get _progress {
     final offset = item.viewOffsetMs;
@@ -345,23 +345,29 @@ class CgflixWideCard extends StatelessWidget {
             const SizedBox(height: 6),
             SizedBox(
               height: titleBlockHeight - 6,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              // Fonte grande do sistema não estoura o cartão (no máximo 1,2×).
+              child: MediaQuery.withClampedTextScaling(
+                maxScaleFactor: 1.2,
+                child: ClipRect(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      if (subtitle != null && subtitle.isNotEmpty)
+                        Text(
+                          subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(color: CgflixColors.textMuted),
+                        ),
+                    ],
                   ),
-                  if (subtitle != null && subtitle.isNotEmpty)
-                    Text(
-                      subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(color: CgflixColors.textMuted),
-                    ),
-                ],
+                ),
               ),
             ),
           ],

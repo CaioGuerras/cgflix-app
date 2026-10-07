@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/cgflix/cgflix_intro.dart';
@@ -26,7 +28,7 @@ void main() {
       ),
     );
     var finished = false;
-    CgflixIntro.finished().then((_) => finished = true);
+    unawaited(CgflixIntro.finished().then((_) => finished = true));
     for (var ms = 0; ms <= 1500; ms += 100) {
       await tester.pump(const Duration(milliseconds: 100));
     }
