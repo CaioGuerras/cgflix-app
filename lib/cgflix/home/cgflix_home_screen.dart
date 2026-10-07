@@ -4,8 +4,8 @@
 // Cada linha carrega sozinha (cache do aparelho primeiro). Sem servidor Jellyfin (só Plex),
 // mostra a Início original do upstream.
 // Etapa 1C: os chips Filmes · Séries · Animes filtram a própria Início (padrão Netflix), com
-// "×" para voltar a "Tudo"; o topo some ao rolar para baixo e volta ao rolar para cima; o
-// perfil saiu daqui (fica só na aba Você).
+// "×" para voltar a "Tudo"; o topo some ao rolar para baixo e volta ao rolar para cima.
+// Etapa 1D: o topo é a barra única do app (emblema = menu do usuário, chips, Busca e Pedir).
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -25,7 +25,8 @@ import '../../services/watch_actions.dart';
 import '../../utils/app_logger.dart';
 import '../../widgets/app_icon.dart';
 import '../cgflix_layout.dart';
-import '../cgflix_logo.dart';
+import '../cgflix_about.dart';
+import '../cgflix_navigation.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 import 'cgflix_cards.dart';
@@ -285,7 +286,13 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
             ),
           ),
       _GenreRows(key: ValueKey('genres:$key'), repository: repository, filter: filter),
-      SliverToBoxAdapter(child: SizedBox(height: MediaQuery.paddingOf(context).bottom + 24)),
+      // Rodapé: a dedicatória, discreta (Configurações › Avançado › Mostrar dedicatória).
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(24, 32, 24, MediaQuery.paddingOf(context).bottom + 24),
+          child: const CgflixDedicationLine(center: true),
+        ),
+      ),
     ];
   }
 }
@@ -571,7 +578,7 @@ class _HeroSkeleton extends StatelessWidget {
   }
 }
 
-/// Topo da Início: emblema e chips Filmes · Séries · Animes sobre um gradiente (nada de barra
+/// Topo da Início: a barra única do app ([CgflixTopBar]) sobre um gradiente (nada de barra
 /// opaca). Some ao rolar para baixo e volta ao rolar para cima. Com um chip ativo, os outros
 /// saem e aparece o "×" para voltar a "Tudo".
 class _TopBar extends StatefulWidget {
@@ -629,7 +636,7 @@ class _TopBarState extends State<_TopBar> {
 
   @override
   Widget build(BuildContext context) {
-    final top = MediaQuery.paddingOf(context).top;
+    final padding = MediaQuery.paddingOf(context);
     final filter = widget.filter;
     final chips = filter == null
         ? widget.chips
@@ -653,113 +660,21 @@ class _TopBarState extends State<_TopBar> {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(16, top + 8, 16, 20),
-            child: Row(
-              children: [
-                Semantics(label: 'CGFLIX', child: const CgflixEmblem(size: 30)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: AnimatedSize(
-                      duration: CgflixMotion.medium,
-                      curve: CgflixMotion.curve,
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          if (filter != null)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: _ClearFilterButton(onPressed: () => widget.onFilter(null)),
-                            ),
-                          for (final chip in chips)
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: _FilterChip(
-                                label: chip.label,
-                                selected: filter != null,
-                                onPressed: () {
-                                  final tapped = CgflixHomeFilter.fromChip(chip);
-                                  widget.onFilter(tapped == filter ? null : tapped);
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
+            // Deitado, respeita o recorte da câmera nas laterais.
+            padding: EdgeInsets.fromLTRB(8 + padding.left, padding.top + 4, 8 + padding.right, 16),
+            child: CgflixTopBar(
+              onClearFilter: filter == null ? null : () => widget.onFilter(null),
+              chips: [
+                for (final chip in chips)
+                  CgflixTopBarChip(
+                    label: chip.label,
+                    selected: filter != null,
+                    onPressed: () {
+                      final tapped = CgflixHomeFilter.fromChip(chip);
+                      widget.onFilter(tapped == filter ? null : tapped);
+                    },
                   ),
-                ),
               ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.selected, required this.onPressed});
-  final String label;
-  final bool selected;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: selected ? '$label, filtro ativo' : 'Mostrar só $label',
-      excludeSemantics: true,
-      child: AnimatedContainer(
-        duration: CgflixMotion.fast,
-        curve: CgflixMotion.curve,
-        decoration: ShapeDecoration(
-          shape: StadiumBorder(side: BorderSide(color: selected ? CgflixColors.accent : Colors.white38)),
-          color: selected ? CgflixColors.accent.withValues(alpha: 0.28) : const Color(0x3307060A),
-        ),
-        child: Material(
-          type: MaterialType.transparency,
-          shape: const StadiumBorder(),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onPressed,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                label,
-                style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// "×" redondo que volta a Início para "Tudo".
-class _ClearFilterButton extends StatelessWidget {
-  const _ClearFilterButton({required this.onPressed});
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: 'Voltar para Tudo',
-      child: Semantics(
-        button: true,
-        label: 'Voltar para Tudo',
-        excludeSemantics: true,
-        child: Material(
-          color: const Color(0x3307060A),
-          shape: const CircleBorder(side: BorderSide(color: Colors.white38)),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onPressed,
-            child: const SizedBox.square(
-              dimension: 36,
-              child: Center(child: AppIcon(Symbols.close_rounded, size: 20, color: Colors.white)),
             ),
           ),
         ),

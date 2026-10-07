@@ -1,5 +1,4 @@
 import '../cgflix/cgflix_navigation.dart';
-import '../cgflix/cgflix_you_screen.dart';
 import '../cgflix/home/cgflix_home_screen.dart';
 import 'dart:async';
 import '../media/ids.dart';
@@ -552,7 +551,7 @@ class _MainScreenState extends State<MainScreen>
     _autoSwitchedToDownloads = _isOffline && _currentTab == NavigationTabId.downloads;
     // If the preferred startup section isn't visible yet (e.g. Live TV before
     // servers finish binding), remember it and switch once it becomes available.
-    final preferredStartup = SettingsService.instanceOrNull?.read(SettingsService.startupSection);
+    final preferredStartup = cgflixStartupSection(); // CGFLIX: no celular a raiz é sempre a Início
     _pendingStartupTab = (!_isOffline && preferredStartup != null && preferredStartup != _currentTab)
         ? preferredStartup
         : null;
@@ -1267,14 +1266,8 @@ class _MainScreenState extends State<MainScreen>
       ),
       NavigationTabId.liveTv => LiveTvScreen(key: _screenKeys[tab]),
       NavigationTabId.search => SearchScreen(key: _screenKeys[tab]),
-      NavigationTabId.downloads =>
-        cgflixUseYouTab(context) // CGFLIX: termina acima da barra translúcida
-            ? CgflixAboveNavBar(child: DownloadsScreen(key: _screenKeys[tab]))
-            : DownloadsScreen(key: _screenKeys[tab]),
-      NavigationTabId.settings =>
-        cgflixUseYouTab(context) // CGFLIX: no celular a aba é "Você"
-            ? CgflixYouScreen(key: _screenKeys[tab])
-            : SettingsScreen(key: _screenKeys[tab]),
+      NavigationTabId.downloads => DownloadsScreen(key: _screenKeys[tab]),
+      NavigationTabId.settings => SettingsScreen(key: _screenKeys[tab]),
     };
   }
 
@@ -1290,7 +1283,7 @@ class _MainScreenState extends State<MainScreen>
     isOffline: isOffline,
     hasLiveTv: _hasLiveTv,
     hasExplore: _lastHasExplore,
-    preferredStartup: SettingsService.instanceOrNull?.read(SettingsService.startupSection),
+    preferredStartup: cgflixStartupSection(), // CGFLIX
   );
 
   void _triggerReconnect() {
@@ -2236,7 +2229,8 @@ class _MainScreenState extends State<MainScreen>
       },
       child: ScaffoldMessenger(
         key: ProfileNavigationScope.of(context).mainScaffoldMessengerKey,
-        child: PlatformDetector.shouldUseLandscapeNavigationRail(context)
+        // CGFLIX: celular sem trilho lateral, deitado ou em pé (barra única no topo)
+        child: PlatformDetector.shouldUseLandscapeNavigationRail(context) && !cgflixUseYouTab(context)
             ? _buildLandscapeShell(context)
             : _buildPortraitShell(context),
       ),
@@ -2286,8 +2280,8 @@ class _MainScreenState extends State<MainScreen>
   }
 
   Widget _buildPortraitShell(BuildContext context) {
+    if (cgflixUseYouTab(context)) return _buildCgflixShell(context); // CGFLIX: sem barra inferior
     return Scaffold(
-      extendBody: cgflixUseYouTab(context), // CGFLIX: barra translúcida sobre o conteúdo
       body: _buildTickerAwareStack(),
       bottomNavigationBar: Column(
         key: _navBarKey,
@@ -2333,19 +2327,34 @@ class _MainScreenState extends State<MainScreen>
               // this builder reruns on label toggles AND on every
               // MainScreen rebuild (offline bar appearing/disappearing).
               _scheduleNavBarMeasure(rail: false);
-              if (cgflixUseYouTab(context)) {
-                // CGFLIX: barra compacta só com ícones
-                return CgflixNavigationBar(
-                  tabs: _getBottomNavigationTabs(context),
-                  currentTab: _currentTab,
-                  onSelectTab: _selectTab,
-                );
-              }
               return NavigationBarTheme(
                 data: NavigationBarTheme.of(context).copyWith(height: hideLabels ? 56 : null),
                 child: _buildBottomNavigationBar(context, hideLabels: hideLabels),
               );
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// CGFLIX: celular e tablet sem barra de abas. A Início traz a barra do topo; sem conexão,
+  /// Baixados vira a raiz com um topo próprio (menu do usuário e Reconectar).
+  Widget _buildCgflixShell(BuildContext context) {
+    final insets = _miniPlayerInsets;
+    if (insets != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) insets.setNavInsets(bottom: 0, start: 0);
+      });
+    }
+    return Scaffold(
+      body: Column(
+        children: [
+          if (_isOffline) CgflixOfflineTopBar(reconnecting: _isReconnecting, onReconnect: _triggerReconnect),
+          Expanded(
+            child: _isOffline
+                ? MediaQuery.removePadding(context: context, removeTop: true, child: _buildTickerAwareStack())
+                : _buildTickerAwareStack(),
           ),
         ],
       ),

@@ -1,98 +1,262 @@
-// Barra inferior do CGFLIX no celular: Início · Buscar · Baixados · Você.
-// As bibliotecas saem da barra (viram os chips Filmes/Séries/Animes da Início) e
-// "Configurações" vira "Você". TV e computador continuam com a navegação do upstream.
-// Etapa 1C: barra compacta só com ícones (o nome fica no leitor de tela e na dica),
-// translúcida com desfoque sobre o conteúdo, indicador roxo no ícone ativo.
-import 'dart:ui' show ImageFilter;
+// Navegação do CGFLIX no celular (Etapa 1D): UMA barra no topo, sem barra inferior.
+//   - à esquerda, o emblema: abre o menu do usuário (perfil, Baixados, Configurações, Sobre, Sair);
+//   - ao centro: chips Filmes · Séries · Animes, lupa (Busca) e "Pedir" (Seerr).
+// A Início é a raiz; Busca, Baixados, Configurações e Pedir abrem como páginas por cima, com
+// Voltar (botão e gesto). TV e computador continuam com a navegação do upstream.
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:provider/provider.dart';
 
 import '../navigation/navigation_tabs.dart';
+import '../navigation/settings_shortcut.dart';
+import '../providers/catalog_sources_provider.dart';
+import '../screens/catalog_search_screen.dart';
+import '../services/catalog/seerr_catalog_source.dart';
+import '../screens/downloads/downloads_screen.dart';
+import '../screens/search_screen.dart';
+import '../screens/settings/seerr_connect_screen.dart';
+import '../services/settings_service.dart';
 import '../utils/platform_detector.dart';
 import '../widgets/app_icon.dart';
+import 'cgflix_logo.dart';
 import 'cgflix_style.dart';
+import 'cgflix_user_menu.dart';
 
-String _youLabel() => 'Você';
-
-/// A aba "Você" ocupa o lugar das Configurações (mesmo id, outro ícone e nome).
-const cgflixYouTab = NavigationTab(
-  id: NavigationTabId.settings,
-  onlineOnly: false,
-  icon: Symbols.account_circle_rounded,
-  getLabel: _youLabel,
-);
-
-/// Ordem fixa da barra do celular.
-const cgflixMobileTabOrder = [
-  NavigationTabId.discover,
-  NavigationTabId.search,
-  NavigationTabId.downloads,
-  NavigationTabId.settings,
-];
-
-/// Filtra e ordena as abas visíveis para a barra do celular. Sem conexão sobram
-/// Baixados e Você (o upstream já tira as abas que exigem servidor).
-List<NavigationTab> cgflixMobileTabs(List<NavigationTab> visibleTabs) {
-  final byId = {for (final tab in visibleTabs) tab.id: tab};
-  return [
-    for (final id in cgflixMobileTabOrder)
-      if (id == NavigationTabId.settings) cgflixYouTab else if (byId[id] != null) byId[id]!,
-  ];
-}
-
-/// A aba de Configurações vira "Você" só no celular (TV e computador ficam como no upstream).
+/// Celular e tablet usam a navegação do CGFLIX (TV e computador ficam como no upstream).
 bool cgflixUseYouTab(BuildContext context) => PlatformDetector.isMobile(context);
 
-/// Altura da barra compacta (sem contar a barra de gestos do sistema).
-const cgflixNavBarHeight = 60.0;
+/// Seção inicial: no celular a raiz é sempre a Início (não há mais abas para escolher);
+/// TV e computador seguem a preferência "Seção inicial" do upstream.
+NavigationTabId? cgflixStartupSection() {
+  final handheld = !PlatformDetector.isTV() && (Platform.isAndroid || Platform.isIOS);
+  if (handheld) return null;
+  return SettingsService.instanceOrNull?.read(SettingsService.startupSection);
+}
 
-/// Barra do celular: só ícones, sem rótulos ([NavigationDestinationLabelBehavior.alwaysHide]);
-/// o TalkBack continua lendo "Início", "Buscar"... e segurar mostra o nome.
-class CgflixNavigationBar extends StatelessWidget {
-  const CgflixNavigationBar({super.key, required this.tabs, required this.currentTab, required this.onSelectTab});
-  final List<NavigationTab> tabs;
-  final NavigationTabId currentTab;
-  final ValueChanged<NavigationTabId> onSelectTab;
+/// Sem barra de abas: só a raiz. Conectado é a Início; sem conexão sobra Baixados (o upstream
+/// já tira as abas que exigem servidor).
+List<NavigationTab> cgflixMobileTabs(List<NavigationTab> visibleTabs) {
+  for (final id in const [NavigationTabId.discover, NavigationTabId.downloads]) {
+    final tab = visibleTabs.where((t) => t.id == id).firstOrNull;
+    if (tab != null) return [tab];
+  }
+  return visibleTabs.take(1).toList();
+}
+
+// ---------------------------------------------------------------------------
+// Destinos da barra do topo e do menu do usuário
+
+/// Páginas que a barra do topo e o menu abrem. Ficam aqui (trocáveis) para os testes da
+/// navegação não precisarem montar o app inteiro.
+abstract final class CgflixPages {
+  static WidgetBuilder search = (_) => const SearchScreen();
+  static WidgetBuilder downloads = (_) => const DownloadsScreen();
+  static Route<void> Function() settings = buildSettingsRoute;
+
+  /// Com os Pedidos conectados, a busca do Seerr; sem, a tela de conectar.
+  static Widget Function(SeerrCatalogSource? seerr) requests = (seerr) =>
+      seerr == null ? const SeerrConnectScreen() : CatalogSearchScreen(source: seerr);
+}
+
+/// Busca unificada (1C) como página por cima da Início; o campo já abre com foco.
+Future<void> cgflixOpenSearch(BuildContext context) {
+  HapticFeedback.selectionClick();
+  return Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      settings: const RouteSettings(name: 'cgflix/busca'),
+      builder: CgflixPages.search,
+    ),
+  );
+}
+
+/// Baixados (saiu da barra inferior e entrou no menu do usuário).
+Future<void> cgflixOpenDownloads(BuildContext context) => Navigator.of(context).push(
+  MaterialPageRoute<void>(
+    settings: const RouteSettings(name: 'cgflix/baixados'),
+    builder: CgflixPages.downloads,
+  ),
+);
+
+Future<void> cgflixOpenSettings(BuildContext context) => Navigator.of(context).push(CgflixPages.settings());
+
+/// "Pedir" (Seerr): com os Pedidos conectados, abre a busca do Seerr (lá se pede o título);
+/// sem conexão, abre a tela de conectar, que entra com o login do Jellyfin ou Quick Connect.
+Future<void> cgflixOpenRequests(BuildContext context) {
+  HapticFeedback.selectionClick();
+  final seerr = context.read<CatalogSourcesProvider?>()?.seerrSource;
+  return Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      settings: const RouteSettings(name: 'cgflix/pedir'),
+      builder: (_) => CgflixPages.requests(seerr),
+    ),
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Barra do topo
+
+/// Altura da linha da barra (sem a barra de status). Chips, lupa e "Pedir" têm a mesma altura
+/// visual (36 dp) e alvo de toque de 48 dp.
+const cgflixTopBarHeight = 56.0;
+const _itemHeight = 36.0;
+
+/// Chip de categoria para a barra do topo (o estado do filtro fica com quem chama).
+class CgflixTopBarChip {
+  const CgflixTopBarChip({required this.label, required this.selected, required this.onPressed});
+  final String label;
+  final bool selected;
+  final VoidCallback onPressed;
+}
+
+/// Barra única do topo: emblema à esquerda; chips, Busca e Pedir alinhados entre si e
+/// centralizados na TELA. Se não couber (celular estreito, fonte grande), só os chips rolam na
+/// horizontal: a lupa e o Pedir ficam sempre visíveis e o emblema nunca é empurrado.
+/// Transparente: quem chama põe o gradiente e o "some ao rolar".
+class CgflixTopBar extends StatelessWidget {
+  const CgflixTopBar({super.key, this.chips = const [], this.onClearFilter, this.showActions = true});
+
+  final List<CgflixTopBarChip> chips;
+
+  /// Com um chip ativo, aparece o "×" para voltar a Tudo.
+  final VoidCallback? onClearFilter;
+
+  /// Busca e Pedir (some sem conexão).
+  final bool showActions;
+
+  /// Largura natural do grupo do centro (para decidir se dá para centralizar na tela).
+  double _groupWidth(BuildContext context) {
+    final scaler = _chipTextScaler(context);
+    var width = 0.0;
+    for (final chip in chips) {
+      final painter = TextPainter(
+        text: TextSpan(text: chip.label, style: _chipTextStyle),
+        textDirection: TextDirection.ltr,
+        textScaler: scaler,
+        maxLines: 1,
+      )..layout();
+      width += painter.width + 2 * (_chipPadding + _slotPadding);
+      painter.dispose();
+    }
+    if (onClearFilter != null) width += 48;
+    if (showActions) width += 2 * 48;
+    return width;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final selectedIndex = tabs.indexWhere((tab) => tab.id == currentTab);
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: CgflixColors.background.withValues(alpha: 0.78),
-            border: const Border(top: BorderSide(color: Color(0x14FFFFFF), width: 0.5)),
+    final chipsRow = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (onClearFilter != null)
+          _RoundIconButton(
+            key: const ValueKey('cgflix-top-clear'),
+            icon: Symbols.close_rounded,
+            label: 'Voltar para Tudo',
+            onPressed: onClearFilter!,
           ),
-          child: NavigationBar(
-            height: cgflixNavBarHeight,
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            elevation: 0,
-            indicatorColor: CgflixColors.accent.withValues(alpha: 0.22),
-            indicatorShape: const StadiumBorder(),
-            animationDuration: CgflixMotion.fast,
-            labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-            selectedIndex: selectedIndex < 0 ? 0 : selectedIndex,
-            onDestinationSelected: (index) {
-              if (index < 0 || index >= tabs.length) return;
-              if (index != selectedIndex) HapticFeedback.selectionClick();
-              onSelectTab(tabs[index].id);
-            },
-            destinations: [
-              for (final tab in tabs)
-                NavigationDestination(
-                  icon: AppIcon(tab.icon, fill: 0, color: Colors.white70, size: 26),
-                  // Ícone cheio quando ativo, contornado quando não.
-                  selectedIcon: AppIcon(tab.icon, fill: 1, color: CgflixColors.accent, size: 26),
-                  label: tab.getLabel(),
-                  tooltip: tab.getLabel(),
-                ),
+        for (final chip in chips) _TopChip(key: ValueKey('cgflix-top-chip-${chip.label}'), chip: chip),
+      ],
+    );
+    final actions = [
+      if (showActions) ...[
+        _RoundIconButton(
+          key: const ValueKey('cgflix-top-search'),
+          icon: Symbols.search_rounded,
+          label: 'Buscar',
+          onPressed: () => cgflixOpenSearch(context),
+        ),
+        _RoundIconButton(
+          key: const ValueKey('cgflix-top-request'),
+          icon: Symbols.add_circle_rounded,
+          label: 'Pedir um título',
+          onPressed: () => cgflixOpenRequests(context),
+        ),
+      ],
+    ];
+    final group = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: chipsRow),
+        ),
+        ...actions,
+      ],
+    );
+
+    return SizedBox(
+      height: cgflixTopBarHeight,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const side = CgflixUserMenuButton.size + 8;
+          // Cabe com um espelho do emblema do outro lado? Então o centro do grupo é o centro
+          // da tela. Senão, centraliza no espaço à direita do emblema (e, se nem assim
+          // couber, os chips rolam).
+          final centered = _groupWidth(context) <= constraints.maxWidth - 2 * side;
+          return Row(
+            children: [
+              const CgflixUserMenuButton(),
+              const SizedBox(width: 8),
+              Expanded(child: Center(child: group)),
+              if (centered) const SizedBox(width: side),
             ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Estados visíveis (o tema do upstream desliga o efeito de toque): pressionado, foco
+/// (teclado/controle) e mouse por cima.
+final cgflixPressedOverlay = WidgetStateProperty.resolveWith<Color?>((states) {
+  if (states.contains(WidgetState.pressed)) return Colors.white24;
+  if (states.contains(WidgetState.focused)) return CgflixColors.accent.withValues(alpha: 0.35);
+  if (states.contains(WidgetState.hovered)) return Colors.white10;
+  return null;
+});
+
+const _chipPadding = 12.0;
+const _slotPadding = 6.0;
+const _chipTextStyle = TextStyle(
+  color: Colors.white,
+  fontSize: 14,
+  height: 1.2,
+  fontWeight: FontWeight.w600,
+  fontFamily: 'Inter',
+);
+TextScaler _chipTextScaler(BuildContext context) => MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.3);
+
+/// Emblema do CGFLIX que abre o menu do usuário (o novo lugar do perfil).
+class CgflixUserMenuButton extends StatelessWidget {
+  const CgflixUserMenuButton({super.key});
+
+  static const size = 48.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Menu: perfil, Baixados e Configurações',
+      child: Semantics(
+        button: true,
+        label: 'Menu do CGFLIX: perfil, Baixados, Configurações e Sair',
+        excludeSemantics: true,
+        child: Material(
+          type: MaterialType.transparency,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            key: const ValueKey('cgflix-top-menu'),
+            onTap: () {
+              HapticFeedback.selectionClick();
+              showCgflixUserMenu(context);
+            },
+            child: const SizedBox.square(
+              dimension: size,
+              child: Center(child: CgflixEmblem(size: 32)),
+            ),
           ),
         ),
       ),
@@ -100,18 +264,147 @@ class CgflixNavigationBar extends StatelessWidget {
   }
 }
 
-/// Telas do upstream que não sabem que a barra fica por cima (ex.: Baixados): terminam
-/// acima dela, em vez de deixar as últimas linhas escondidas atrás do vidro.
-class CgflixAboveNavBar extends StatelessWidget {
-  const CgflixAboveNavBar({super.key, required this.child});
-  final Widget child;
+class _TopChip extends StatelessWidget {
+  const _TopChip({super.key, required this.chip});
+  final CgflixTopBarChip chip;
 
   @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.paddingOf(context).bottom;
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottom),
-      child: MediaQuery.removePadding(context: context, removeBottom: true, child: child),
+    final selected = chip.selected;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: selected ? '${chip.label}, filtro ativo' : 'Mostrar só ${chip.label}',
+      excludeSemantics: true,
+      // Alvo de toque de 48 dp, desenho de 36 dp (mesma linha das lupas); 6 dp de cada lado,
+      // como a lupa (48 − 36), dão o mesmo espaço visual (12 dp) entre todos os itens.
+      child: GestureDetector(
+        // Toque na margem do alvo de 48 dp também vale.
+        behavior: HitTestBehavior.opaque,
+        onTap: chip.onPressed,
+        child: Container(
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: _slotPadding),
+          child: Center(
+            child: AnimatedContainer(
+              duration: CgflixMotion.fast,
+              curve: CgflixMotion.curve,
+              height: _itemHeight,
+              decoration: ShapeDecoration(
+                shape: StadiumBorder(side: BorderSide(color: selected ? CgflixColors.accent : Colors.white38)),
+                color: selected ? CgflixColors.accent.withValues(alpha: 0.28) : const Color(0x3307060A),
+              ),
+              child: Material(
+                type: MaterialType.transparency,
+                shape: const StadiumBorder(),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: chip.onPressed,
+                  overlayColor: cgflixPressedOverlay,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: _chipPadding),
+                    child: Center(
+                      widthFactor: 1,
+                      child: Text(
+                        chip.label,
+                        maxLines: 1,
+                        softWrap: false,
+                        textScaler: _chipTextScaler(context),
+                        style: _chipTextStyle,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Botão redondo da barra (lupa, Pedir, "×"): 36 dp desenhados, 48 dp de toque.
+class _RoundIconButton extends StatelessWidget {
+  const _RoundIconButton({super.key, required this.icon, required this.label, required this.onPressed});
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: label,
+      child: Semantics(
+        button: true,
+        label: label,
+        excludeSemantics: true,
+        child: GestureDetector(
+          // Toque na margem do alvo de 48 dp também vale.
+          behavior: HitTestBehavior.opaque,
+          onTap: onPressed,
+          child: SizedBox.square(
+            dimension: 48,
+            child: Center(
+              child: Material(
+                color: const Color(0x3307060A),
+                shape: const CircleBorder(side: BorderSide(color: Colors.white38)),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: onPressed,
+                  overlayColor: cgflixPressedOverlay,
+                  child: SizedBox.square(
+                    dimension: _itemHeight,
+                    child: Center(child: AppIcon(icon, size: 20, color: Colors.white)),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Sem conexão (a raiz vira Baixados): o mesmo topo, só com o emblema/menu e "Reconectar".
+class CgflixOfflineTopBar extends StatelessWidget {
+  const CgflixOfflineTopBar({super.key, required this.reconnecting, required this.onReconnect});
+  final bool reconnecting;
+  final VoidCallback onReconnect;
+
+  @override
+  Widget build(BuildContext context) {
+    final padding = MediaQuery.paddingOf(context);
+    return ColoredBox(
+      color: CgflixColors.background,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(8 + padding.left, padding.top, 8 + padding.right, 0),
+        child: SizedBox(
+          height: cgflixTopBarHeight,
+          child: Row(
+            children: [
+              const CgflixUserMenuButton(),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Sem conexão',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: CgflixColors.textMuted, fontWeight: FontWeight.w600),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: reconnecting ? null : onReconnect,
+                icon: reconnecting
+                    ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const AppIcon(Symbols.wifi_rounded, size: 18),
+                label: const Text('Reconectar'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

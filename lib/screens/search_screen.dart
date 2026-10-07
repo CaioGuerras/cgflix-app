@@ -552,7 +552,8 @@ class _SearchScreenState extends State<SearchScreen>
         child: CustomScrollView(
           primary: false,
           slivers: [
-            if (!PlatformDetector.isMobile(context)) // CGFLIX: no celular o campo já é o topo
+            // CGFLIX: no celular a busca abre por cima da Início, com Voltar
+            if (!PlatformDetector.isMobile(context) || (ModalRoute.of(context)?.canPop ?? false))
               DesktopSliverAppBar(title: Text(t.common.search), floating: true),
             SliverToBoxAdapter(
               child: SearchInputField(
