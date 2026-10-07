@@ -98,7 +98,8 @@ void main() {
       final oled = p.darkTheme;
 
       // OLED must be a true black canvas; regular dark uses a non-black surface.
-      expect(oled.scaffoldBackgroundColor, const material.Color(0xFF000000));
+      // CGFLIX: o "OLED" usa o preto do site (#07060a), quase preto puro.
+      expect(oled.scaffoldBackgroundColor, const material.Color(0xFF07060A));
       expect(dark.scaffoldBackgroundColor, isNot(const material.Color(0xFF000000)));
 
       p.dispose();

@@ -86,6 +86,7 @@ import 'utils/media_server_timeouts.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
 import 'cgflix/cgflix_intro.dart';
+import 'cgflix/cgflix_theme.dart';
 import 'i18n/app_locale_utils.dart';
 import 'i18n/strings.g.dart';
 import 'widgets/app_icon.dart';
@@ -169,6 +170,7 @@ void _bootstrapApp() {
   // Off the critical path: the version label only decorates a diagnostic.
   unawaited(_primeDiagnosticsVersion());
 
+  if (Platform.isAndroid) cgflixEnableEdgeToEdge(); // CGFLIX: barras transparentes
   AndroidExitDiagnostics.markStartupPhase(AndroidStartupPhase.runApp);
   runApp(
     StartupBootstrap<_StartupDependencies>(

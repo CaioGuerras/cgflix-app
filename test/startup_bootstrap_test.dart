@@ -199,7 +199,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
 
     expect(bootstrapTheme(tester).brightness, Brightness.dark);
-    expect(bootstrapTheme(tester).scaffoldBackgroundColor, const Color(0xFF000000));
+    expect(bootstrapTheme(tester).scaffoldBackgroundColor, const Color(0xFF07060A)); // CGFLIX: preto do site
 
     completion.complete(1);
     await tester.pump();
