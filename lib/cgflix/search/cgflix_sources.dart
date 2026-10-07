@@ -151,6 +151,8 @@ Future<LibraryPage<MediaItem>>? cgflixMergedPersonPage(
           client
               .fetchPersonMediaPage(person.id, start: 0, size: size, abort: abort)
               .then((page) => page.items)
+              // Um servidor lento/dormindo não segura a página inteira (o padrão do HTTP é 2 min).
+              .timeout(const Duration(seconds: 10))
               .catchError((Object e) {
                 appLogger.w('CGFLIX: filmografia de ${person.serverName} falhou', error: e);
                 return const <MediaItem>[];
@@ -183,7 +185,12 @@ Future<List<MediaPerson>> _findPersonEverywhere(
   final results = await Future.wait([
     for (final entry in clients.entries)
       if (entry.key != serverId)
-        entry.value.searchPeople(personName, limit: 5, abort: abort).catchError((Object e) => const <MediaPerson>[]),
+        entry.value.searchPeople(personName, limit: 5, abort: abort).timeout(const Duration(seconds: 10)).catchError((
+          Object e,
+        ) {
+          appLogger.d('CGFLIX: busca da pessoa em ${entry.key} falhou', error: e);
+          return const <MediaPerson>[];
+        }),
   ]);
   final others = [for (final list in results) ...list.where((p) => cgflixSearchNormalize(p.name) == wanted).take(1)];
   if (others.isEmpty) return const [];

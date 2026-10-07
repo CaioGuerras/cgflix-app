@@ -85,7 +85,7 @@ Future<void> cgflixPlay(BuildContext context, MediaItem item) async {
     final client = cgflixClientFor(context, item);
     if (client != null) {
       try {
-        final result = await client.fetchItemWithOnDeck(item.id);
+        final result = await client.fetchItemWithOnDeck(item.id).timeout(const Duration(seconds: 10));
         final next = result.onDeckEpisode;
         if (next != null && context.mounted) {
           await navigateToVideoPlayer(context, metadata: next);
