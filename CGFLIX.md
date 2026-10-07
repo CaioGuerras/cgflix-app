@@ -99,9 +99,41 @@ mais polido e integrado ao Android. Ordem de serviço em `docs/ORDEM_1C.md`.
 | `lib/cgflix/home/cgflix_actions.dart` | háptico leve ao tocar "Assistir" |
 | `test/cgflix/*`, `test/providers/theme_provider_test.dart` | testes do agrupamento, do filtro, da barra e do histórico; fundo OLED = `#07060a` |
 
-**Voltar preditivo**: as transições já acompanham o gesto quando ele for ligado, mas o `android:enableOnBackInvokedCallback`
-ficou **desligado**: com ele, o Android deixa de entregar a tecla VOLTAR do controle remoto como tecla, e a navegação da TV
-do upstream depende disso. Fica para a 1D, com teste numa TV box.
+**Voltar preditivo**: o `android:enableOnBackInvokedCallback` continua sem declarar: com ele, o Android deixa de entregar a tecla VOLTAR do controle remoto como tecla, e a navegação da TV
+do upstream depende disso. Continua pendente na 1D (precisa de teste numa TV box; ver `docs/cgflix/AUDITORIA_GOOGLE_1D.md`).
+
+## Etapa 1D — barra única no topo, paisagem, tema único e auditorias (versão 1.2.0, versionCode 400)
+
+Pedido do dono depois do 1.1.0 (300) no motorola edge 70: acabar com a barra inferior, alinhar os chips, tirar o botão
+Início, um tema só e funcionar deitado. Mais as auditorias (Google, telas, código) e a dedicatória em destaque.
+
+**Causa da tela preta deitado**: a altura do destaque da Início era `clamp(360, altura × 0,68)`; deitado, 68% da altura fica
+abaixo de 360, o `clamp` lança `ArgumentError` e o `ErrorWidget` do release pinta a tela de preto. O trilho lateral do
+upstream em paisagem também não conhecia as abas do CGFLIX.
+
+| Arquivo | Mudança |
+|---|---|
+| `pubspec.yaml`, `lib/cgflix/cgflix_version.dart` | `version: 1.2.0+400` |
+| `lib/cgflix/cgflix_layout.dart` (novo) | altura do destaque em pé e deitado (sem a exceção), destaque compacto |
+| `lib/cgflix/cgflix_navigation.dart` | barra única do topo (`CgflixTopBar`): emblema = menu do usuário; chips, Busca e Pedir alinhados (36 dp de desenho, 48 dp de toque, 12 dp entre todos) e centralizados na tela; só os chips rolam em tela estreita; páginas (`CgflixPages`) de Busca, Baixados, Configurações e Pedir; topo sem conexão; Configurações escondidas no celular |
+| `lib/cgflix/cgflix_user_menu.dart` (novo), `cgflix_you_screen.dart` (removido) | menu do usuário: Trocar perfil/usuário, Baixados, Configurações, Sobre, Sair, com a dedicatória |
+| `lib/screens/main_screen.dart` | ganchos: celular sem barra inferior nem trilho lateral (também deitado); sem conexão, Baixados com topo próprio; Seção inicial ignorada no celular |
+| `lib/screens/search_screen.dart` | 1 linha: aberta por cima da Início, mostra a barra com Voltar |
+| `lib/cgflix/home/cgflix_home_screen.dart`, `cgflix_hero.dart` | topo = `CgflixTopBar`; destaque compacto deitado; rodapé com a dedicatória; destaque parado com TalkBack/"remover animações"; linha que falha some (não fica no esqueleto) |
+| `lib/cgflix/home/cgflix_home_repository.dart` | emite vazio quando o cache vazio + rede fora; teto de 30 s |
+| `lib/cgflix/cgflix_theme.dart`, `lib/main.dart`, `settings/appearance_settings_screen.dart` | tema único `cgflixAppTheme()` (OLED fixo, mesmo com o Android claro); sem escolha de tema; transição seca com "remover animações"; película na navegação de 3 botões |
+| `lib/cgflix/cgflix_about.dart`, `cgflix_advanced.dart`, `lib/main.dart` | dedicatória na abertura, no menu e no rodapé da Início; Avançado › "Mostrar dedicatória" (padrão ligado); carregamento roxo |
+| `settings/appearance_settings_screen.dart`, `general_settings_screen.dart` | 1 linha cada: no celular somem Tela inicial, Navegação, TV ao vivo e Seção inicial |
+| `settings/logs_screen.dart`, `lib/cgflix/cgflix_defaults.dart` | sem "Enviar logs" para o servidor do Plezy (`cgflixAllowLogUpload`) |
+| `android/app/src/main/AndroidManifest.xml` | `allowBackup="false"`; `plezy://play`/`live` sem `BROWSABLE` |
+| `lib/cgflix/search/cgflix_search_extras.dart`, `cgflix_sources.dart` | Pedir da busca rola deitado e leva a conectar o Seerr; prazo de 10 s por servidor na filmografia; 48 dp no seletor |
+| `lib/cgflix/home/cgflix_actions.dart`, `cgflix_preview_sheet.dart`, `cgflix_detail.dart` | "Assistir" em `#9333ea` (contraste 5,4:1) e 48 dp; episódio sempre "T2:E5"; prazo de 10 s |
+| `lib/i18n/pt.i18n.json` + `strings_pt.g.dart` | 52 textos que caíam no inglês; "Baixados"; "Classificação indicativa"; aviso das 2 telas |
+| `.github/workflows/cgflix-android.yml` | job novo **Emulador**: Android 34 com tela do edge 70, roteiro, giro e capturas (artifact `cgflix-capturas`) |
+| `scripts/cgflix/emulador_navegacao.py`, `test_emulador_navegacao.py` (novos) | roteiro (uiautomator/adb), detector de tela preta e filtro do logcat (só biblioteca padrão) |
+| `test/cgflix/emulador/app_navegacao.dart` (novo) | app de teste do emulador: peças reais do CGFLIX, dados falsos, sem servidor |
+| `test/cgflix/*`, `test/screens/...` | barra do topo em 360/412/800 dp em pé e deitado, menu, Voltar, Pedir, destaque, dedicatória, tema; testes do upstream olham as Configurações completas |
+| `docs/cgflix/AUDITORIA_GOOGLE_1D.md`, `REVISAO_TELAS_1D.md`, `AUDITORIA_CODIGO_1D.md` (novos) | relatórios E, F e H |
 
 ## Como gerar o APK
 
