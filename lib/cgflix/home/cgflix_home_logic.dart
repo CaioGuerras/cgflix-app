@@ -16,16 +16,45 @@ const cgflixFixedRowOrder = [
   CgflixRowKind.newShows,
 ];
 
-/// Títulos iguais aos do site.
-String cgflixRowTitle(CgflixRowKind kind, {String? genre, String? trendingTitle}) => switch (kind) {
-  CgflixRowKind.continueWatching => 'Continuar assistindo',
-  CgflixRowKind.trending => (trendingTitle?.trim().isNotEmpty ?? false) ? trendingTitle!.trim() : cgflixTrendingTitle,
-  CgflixRowKind.releases => 'Lançamentos',
-  CgflixRowKind.newEpisodes => 'Novos episódios',
-  CgflixRowKind.newMovies => 'Novidades em filmes',
-  CgflixRowKind.newShows => 'Novidades em séries e animes',
-  CgflixRowKind.genre => genre ?? '',
-};
+/// Títulos iguais aos do site. Com um chip ativo, "Novidades" fala só daquele tipo.
+String cgflixRowTitle(CgflixRowKind kind, {String? genre, String? trendingTitle, CgflixHomeFilter? filter}) =>
+    switch (kind) {
+      CgflixRowKind.continueWatching => 'Continuar assistindo',
+      CgflixRowKind.trending =>
+        (trendingTitle?.trim().isNotEmpty ?? false) ? trendingTitle!.trim() : cgflixTrendingTitle,
+      CgflixRowKind.releases => 'Lançamentos',
+      CgflixRowKind.newEpisodes => 'Novos episódios',
+      CgflixRowKind.newMovies => 'Novidades em filmes',
+      CgflixRowKind.newShows => switch (filter?.kind) {
+        CgflixChipKind.shows => 'Novidades em séries',
+        CgflixChipKind.animes => 'Novidades em animes',
+        _ => 'Novidades em séries e animes',
+      },
+      CgflixRowKind.genre => genre ?? '',
+    };
+
+/// Chip ativo na Início (Filmes, Séries ou Animes): destaque e linhas só daquela biblioteca.
+class CgflixHomeFilter {
+  const CgflixHomeFilter(this.kind, this.libraryId);
+  CgflixHomeFilter.fromChip(CgflixLibraryChip chip) : this(chip.kind, chip.library.id);
+
+  final CgflixChipKind kind;
+  final String libraryId;
+
+  bool get isMovies => kind == CgflixChipKind.movies;
+
+  /// Tipo de item do Jellyfin que a biblioteca guarda.
+  String get itemType => isMovies ? 'Movie' : 'Series';
+
+  /// Separa o cache do aparelho de cada filtro.
+  String get cacheSuffix => '@$libraryId';
+
+  @override
+  bool operator ==(Object other) => other is CgflixHomeFilter && other.kind == kind && other.libraryId == libraryId;
+
+  @override
+  int get hashCode => Object.hash(kind, libraryId);
+}
 
 const cgflixTrendingTitle = 'Em alta no Brasil';
 
@@ -46,7 +75,11 @@ const cgflixHeroInterval = Duration(seconds: 8);
 
 /// Parâmetros de `GET /Items` para cada linha que vem de consulta direta.
 /// Linhas que não são consulta (Continuar, Em alta) devolvem `null`.
-Map<String, String>? cgflixRowQuery(CgflixRowKind kind, {String? genre, DateTime? now}) {
+///
+/// Com [filter] (chip ativo), tudo fica dentro da biblioteca escolhida e as linhas que não
+/// fazem sentido para ela (ex.: "Novos episódios" em Filmes) devolvem `null` e somem.
+Map<String, String>? cgflixRowQuery(CgflixRowKind kind, {String? genre, DateTime? now, CgflixHomeFilter? filter}) {
+  if (filter != null) return _filteredRowQuery(kind, filter, genre: genre, now: now);
   final today = (now ?? DateTime.now()).toUtc();
   final limit = '$cgflixRowLimit';
   return switch (kind) {
@@ -90,12 +123,27 @@ Map<String, String>? cgflixRowQuery(CgflixRowKind kind, {String? genre, DateTime
   };
 }
 
-/// Destaque: filmes e séries com fundo e logo, sorteados pelo servidor.
-Map<String, String> cgflixHeroQuery() => const {
-  'IncludeItemTypes': 'Movie,Series',
+Map<String, String>? _filteredRowQuery(CgflixRowKind kind, CgflixHomeFilter filter, {String? genre, DateTime? now}) {
+  final base = cgflixRowQuery(kind, genre: genre, now: now);
+  if (base == null) return null;
+  final scoped = {...base, 'ParentId': filter.libraryId};
+  return switch (kind) {
+    // Lançamentos: filmes ou séries (pela estreia), conforme a biblioteca.
+    CgflixRowKind.releases || CgflixRowKind.genre => {...scoped, 'IncludeItemTypes': filter.itemType},
+    CgflixRowKind.newMovies => filter.isMovies ? scoped : null,
+    CgflixRowKind.newEpisodes || CgflixRowKind.newShows => filter.isMovies ? null : scoped,
+    CgflixRowKind.continueWatching || CgflixRowKind.trending => null,
+  };
+}
+
+/// Destaque: filmes e séries com fundo e logo, sorteados pelo servidor (com chip ativo,
+/// só da biblioteca escolhida).
+Map<String, String> cgflixHeroQuery({CgflixHomeFilter? filter}) => {
+  'IncludeItemTypes': filter?.itemType ?? 'Movie,Series',
   'ImageTypes': 'Backdrop,Logo',
   'SortBy': 'Random',
   'Limit': '8',
+  if (filter != null) 'ParentId': filter.libraryId,
 };
 
 // ---------------------------------------------------------------------------

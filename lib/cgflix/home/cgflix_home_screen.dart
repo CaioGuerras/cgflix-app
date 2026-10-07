@@ -3,27 +3,28 @@
 // Novidades em filmes, Novidades em séries e animes e as linhas por gênero.
 // Cada linha carrega sozinha (cache do aparelho primeiro). Sem servidor Jellyfin (só Plex),
 // mostra a Início original do upstream.
+// Etapa 1C: os chips Filmes · Séries · Animes filtram a própria Início (padrão Netflix), com
+// "×" para voltar a "Tudo"; o topo some ao rolar para baixo e volta ao rolar para cima; o
+// perfil saiu daqui (fica só na aba Você).
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
-import '../../utils/global_key_utils.dart';
 import '../../media/media_item.dart';
+import '../../media/media_kind.dart';
 import '../../mixins/refreshable.dart';
 import '../../mixins/tab_visibility_aware.dart';
-import '../../navigation/main_screen_scope.dart';
-import '../../profiles/active_profile_provider.dart';
-import '../../profiles/profile_avatar.dart';
 import '../../providers/discover_provider.dart';
 import '../../providers/multi_server_provider.dart';
 import '../../screens/discover_screen.dart';
-import '../../screens/profile/profile_switch_screen.dart';
 import '../../services/jellyfin_client.dart';
 import '../../services/watch_actions.dart';
 import '../../utils/app_logger.dart';
 import '../../widgets/app_icon.dart';
+import '../cgflix_logo.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 import 'cgflix_cards.dart';
@@ -53,6 +54,13 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
 
   /// Muda a cada "puxar para atualizar": as linhas renascem e buscam de novo.
   int _generation = 0;
+
+  /// Chips Filmes · Séries · Animes (bibliotecas do servidor) e o filtro ativo (null = Tudo).
+  List<CgflixLibraryChip> _chips = const [];
+  CgflixHomeFilter? _filter;
+
+  /// Troca de filtro: some (150 ms), troca as linhas e volta (150 ms).
+  bool _fading = false;
 
   @override
   void initState() {
@@ -95,7 +103,36 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
     _repository?.dispose();
     _client = client;
     _repository = client == null ? null : CgflixHomeRepository(client);
+    _filter = null;
+    _chips = const [];
+    unawaited(_loadChips());
     _onChanged();
+  }
+
+  Future<void> _loadChips() async {
+    final repository = _repository;
+    if (repository == null) return;
+    final chips = await repository.chips();
+    if (!mounted || repository != _repository) return;
+    setState(() {
+      _chips = chips;
+      // A biblioteca do filtro sumiu (ex.: escondida): volta para Tudo.
+      if (_filter != null && !chips.any((c) => CgflixHomeFilter.fromChip(c) == _filter)) _filter = null;
+    });
+  }
+
+  /// Toque num chip filtra a Início; tocar no ativo (ou no "×") volta para Tudo.
+  Future<void> _setFilter(CgflixHomeFilter? filter) async {
+    if (filter == _filter || _fading) return;
+    unawaited(HapticFeedback.selectionClick());
+    setState(() => _fading = true);
+    await Future<void>.delayed(CgflixMotion.filterFade);
+    if (!mounted) return;
+    if (_scrollController.hasClients) _scrollController.jumpTo(0);
+    setState(() {
+      _filter = filter;
+      _fading = false;
+    });
   }
 
   bool get _hasOnlineServer => _servers.serverManager.visibleOnlineClients.isNotEmpty;
@@ -123,6 +160,7 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
     }
     unawaited(_discover.load());
     if (mounted) setState(() => _generation++);
+    unawaited(_loadChips());
   }
 
   @override
@@ -154,6 +192,7 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
   Future<void> _pullToRefresh() async {
     _repository?.forgetMemory();
     setState(() => _generation++);
+    unawaited(_loadChips());
     await Future.wait([
       _discover.refreshNow(),
       // Dá tempo para o gesto terminar com a animação, mesmo com tudo vindo do cache.
@@ -174,67 +213,77 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
       backgroundColor: CgflixColors.background,
       body: Stack(
         children: [
-          RefreshIndicator(
-            color: CgflixColors.accent,
-            backgroundColor: CgflixColors.surface,
-            edgeOffset: media.padding.top + 56,
-            onRefresh: _pullToRefresh,
-            child: CustomScrollView(
-              key: const PageStorageKey('cgflix-home'),
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: repository == null
-                  ? [
-                      SliverToBoxAdapter(child: _HeroSkeleton(height: heroHeight)),
-                      const SliverToBoxAdapter(child: CgflixSkeletonRow(wide: true)),
-                      const SliverToBoxAdapter(child: CgflixSkeletonRow()),
-                    ]
-                  : _buildSlivers(repository, heroHeight),
+          AnimatedOpacity(
+            opacity: _fading ? 0 : 1,
+            duration: CgflixMotion.filterFade,
+            curve: CgflixMotion.curve,
+            child: RefreshIndicator(
+              color: CgflixColors.accent,
+              backgroundColor: CgflixColors.surface,
+              edgeOffset: media.padding.top + 56,
+              onRefresh: _pullToRefresh,
+              child: CustomScrollView(
+                key: const PageStorageKey('cgflix-home'),
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: repository == null
+                    ? [
+                        SliverToBoxAdapter(child: _HeroSkeleton(height: heroHeight)),
+                        const SliverToBoxAdapter(child: CgflixSkeletonRow(wide: true)),
+                        const SliverToBoxAdapter(child: CgflixSkeletonRow()),
+                      ]
+                    : _buildSlivers(repository, heroHeight),
+              ),
             ),
           ),
-          _TopBar(scrollController: _scrollController, repository: repository, generation: _generation),
+          _TopBar(scrollController: _scrollController, chips: _chips, filter: _filter, onFilter: _setFilter),
         ],
       ),
     );
   }
 
   List<Widget> _buildSlivers(CgflixHomeRepository repository, double heroHeight) {
-    final key = '${repository.client.serverId.value}:$_generation';
+    final filter = _filter;
+    final key = '${repository.client.serverId.value}:$_generation${filter?.cacheSuffix ?? ''}';
     return [
       SliverToBoxAdapter(
         child: _StreamSection<CgflixRowData>(
           key: ValueKey('hero:$key'),
-          stream: repository.watchHero,
+          stream: () => repository.watchHero(filter: filter),
           loading: _HeroSkeleton(height: heroHeight),
           builder: (data) => data.items.isEmpty
               ? SizedBox(height: MediaQuery.paddingOf(context).top + 72)
               : CgflixHero(items: data.items, height: heroHeight, paused: !_tabVisible || !_appActive),
         ),
       ),
-      SliverToBoxAdapter(child: _ContinueWatchingRow(discover: _discover)),
+      SliverToBoxAdapter(
+        child: _ContinueWatchingRow(discover: _discover, filter: filter),
+      ),
       SliverToBoxAdapter(
         child: _StreamSection<CgflixRowData>(
           key: ValueKey('trending:$key'),
-          stream: repository.watchTrending,
+          stream: () => repository.watchTrending(filter: filter),
           loading: const CgflixSkeletonRow(),
           builder: (data) => _Top10Row(data: data),
         ),
       ),
       for (final kind in cgflixFixedRowOrder.skip(2))
-        SliverToBoxAdapter(
-          child: _StreamSection<CgflixRowData>(
-            key: ValueKey('${kind.name}:$key'),
-            stream: () => repository.watchRow(kind),
-            loading: CgflixSkeletonRow(wide: kind == CgflixRowKind.newEpisodes),
-            builder: (data) => _ItemsRow(
-              title: cgflixRowTitle(kind),
-              items: data.items,
-              storageKey: kind.name,
-              wide: kind == CgflixRowKind.newEpisodes,
+        // Com chip ativo, linha sem sentido para a biblioteca (ex.: episódios em Filmes) nem monta.
+        if (cgflixRowQuery(kind, filter: filter, genre: '') != null)
+          SliverToBoxAdapter(
+            child: _StreamSection<CgflixRowData>(
+              key: ValueKey('${kind.name}:$key'),
+              stream: () => repository.watchRow(kind, filter: filter),
+              loading: CgflixSkeletonRow(wide: kind == CgflixRowKind.newEpisodes),
+              builder: (data) => _ItemsRow(
+                title: cgflixRowTitle(kind, filter: filter),
+                items: data.items,
+                storageKey: '${kind.name}${filter?.cacheSuffix ?? ''}',
+                wide: kind == CgflixRowKind.newEpisodes,
+              ),
             ),
           ),
-        ),
-      _GenreRows(key: ValueKey('genres:$key'), repository: repository),
+      _GenreRows(key: ValueKey('genres:$key'), repository: repository, filter: filter),
       SliverToBoxAdapter(child: SizedBox(height: MediaQuery.paddingOf(context).bottom + 24)),
     ];
   }
@@ -368,8 +417,9 @@ class _Top10Row extends StatelessWidget {
 /// Continuar assistindo: vem do DiscoverProvider do upstream (mesma regra de "próximo
 /// episódio" e de atualização). Tocar = continua direto; segurar = remover da linha.
 class _ContinueWatchingRow extends StatelessWidget {
-  const _ContinueWatchingRow({required this.discover});
+  const _ContinueWatchingRow({required this.discover, this.filter});
   final DiscoverProvider discover;
+  final CgflixHomeFilter? filter;
 
   Future<void> _confirmRemove(BuildContext context, MediaItem item) async {
     final remove = await showModalBottomSheet<bool>(
@@ -414,9 +464,17 @@ class _ContinueWatchingRow extends StatelessWidget {
     }
   }
 
+  /// Com chip ativo, só o que é daquela biblioteca (pelo id dela; sem id, pelo tipo).
+  static bool _matches(MediaItem item, CgflixHomeFilter filter) {
+    final libraryId = item.libraryId;
+    if (libraryId != null) return libraryId == filter.libraryId;
+    return filter.isMovies ? item.kind == MediaKind.movie : item.kind != MediaKind.movie;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final items = discover.onDeck;
+    final filter = this.filter;
+    final items = filter == null ? discover.onDeck : discover.onDeck.where((i) => _matches(i, filter)).toList();
     final Widget child;
     if (items.isEmpty && discover.isLoading) {
       child = const CgflixSkeletonRow(key: ValueKey('loading'), wide: true);
@@ -452,8 +510,9 @@ class _ContinueWatchingRow extends StatelessWidget {
 /// Linhas por gênero: a lista de gêneros vem primeiro; cada linha só busca seus títulos
 /// quando chega perto da tela (SliverList monta sob demanda).
 class _GenreRows extends StatefulWidget {
-  const _GenreRows({super.key, required this.repository});
+  const _GenreRows({super.key, required this.repository, this.filter});
   final CgflixHomeRepository repository;
+  final CgflixHomeFilter? filter;
 
   @override
   State<_GenreRows> createState() => _GenreRowsState();
@@ -466,7 +525,7 @@ class _GenreRowsState extends State<_GenreRows> {
   @override
   void initState() {
     super.initState();
-    _subscription = widget.repository.watchGenres().listen((genres) {
+    _subscription = widget.repository.watchGenres(filter: widget.filter).listen((genres) {
       if (mounted) setState(() => _genres = genres);
     });
   }
@@ -483,14 +542,15 @@ class _GenreRowsState extends State<_GenreRows> {
       itemCount: _genres.length,
       itemBuilder: (context, index) {
         final genre = _genres[index];
+        final suffix = widget.filter?.cacheSuffix ?? '';
         return _StreamSection<CgflixRowData>(
-          key: ValueKey('genre:$genre'),
-          stream: () => widget.repository.watchRow(CgflixRowKind.genre, genre: genre),
+          key: ValueKey('genre:$genre$suffix'),
+          stream: () => widget.repository.watchRow(CgflixRowKind.genre, genre: genre, filter: widget.filter),
           loading: const CgflixSkeletonRow(),
           builder: (data) => _ItemsRow(
             title: cgflixRowTitle(CgflixRowKind.genre, genre: genre),
             items: data.items,
-            storageKey: 'genre:$genre',
+            storageKey: 'genre:$genre$suffix',
           ),
         );
       },
@@ -510,106 +570,196 @@ class _HeroSkeleton extends StatelessWidget {
   }
 }
 
-/// Topo da Início: chips Filmes · Séries · Animes e o avatar. Transparente sobre o
-/// destaque; ganha fundo aos poucos quando a página rola (nada de barra opaca de cara).
+/// Topo da Início: emblema e chips Filmes · Séries · Animes sobre um gradiente (nada de barra
+/// opaca). Some ao rolar para baixo e volta ao rolar para cima. Com um chip ativo, os outros
+/// saem e aparece o "×" para voltar a "Tudo".
 class _TopBar extends StatefulWidget {
-  const _TopBar({required this.scrollController, required this.repository, required this.generation});
+  const _TopBar({required this.scrollController, required this.chips, required this.filter, required this.onFilter});
   final ScrollController scrollController;
-  final CgflixHomeRepository? repository;
-  final int generation;
+  final List<CgflixLibraryChip> chips;
+  final CgflixHomeFilter? filter;
+  final ValueChanged<CgflixHomeFilter?> onFilter;
 
   @override
   State<_TopBar> createState() => _TopBarState();
 }
 
 class _TopBarState extends State<_TopBar> {
-  List<CgflixLibraryChip> _chips = const [];
+  bool _visible = true;
+  double _lastOffset = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadChips();
+    widget.scrollController.addListener(_onScroll);
   }
 
   @override
   void didUpdateWidget(_TopBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.repository != widget.repository || oldWidget.generation != widget.generation) _loadChips();
+    if (oldWidget.scrollController != widget.scrollController) {
+      oldWidget.scrollController.removeListener(_onScroll);
+      widget.scrollController.addListener(_onScroll);
+    }
+    // Trocou o filtro (a lista volta ao topo): o topo reaparece.
+    if (oldWidget.filter != widget.filter && !_visible) setState(() => _visible = true);
   }
 
-  Future<void> _loadChips() async {
-    final repository = widget.repository;
-    if (repository == null) return;
-    final chips = await repository.chips();
-    if (mounted && repository == widget.repository) setState(() => _chips = chips);
+  @override
+  void dispose() {
+    widget.scrollController.removeListener(_onScroll);
+    super.dispose();
   }
 
-  void _openLibrary(CgflixLibraryChip chip) {
-    final serverId = widget.repository?.client.serverId;
-    if (serverId == null) return;
-    MainScreenFocusScope.of(context, listen: false)?.selectLibrary?.call(buildGlobalKey(serverId, chip.library.id));
+  void _onScroll() {
+    final controller = widget.scrollController;
+    if (!controller.hasClients || controller.positions.length != 1) return;
+    final offset = controller.offset;
+    final delta = offset - _lastOffset;
+    _lastOffset = offset;
+    final visible = switch (delta) {
+      _ when offset < 80 => true,
+      > 6 => false,
+      < -6 => true,
+      _ => _visible,
+    };
+    if (visible != _visible) setState(() => _visible = visible);
   }
 
   @override
   Widget build(BuildContext context) {
     final top = MediaQuery.paddingOf(context).top;
-    final profiles = context.watch<ActiveProfileProvider>();
-    final active = profiles.active;
+    final filter = widget.filter;
+    final chips = filter == null
+        ? widget.chips
+        : widget.chips.where((c) => CgflixHomeFilter.fromChip(c) == filter).toList();
 
     return Positioned(
       top: 0,
       left: 0,
       right: 0,
-      child: AnimatedBuilder(
-        animation: widget.scrollController,
-        builder: (context, child) {
-          final offset = widget.scrollController.hasClients ? widget.scrollController.offset : 0.0;
-          final opacity = (offset / 160).clamp(0.0, 0.92);
-          return DecoratedBox(
-            decoration: BoxDecoration(color: CgflixColors.background.withValues(alpha: opacity)),
-            child: child,
-          );
-        },
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(12, top + 8, 12, 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: CgflixMotion.medium,
+      child: AnimatedSlide(
+        offset: _visible ? Offset.zero : const Offset(0, -1),
+        duration: CgflixMotion.fast,
+        curve: CgflixMotion.curve,
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xE607060A), Color(0x9907060A), Color(0x0007060A)],
+              stops: [0, 0.55, 1],
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, top + 8, 16, 20),
+            child: Row(
+              children: [
+                Semantics(label: 'CGFLIX', child: const CgflixEmblem(size: 30)),
+                const SizedBox(width: 12),
+                Expanded(
                   child: SingleChildScrollView(
-                    key: ValueKey(_chips.length),
                     scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        for (final chip in _chips)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: ActionChip(
-                              label: Text(chip.label),
-                              onPressed: () => _openLibrary(chip),
-                              backgroundColor: const Color(0x3307060A),
-                              side: const BorderSide(color: Colors.white38),
-                              shape: const StadiumBorder(),
-                              labelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    child: AnimatedSize(
+                      duration: CgflixMotion.medium,
+                      curve: CgflixMotion.curve,
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          if (filter != null)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: _ClearFilterButton(onPressed: () => widget.onFilter(null)),
                             ),
-                          ),
-                      ],
+                          for (final chip in chips)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: _FilterChip(
+                                label: chip.label,
+                                selected: filter != null,
+                                onPressed: () {
+                                  final tapped = CgflixHomeFilter.fromChip(chip);
+                                  widget.onFilter(tapped == filter ? null : tapped);
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({required this.label, required this.selected, required this.onPressed});
+  final String label;
+  final bool selected;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: selected ? '$label, filtro ativo' : 'Mostrar só $label',
+      excludeSemantics: true,
+      child: AnimatedContainer(
+        duration: CgflixMotion.fast,
+        curve: CgflixMotion.curve,
+        decoration: ShapeDecoration(
+          shape: StadiumBorder(side: BorderSide(color: selected ? CgflixColors.accent : Colors.white38)),
+          color: selected ? CgflixColors.accent.withValues(alpha: 0.28) : const Color(0x3307060A),
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          shape: const StadiumBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onPressed,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
               ),
-              IconButton(
-                tooltip: 'Trocar perfil',
-                onPressed: () => Navigator.of(
-                  context,
-                  rootNavigator: true,
-                ).push(MaterialPageRoute(builder: (_) => const ProfileSwitchScreen())),
-                icon: active != null
-                    ? ProfileAvatar(profile: active, size: 32, avatarUrl: profiles.avatarUrlFor(active.id))
-                    : const AppIcon(Symbols.account_circle_rounded, fill: 1, size: 32),
-              ),
-            ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "×" redondo que volta a Início para "Tudo".
+class _ClearFilterButton extends StatelessWidget {
+  const _ClearFilterButton({required this.onPressed});
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Voltar para Tudo',
+      child: Semantics(
+        button: true,
+        label: 'Voltar para Tudo',
+        excludeSemantics: true,
+        child: Material(
+          color: const Color(0x3307060A),
+          shape: const CircleBorder(side: BorderSide(color: Colors.white38)),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onPressed,
+            child: const SizedBox.square(
+              dimension: 36,
+              child: Center(child: AppIcon(Symbols.close_rounded, size: 20, color: Colors.white)),
+            ),
           ),
         ),
       ),

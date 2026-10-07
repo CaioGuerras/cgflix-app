@@ -201,4 +201,43 @@ void main() {
       empty.dispose();
     });
   });
+
+  group('chips filtram a Início', () {
+    const movies = CgflixHomeFilter(CgflixChipKind.movies, 'lib-filmes');
+    const animes = CgflixHomeFilter(CgflixChipKind.animes, 'lib-animes');
+
+    test('destaque e linhas ficam dentro da biblioteca escolhida', () {
+      expect(cgflixHeroQuery(filter: movies)['ParentId'], 'lib-filmes');
+      expect(cgflixHeroQuery(filter: movies)['IncludeItemTypes'], 'Movie');
+      expect(cgflixHeroQuery(filter: animes)['IncludeItemTypes'], 'Series');
+      expect(cgflixHeroQuery().containsKey('ParentId'), isFalse);
+
+      final releases = cgflixRowQuery(CgflixRowKind.releases, filter: animes)!;
+      expect(releases['ParentId'], 'lib-animes');
+      expect(releases['IncludeItemTypes'], 'Series');
+      expect(cgflixRowQuery(CgflixRowKind.genre, genre: 'Ação', filter: movies)!['Genres'], 'Ação');
+    });
+
+    test('linhas sem sentido para a biblioteca somem', () {
+      expect(cgflixRowQuery(CgflixRowKind.newEpisodes, filter: movies), isNull);
+      expect(cgflixRowQuery(CgflixRowKind.newShows, filter: movies), isNull);
+      expect(cgflixRowQuery(CgflixRowKind.newMovies, filter: animes), isNull);
+      expect(cgflixRowQuery(CgflixRowKind.newEpisodes, filter: animes)!['ParentId'], 'lib-animes');
+    });
+
+    test('títulos das linhas falam do tipo escolhido', () {
+      expect(cgflixRowTitle(CgflixRowKind.newShows), 'Novidades em séries e animes');
+      expect(cgflixRowTitle(CgflixRowKind.newShows, filter: animes), 'Novidades em animes');
+      expect(
+        cgflixRowTitle(CgflixRowKind.newShows, filter: const CgflixHomeFilter(CgflixChipKind.shows, 's')),
+        'Novidades em séries',
+      );
+    });
+
+    test('filtro do chip compara por tipo e biblioteca', () {
+      final chip = CgflixLibraryChip(CgflixChipKind.movies, _lib('lib-filmes', 'Filmes', MediaKind.movie));
+      expect(CgflixHomeFilter.fromChip(chip), movies);
+      expect(CgflixHomeFilter.fromChip(chip) == animes, isFalse);
+    });
+  });
 }

@@ -1267,7 +1267,10 @@ class _MainScreenState extends State<MainScreen>
       ),
       NavigationTabId.liveTv => LiveTvScreen(key: _screenKeys[tab]),
       NavigationTabId.search => SearchScreen(key: _screenKeys[tab]),
-      NavigationTabId.downloads => DownloadsScreen(key: _screenKeys[tab]),
+      NavigationTabId.downloads =>
+        cgflixUseYouTab(context) // CGFLIX: termina acima da barra translúcida
+            ? CgflixAboveNavBar(child: DownloadsScreen(key: _screenKeys[tab]))
+            : DownloadsScreen(key: _screenKeys[tab]),
       NavigationTabId.settings =>
         cgflixUseYouTab(context) // CGFLIX: no celular a aba é "Você"
             ? CgflixYouScreen(key: _screenKeys[tab])
@@ -2284,6 +2287,7 @@ class _MainScreenState extends State<MainScreen>
 
   Widget _buildPortraitShell(BuildContext context) {
     return Scaffold(
+      extendBody: cgflixUseYouTab(context), // CGFLIX: barra translúcida sobre o conteúdo
       body: _buildTickerAwareStack(),
       bottomNavigationBar: Column(
         key: _navBarKey,
@@ -2329,6 +2333,14 @@ class _MainScreenState extends State<MainScreen>
               // this builder reruns on label toggles AND on every
               // MainScreen rebuild (offline bar appearing/disappearing).
               _scheduleNavBarMeasure(rail: false);
+              if (cgflixUseYouTab(context)) {
+                // CGFLIX: barra compacta só com ícones
+                return CgflixNavigationBar(
+                  tabs: _getBottomNavigationTabs(context),
+                  currentTab: _currentTab,
+                  onSelectTab: _selectTab,
+                );
+              }
               return NavigationBarTheme(
                 data: NavigationBarTheme.of(context).copyWith(height: hideLabels ? 56 : null),
                 child: _buildBottomNavigationBar(context, hideLabels: hideLabels),

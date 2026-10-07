@@ -25,12 +25,14 @@ extension CgflixJellyfinQueries on JellyfinClient {
   List<MediaItem> cgflixMapItems(Iterable<Map<String, dynamic>> raw) => _mapItems(raw);
 
   /// Gêneros de filmes e séries do usuário (já vêm em português do servidor).
-  Future<List<Map<String, dynamic>>> cgflixFetchRawGenres() async {
+  /// Com [parentId], só os da biblioteca (chip ativo na Início).
+  Future<List<Map<String, dynamic>>> cgflixFetchRawGenres({String? parentId, String? itemTypes}) async {
     final response = await _http.get(
       '/Genres',
       queryParameters: {
         'UserId': connection.userId,
-        'IncludeItemTypes': 'Movie,Series',
+        'IncludeItemTypes': itemTypes ?? 'Movie,Series',
+        'ParentId': ?parentId,
         'Recursive': 'true',
         'SortBy': 'SortName',
         'Fields': 'ItemCounts',

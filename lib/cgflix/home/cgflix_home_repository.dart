@@ -127,25 +127,45 @@ class CgflixHomeRepository {
     }
   }
 
-  /// Linha de consulta direta (Lançamentos, Novidades, gêneros...).
-  Stream<CgflixRowData> watchRow(CgflixRowKind kind, {String? genre}) {
-    final query = cgflixRowQuery(kind, genre: genre);
-    if (query == null) return const Stream.empty();
-    final key = genre == null ? kind.name : '${kind.name}:$genre';
+  /// Linha de consulta direta (Lançamentos, Novidades, gêneros...). Com [filter] (chip ativo),
+  /// só da biblioteca escolhida; linha sem sentido para ela devolve vazio (some).
+  Stream<CgflixRowData> watchRow(CgflixRowKind kind, {String? genre, CgflixHomeFilter? filter}) {
+    final query = cgflixRowQuery(kind, genre: genre, filter: filter);
+    if (query == null) return Stream.value(const CgflixRowData(items: []));
+    final key = '${genre == null ? kind.name : '${kind.name}:$genre'}${filter?.cacheSuffix ?? ''}';
     return _cachedThenNetwork(key, () async => (raw: await client.cgflixFetchRawItems(query), title: null));
   }
 
   /// Destaque do topo.
-  Stream<CgflixRowData> watchHero() => _cachedThenNetwork(
-    'hero',
-    () async => (raw: await client.cgflixFetchRawItems(cgflixHeroQuery()), title: null),
+  Stream<CgflixRowData> watchHero({CgflixHomeFilter? filter}) => _cachedThenNetwork(
+    'hero${filter?.cacheSuffix ?? ''}',
+    () async => (raw: await client.cgflixFetchRawItems(cgflixHeroQuery(filter: filter)), title: null),
     maxAge: const Duration(minutes: 30),
   );
 
   /// Em alta no Brasil: emalta.json do servidor; se falhar, a coleção "Em alta no Brasil";
-  /// se nenhum, linha vazia (some). Vale por 1 h no aparelho.
-  Stream<CgflixRowData> watchTrending() =>
-      _cachedThenNetwork('trending', _fetchTrending, maxAge: cgflixTrendingCacheTtl);
+  /// se nenhum, linha vazia (some). Vale por 1 h no aparelho. Com [filter], só os títulos
+  /// do ranking que estão na biblioteca escolhida (mesma ordem).
+  Stream<CgflixRowData> watchTrending({CgflixHomeFilter? filter}) => _cachedThenNetwork(
+    'trending${filter?.cacheSuffix ?? ''}',
+    filter == null ? _fetchTrending : () => _fetchTrendingIn(filter),
+    maxAge: cgflixTrendingCacheTtl,
+  );
+
+  Future<({List<Map<String, dynamic>> raw, String? title})> _fetchTrendingIn(CgflixHomeFilter filter) async {
+    final all = await _fetchTrending();
+    final ids = [for (final r in all.raw) '${r['Id']}'];
+    if (ids.isEmpty) return all;
+    final inLibrary = await client.cgflixFetchRawItems({
+      'Ids': ids.join(','),
+      'ParentId': filter.libraryId,
+      'Limit': '${ids.length}',
+    });
+    // O tipo confere de novo: se o servidor ignorar o ParentId junto com Ids, pelo menos
+    // Filmes mostra só filmes e Séries/Animes só séries.
+    final ofType = inLibrary.where((r) => r['Type'] == filter.itemType).toList();
+    return (raw: cgflixOrderByIds(ofType, ids, (r) => '${r['Id']}'), title: all.title);
+  }
 
   Future<({List<Map<String, dynamic>> raw, String? title})> _fetchTrending() async {
     CgflixTrending? trending;
@@ -175,14 +195,15 @@ class CgflixHomeRepository {
     return (raw: items.take(10).toList(), title: cgflixTrendingTitle);
   }
 
-  /// Gêneros que viram linhas (cache primeiro).
-  Stream<List<String>> watchGenres() async* {
+  /// Gêneros que viram linhas (cache primeiro). Com [filter], só os da biblioteca escolhida.
+  Stream<List<String>> watchGenres({CgflixHomeFilter? filter}) async* {
     await _ensureCache();
-    final cached = _cached('genres');
+    final key = 'genres${filter?.cacheSuffix ?? ''}';
+    final cached = _cached(key);
     if (cached != null && cached.raw.isNotEmpty) yield cgflixPickGenres(cached.raw);
     try {
-      final raw = await client.cgflixFetchRawGenres();
-      _store('genres', raw);
+      final raw = await client.cgflixFetchRawGenres(parentId: filter?.libraryId, itemTypes: filter?.itemType);
+      _store(key, raw);
       yield cgflixPickGenres(raw);
     } catch (e) {
       appLogger.w('CGFLIX: gêneros falharam', error: e);

@@ -27,6 +27,9 @@ abstract final class CgflixMotion {
   static const medium = Duration(milliseconds: 300);
   static const slow = Duration(milliseconds: 350);
 
+  /// Troca de filtro na Início: some e volta, 150 ms cada (300 ms no total).
+  static const filterFade = Duration(milliseconds: 150);
+
   /// Troca cruzada do destaque (fundo + logo).
   static const crossFade = Duration(milliseconds: 600);
 
