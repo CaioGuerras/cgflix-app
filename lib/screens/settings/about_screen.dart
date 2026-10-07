@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../cgflix/cgflix_about.dart';
 import '../../cgflix/cgflix_logo.dart';
+import '../../cgflix/cgflix_version.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/settings_section.dart';
@@ -40,7 +41,7 @@ class AboutScreen extends StatelessWidget {
                         Text(appName, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold)),
                         const SizedBox(height: 8),
                         Text(
-                          t.about.versionLabel(version: appVersion),
+                          cgflixVersionLabel(appVersion), // CGFLIX
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: tokens(context).textMuted),
                         ),
                         const SizedBox(height: 16),
