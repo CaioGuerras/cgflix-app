@@ -54,6 +54,29 @@ jobs:
       - name: Dependências
         run: flutter pub get --enforce-lockfile --no-example
 
+      # 07/10: o APK e o AAB deste workflow saíam com a chave de DEBUG (sem key.properties); mesmo passo do cgflix-release.yml
+      - name: Assinatura (se houver keystore nos secrets)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 --decode > android/app/upload-keystore.jks
+            {
+              echo "storePassword=$STORE_PASSWORD"
+              echo "keyPassword=$KEY_PASSWORD"
+              echo "keyAlias=$KEY_ALIAS"
+              echo "storeFile=upload-keystore.jks"
+            } > android/key.properties
+            echo "Assinando com o keystore dos secrets."
+          else
+            echo "Sem keystore: assinando com a chave de debug."
+          fi
+
+      # Sem Sentry nem verificação de atualização do upstream (não definimos esses flags).
+
       # Sem Sentry nem verificação de atualização do upstream (não definimos esses flags).
       - name: Compilar APK
         run: flutter build apk --release --split-per-abi --dart-define=GIT_COMMIT=${{ github.sha }}
@@ -83,3 +106,7 @@ jobs:
           name: cgflix-aab
           path: build/app/outputs/bundle/release/*.aab
           if-no-files-found: error
+
+      - name: Limpar keystore
+        if: always()
+        run: rm -f android/app/upload-keystore.jks android/key.properties
