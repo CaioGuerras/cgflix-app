@@ -10,6 +10,7 @@ import '../../utils/media_image_helper.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/optimized_media_image.dart';
 import '../cgflix_layout.dart';
+import '../cgflix_navigation.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 import 'cgflix_home_logic.dart';
@@ -51,9 +52,23 @@ class _CgflixHeroState extends State<CgflixHero> {
     super.dispose();
   }
 
+  /// Leitor de tela ou "remover animações" ligados: o destaque não troca sozinho (arrastar
+  /// para o lado continua trocando).
+  bool _still = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final still = MediaQuery.disableAnimationsOf(context) || MediaQuery.accessibleNavigationOf(context);
+    if (still != _still) {
+      _still = still;
+      _restartTimer();
+    }
+  }
+
   void _restartTimer() {
     _timer?.cancel();
-    if (widget.paused || widget.items.length < 2) return;
+    if (widget.paused || _still || widget.items.length < 2) return;
     _timer = Timer.periodic(cgflixHeroInterval, (_) => _go(1));
   }
 
@@ -204,10 +219,11 @@ class _HeroInfo extends StatelessWidget {
           children: [
             FilledButton.icon(
               style: FilledButton.styleFrom(
-                backgroundColor: CgflixColors.accent,
+                // Roxo #9333ea: texto branco com contraste 5,4:1 (o #a855f7 dava 3,96:1, abaixo de 4,5).
+                backgroundColor: CgflixColors.accentPressed,
                 foregroundColor: Colors.white,
-                minimumSize: const Size(132, 44),
-              ).copyWith(overlayColor: const WidgetStatePropertyAll(CgflixColors.accentPressed)),
+                minimumSize: const Size(132, 48),
+              ).copyWith(overlayColor: cgflixPressedOverlay),
               onPressed: () => cgflixPlay(context, item),
               icon: const AppIcon(Symbols.play_arrow_rounded, fill: 1),
               label: const Text('Assistir'),

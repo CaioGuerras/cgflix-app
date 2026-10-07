@@ -9,6 +9,7 @@ import '../../media/media_server_client.dart';
 import '../../utils/media_image_helper.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/optimized_media_image.dart';
+import '../cgflix_navigation.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 
@@ -221,10 +222,11 @@ class _CgflixPreviewState extends State<_CgflixPreview> {
                       Expanded(
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
-                            backgroundColor: CgflixColors.accent,
+                            // Roxo #9333ea: contraste 5,4:1 com o texto branco.
+                            backgroundColor: CgflixColors.accentPressed,
                             foregroundColor: Colors.white,
                             minimumSize: const Size.fromHeight(48),
-                          ).copyWith(overlayColor: const WidgetStatePropertyAll(CgflixColors.accentPressed)),
+                          ).copyWith(overlayColor: cgflixPressedOverlay),
                           onPressed: () => _closeThen(
                             (host) => isShow
                                 ? cgflixOpenDetails(host, item, heroTag: widget.heroTag)

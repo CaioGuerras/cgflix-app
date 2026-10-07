@@ -112,7 +112,9 @@ SystemUiOverlayStyle cgflixSystemOverlay(Brightness brightness) {
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.transparent,
     systemNavigationBarDividerColor: Colors.transparent,
-    systemNavigationBarContrastEnforced: false,
+    // Navegação de 3 botões: o Android põe uma película atrás dos botões (sem ela somem no
+    // conteúdo claro). Com gestos não muda nada.
+    systemNavigationBarContrastEnforced: true,
     systemStatusBarContrastEnforced: false,
     statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
     statusBarBrightness: dark ? Brightness.dark : Brightness.light,
