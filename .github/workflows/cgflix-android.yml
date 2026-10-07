@@ -1,13 +1,13 @@
 name: CGFLIX Android
 
-# APK de release do CGFLIX a cada push no main e em PRs (artifact `cgflix-apk`).
-# Assinado com a chave de debug: instala normalmente. Sem segredos nem escrita
-# (regra do CI para workflows de PR); a Release com chave própria está em
-# cgflix-release.yml (tags v*).
+# APK e AAB de release do CGFLIX, ASSINADOS com a chave do CGFLIX (artifacts `cgflix-apk` e `cgflix-aab`).
+# Roda a cada push no main e nos ramos cgflix/** (os ramos dos PRs), e à mão. NÃO roda no evento
+# pull_request de propósito: a regra de segurança do CI (scripts/checks/check_workflow_security.py) proíbe
+# segredos em workflow de PR, e a assinatura precisa do keystore dos secrets. O check aparece no PR do
+# mesmo jeito, porque o push do ramo roda no mesmo commit. A Release com tag continua em cgflix-release.yml.
 on:
   push:
-    branches: [main]
-  pull_request:
+    branches: [main, "cgflix/**"]
   workflow_dispatch:
 
 env:
