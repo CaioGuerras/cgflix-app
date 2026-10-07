@@ -72,3 +72,14 @@ jobs:
           name: cgflix-apk
           path: dist/*.apk
           if-no-files-found: error
+
+      # Play Store (07/10): mesmo build e mesma assinatura do APK, no formato que a Play aceita
+      - name: Compilar AAB (Play Store)
+        run: flutter build appbundle --release --dart-define=GIT_COMMIT=${{ github.sha }}
+
+      - name: Publicar artifact do AAB
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: cgflix-aab
+          path: build/app/outputs/bundle/release/*.aab
+          if-no-files-found: error
