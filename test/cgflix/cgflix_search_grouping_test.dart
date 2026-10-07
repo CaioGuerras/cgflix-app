@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/cgflix/search/cgflix_search_extras.dart';
 import 'package:plezy/cgflix/search/cgflix_search_grouping.dart';
 import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_backend.dart';
@@ -210,6 +211,21 @@ void main() {
       expect(result.hits.first, isA<MediaSearchHit>());
       expect(CgflixSourceRegistry.peopleFor(result.people.single.globalKey), hasLength(5));
       expect(CgflixSourceRegistry.sourcesFor(result.candidates.single.globalKey), hasLength(5));
+    });
+  });
+
+  group('histórico da busca', () {
+    test('novo termo vai para o topo, sem repetir (ignora caixa) e no máximo 8', () {
+      var history = <String>[];
+      for (final term in ['duna', 'heat', 'Duna', 'x']) {
+        history = cgflixPushHistory(history, term);
+      }
+      expect(history, ['Duna', 'heat']);
+      for (var i = 0; i < 20; i++) {
+        history = cgflixPushHistory(history, 'termo $i');
+      }
+      expect(history, hasLength(cgflixSearchHistoryMax));
+      expect(history.first, 'termo 19');
     });
   });
 }

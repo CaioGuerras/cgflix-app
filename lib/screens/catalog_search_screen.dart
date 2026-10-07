@@ -21,8 +21,9 @@ import 'libraries/state_messages.dart';
 /// screen with library matching, exactly like the Explore rows.
 class CatalogSearchScreen extends StatefulWidget {
   final CatalogSource source;
+  final String? initialQuery; // CGFLIX: "Pedir" da busca já abre com o termo
 
-  const CatalogSearchScreen({super.key, required this.source});
+  const CatalogSearchScreen({super.key, required this.source, this.initialQuery});
 
   @override
   State<CatalogSearchScreen> createState() => _CatalogSearchScreenState();
@@ -43,6 +44,10 @@ class _CatalogSearchScreenState extends State<CatalogSearchScreen>
   void initState() {
     super.initState();
     FocusUtils.requestFocusAfterBuild(this, searchFocusNode);
+    // CGFLIX: "Pedir" da busca já abre com o termo (depois do 1º quadro: o texto dispara a busca)
+    if (widget.initialQuery case final query? when query.trim().isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => mounted ? searchController.text = query : null);
+    }
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../cgflix/cgflix_defaults.dart';
+import '../cgflix/search/cgflix_search_extras.dart';
 import '../cgflix/search/cgflix_search_grouping.dart';
 import '../exceptions/media_server_exceptions.dart';
 import '../focus/focusable_text_field.dart';
@@ -212,6 +213,8 @@ class _SearchScreenState extends State<SearchScreen>
     _candidateKinds = _kindsIn(_searchCandidates);
     if (!_hasCandidatesFor(_selectedFilter)) _selectedFilter = const _AllResults();
     _filteredResults = _rankFilteredResults(_selectedFilter, query);
+
+    if (results.isNotEmpty) cgflixRememberSearch(query); // CGFLIX: histórico
 
     if (matched != null && matched.failedServerIds.isNotEmpty) {
       showAppSnackBar(context, t.messages.searchPartialResults);
@@ -575,11 +578,16 @@ class _SearchScreenState extends State<SearchScreen>
               LoadingIndicatorBox.sliver
             else if (!hasSearched)
               SliverFillRemaining(
-                child: StateMessageWidget(
-                  message: t.search.searchYourMedia,
-                  subtitle: t.search.enterTitleActorOrKeyword,
-                  icon: Symbols.search_rounded,
-                  iconSize: 80,
+                // CGFLIX: buscas recentes no celular
+                child: CgflixSearchIdle(
+                  enabled: PlatformDetector.isMobile(context),
+                  onPick: (term) => searchController.text = term,
+                  child: StateMessageWidget(
+                    message: t.search.searchYourMedia,
+                    subtitle: t.search.enterTitleActorOrKeyword,
+                    icon: Symbols.search_rounded,
+                    iconSize: 80,
+                  ),
                 ),
               )
             else if (lastSearchFailed)
@@ -588,11 +596,16 @@ class _SearchScreenState extends State<SearchScreen>
               )
             else if (searchResults.isEmpty)
               SliverFillRemaining(
-                child: StateMessageWidget(
-                  message: t.messages.noResultsFound,
-                  subtitle: t.search.tryDifferentTerm,
-                  icon: Symbols.search_off_rounded,
-                  iconSize: 80,
+                // CGFLIX: "Pedir" (Seerr) quando não acha nada
+                child: CgflixRequestPrompt(
+                  enabled: PlatformDetector.isMobile(context),
+                  query: lastSearchedQuery,
+                  child: StateMessageWidget(
+                    message: t.messages.noResultsFound,
+                    subtitle: t.search.tryDifferentTerm,
+                    icon: Symbols.search_off_rounded,
+                    iconSize: 80,
+                  ),
                 ),
               )
             else ...[
