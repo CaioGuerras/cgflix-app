@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../cgflix/cgflix_navigation.dart';
 import '../../i18n/strings.g.dart';
 import '../../navigation/navigation_tabs.dart';
 import '../../profiles/active_profile_provider.dart';
@@ -40,7 +41,7 @@ class GeneralSettingsScreen extends StatelessWidget {
         SettingsGroup(
           title: t.settings.startup,
           children: [
-            _startupSectionSelector(),
+            if (!cgflixHidesUpstreamSettings(context)) _startupSectionSelector(), // CGFLIX: no celular abre sempre na Início
             if (hasMultipleProfiles)
               SettingSwitchTile(
                 pref: SettingsService.requireProfileSelectionOnOpen,

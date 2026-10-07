@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../i18n/strings.g.dart';
 import '../navigation/navigation_tabs.dart';
 import '../navigation/settings_shortcut.dart';
 import '../providers/catalog_sources_provider.dart';
@@ -20,6 +21,7 @@ import '../screens/search_screen.dart';
 import '../screens/settings/seerr_connect_screen.dart';
 import '../services/settings_service.dart';
 import '../utils/platform_detector.dart';
+import '../widgets/settings_section.dart';
 import '../widgets/app_icon.dart';
 import 'cgflix_logo.dart';
 import 'cgflix_style.dart';
@@ -34,6 +36,24 @@ NavigationTabId? cgflixStartupSection() {
   final handheld = !PlatformDetector.isTV() && (Platform.isAndroid || Platform.isIOS);
   if (handheld) return null;
   return SettingsService.instanceOrNull?.read(SettingsService.startupSection);
+}
+
+/// Testes do upstream ligam isto para ver as Configurações completas (como na TV).
+bool cgflixDebugShowUpstreamSettings = false;
+
+/// Celular: esconde as opções que só mexiam na navegação do upstream.
+bool cgflixHidesUpstreamSettings(BuildContext context) => !cgflixDebugShowUpstreamSettings && cgflixUseYouTab(context);
+
+/// Aparência: no celular saem Tela inicial, Navegação e TV ao vivo (a Início é a do CGFLIX,
+/// sem abas nem TV ao vivo; essas opções só mexiam nas telas do upstream). TV e computador
+/// veem tudo.
+List<Widget> cgflixAppearanceGroups(BuildContext context, List<Widget> children) {
+  if (!cgflixHidesUpstreamSettings(context)) return children;
+  final titles = [t.settings.homeScreen, t.settings.navigation, t.settings.liveTv];
+  return [
+    for (final child in children)
+      if (child is! SettingsGroup || !titles.contains(child.title)) child,
+  ];
 }
 
 /// Sem barra de abas: só a raiz. Conectado é a Início; sem conexão sobra Baixados (o upstream

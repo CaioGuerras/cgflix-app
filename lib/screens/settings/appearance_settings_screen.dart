@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../cgflix/cgflix_navigation.dart';
 import '../../i18n/strings.g.dart';
 import '../../providers/catalog_sources_provider.dart';
 import '../../providers/theme_provider.dart';
@@ -30,7 +31,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
     return SettingsPage(
       title: Text(t.settings.appearance),
       collapsible: true, // CGFLIX
-      children: [
+      children: cgflixAppearanceGroups(context, [
         SettingsGroup(
           initiallyExpanded: true,
           title: t.settings.display,
@@ -176,7 +177,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 24),
-      ],
+      ]),
     );
   }
 
