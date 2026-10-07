@@ -83,6 +83,21 @@ class CgflixDedicationLine extends StatelessWidget {
   }
 }
 
+/// Dedicatória na abertura do app: aparece devagar (600 ms) embaixo do emblema, sem
+/// segurar a partida (não entra na espera da abertura). Respeita "Mostrar dedicatória".
+class CgflixIntroDedication extends StatelessWidget {
+  const CgflixIntroDedication({super.key});
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+    tween: Tween(begin: 0, end: 1),
+    duration: CgflixMotion.crossFade,
+    curve: CgflixMotion.curve,
+    builder: (context, t, child) => Opacity(opacity: t, child: child),
+    child: const Padding(padding: EdgeInsets.symmetric(horizontal: 24), child: CgflixDedicationLine(center: true)),
+  );
+}
+
 /// Créditos ao projeto original (GPL-3.0). Só aparecem no Sobre e no README.
 class CgflixCredits extends StatelessWidget {
   const CgflixCredits({super.key});
