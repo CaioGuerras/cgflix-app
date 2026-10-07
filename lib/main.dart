@@ -85,7 +85,7 @@ import 'utils/media_server_http_client.dart';
 import 'utils/media_server_timeouts.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
-import 'cgflix/cgflix_logo.dart';
+import 'cgflix/cgflix_intro.dart';
 import 'i18n/app_locale_utils.dart';
 import 'i18n/strings.g.dart';
 import 'widgets/app_icon.dart';
@@ -2253,6 +2253,8 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     await downloadProvider.refreshMetadataFromCache();
     if (!mounted) return;
 
+    await CgflixIntro.finished(); // CGFLIX: não corta a abertura no meio
+    if (!mounted) return;
     AndroidExitDiagnostics.markStartupPhase(AndroidStartupPhase.mainScreen);
     unawaited(Navigator.pushReplacement(context, fadeRoute(ProfileSessionScreen(initialPromptHandled: shouldPrompt))));
   }
@@ -2367,7 +2369,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CgflixEmblem(size: 160),
+                  const CgflixIntroEmblem(size: 160), // CGFLIX: abertura animada
                   _buildStatusText(context),
                   const SizedBox(height: 16),
                   Center(
@@ -2390,7 +2392,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Stack(
         children: [
-          Center(child: const CgflixEmblem(size: 288)),
+          Center(child: const CgflixIntroEmblem(size: 288)), // CGFLIX: abertura animada
           Positioned(left: 0, right: 0, bottom: height * 0.5 - 170, child: _buildStatusText(context)),
           Positioned(
             left: 0,

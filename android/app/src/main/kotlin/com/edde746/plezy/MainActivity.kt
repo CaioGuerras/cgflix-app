@@ -847,6 +847,7 @@ class MainActivity : FlutterActivity() {
     flutterEngine.plugins.add(MpvPlayerPlugin())
     flutterEngine.plugins.add(ExoPlayerPlugin())
     flutterEngine.plugins.add(MpvAudioPlayerPlugin())
+    CgflixIntroSoundChannel.register(flutterEngine.dartExecutor.binaryMessenger, this) // CGFLIX
 
     MethodChannel(flutterEngine.dartExecutor.binaryMessenger, DEVICE_CHANNEL).setMethodCallHandler { call, result ->
       when (call.method) {
