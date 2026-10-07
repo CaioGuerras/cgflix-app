@@ -166,18 +166,24 @@ jobs:
       - name: Emulador Android 34 (perfil do edge 70)
         run: |
           SDKBIN="$ANDROID_HOME/cmdline-tools/latest/bin"
+          # Pasta das AVDs fixa (as ferramentas novas usam outro lugar por padrão).
+          export ANDROID_AVD_HOME="$HOME/.android/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+          echo "ANDROID_AVD_HOME=$ANDROID_AVD_HOME" >> "$GITHUB_ENV"
           echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
           "$SDKBIN/sdkmanager" --licenses < <(yes) > /dev/null
           "$SDKBIN/sdkmanager" "platform-tools" "emulator" "system-images;android-34;google_apis;x86_64" > /dev/null
-          echo no | "$SDKBIN/avdmanager" create avd -n edge70 -k "system-images;android-34;google_apis;x86_64" --force
+          echo no | "$SDKBIN/avdmanager" create avd -n edge70 -k "system-images;android-34;google_apis;x86_64" \
+            -p "$ANDROID_AVD_HOME/edge70.avd" --force
+          ls "$ANDROID_AVD_HOME"
           {
             echo "hw.lcd.width=1080"
             echo "hw.lcd.height=2400"
             echo "hw.lcd.density=400"
             echo "hw.keyboard=yes"
             echo "hw.ramSize=4096"
-          } >> "$HOME/.android/avd/edge70.avd/config.ini"
+          } >> "$ANDROID_AVD_HOME/edge70.avd/config.ini"
           nohup "$ANDROID_HOME/emulator/emulator" -avd edge70 -no-window -no-audio -no-boot-anim -no-snapshot \
             -gpu swiftshader_indirect -camera-back none > emulator.log 2>&1 &
           adb wait-for-device
