@@ -41,7 +41,8 @@ class GeneralSettingsScreen extends StatelessWidget {
         SettingsGroup(
           title: t.settings.startup,
           children: [
-            if (!cgflixHidesUpstreamSettings(context)) _startupSectionSelector(), // CGFLIX: no celular abre sempre na Início
+            if (!cgflixHidesUpstreamSettings(context))
+              _startupSectionSelector(), // CGFLIX: no celular abre sempre na Início
             if (hasMultipleProfiles)
               SettingSwitchTile(
                 pref: SettingsService.requireProfileSelectionOnOpen,
