@@ -4,14 +4,15 @@ import '../../media/media_kind.dart';
 import '../../media/media_library.dart';
 
 /// As linhas da Início, nesta ordem (o destaque fica acima de todas).
-enum CgflixRowKind { continueWatching, trending, releases, newEpisodes, newMovies, newShows, genre }
+/// Etapa 1E: sai "Novos episódios" (episódio não tem capa própria e virava miniatura de cena);
+/// "Novidades em séries e animes" já traz as séries com episódio novo, com a capa da série.
+enum CgflixRowKind { continueWatching, trending, releases, newMovies, newShows, genre }
 
 /// Ordem fixa das linhas fixas; as de gênero vêm depois, uma por gênero.
 const cgflixFixedRowOrder = [
   CgflixRowKind.continueWatching,
   CgflixRowKind.trending,
   CgflixRowKind.releases,
-  CgflixRowKind.newEpisodes,
   CgflixRowKind.newMovies,
   CgflixRowKind.newShows,
 ];
@@ -23,7 +24,6 @@ String cgflixRowTitle(CgflixRowKind kind, {String? genre, String? trendingTitle,
       CgflixRowKind.trending =>
         (trendingTitle?.trim().isNotEmpty ?? false) ? trendingTitle!.trim() : cgflixTrendingTitle,
       CgflixRowKind.releases => 'Lançamentos',
-      CgflixRowKind.newEpisodes => 'Novos episódios',
       CgflixRowKind.newMovies => 'Novidades em filmes',
       CgflixRowKind.newShows => switch (filter?.kind) {
         CgflixChipKind.shows => 'Novidades em séries',
@@ -77,7 +77,7 @@ const cgflixHeroInterval = Duration(seconds: 8);
 /// Linhas que não são consulta (Continuar, Em alta) devolvem `null`.
 ///
 /// Com [filter] (chip ativo), tudo fica dentro da biblioteca escolhida e as linhas que não
-/// fazem sentido para ela (ex.: "Novos episódios" em Filmes) devolvem `null` e somem.
+/// fazem sentido para ela (ex.: "Novidades em séries" em Filmes) devolvem `null` e somem.
 Map<String, String>? cgflixRowQuery(CgflixRowKind kind, {String? genre, DateTime? now, CgflixHomeFilter? filter}) {
   if (filter != null) return _filteredRowQuery(kind, filter, genre: genre, now: now);
   final today = (now ?? DateTime.now()).toUtc();
@@ -90,14 +90,6 @@ Map<String, String>? cgflixRowQuery(CgflixRowKind kind, {String? genre, DateTime
       'SortBy': 'PremiereDate,SortName',
       'SortOrder': 'Descending,Ascending',
       'MaxPremiereDate': today.toIso8601String(),
-      'Limit': limit,
-    },
-    // Episódios que chegaram por último (sem os "fantasmas" ainda não exibidos).
-    CgflixRowKind.newEpisodes => {
-      'IncludeItemTypes': 'Episode',
-      'SortBy': 'DateCreated,SortName',
-      'SortOrder': 'Descending,Ascending',
-      'IsMissing': 'false',
       'Limit': limit,
     },
     CgflixRowKind.newMovies => {
@@ -131,7 +123,7 @@ Map<String, String>? _filteredRowQuery(CgflixRowKind kind, CgflixHomeFilter filt
     // Lançamentos: filmes ou séries (pela estreia), conforme a biblioteca.
     CgflixRowKind.releases || CgflixRowKind.genre => {...scoped, 'IncludeItemTypes': filter.itemType},
     CgflixRowKind.newMovies => filter.isMovies ? scoped : null,
-    CgflixRowKind.newEpisodes || CgflixRowKind.newShows => filter.isMovies ? null : scoped,
+    CgflixRowKind.newShows => filter.isMovies ? null : scoped,
     CgflixRowKind.continueWatching || CgflixRowKind.trending => null,
   };
 }

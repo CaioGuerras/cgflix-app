@@ -1,5 +1,5 @@
 // Início do CGFLIX no celular ("só o nosso acervo"), na ordem combinada:
-// destaque, Continuar assistindo, Em alta no Brasil (Top 10), Lançamentos, Novos episódios,
+// destaque, Continuar assistindo, Em alta no Brasil (Top 10), Lançamentos,
 // Novidades em filmes, Novidades em séries e animes e as linhas por gênero.
 // Cada linha carrega sozinha (cache do aparelho primeiro). Sem servidor Jellyfin (só Plex),
 // mostra a Início original do upstream.
@@ -274,18 +274,17 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
         ),
       ),
       for (final kind in cgflixFixedRowOrder.skip(2))
-        // Com chip ativo, linha sem sentido para a biblioteca (ex.: episódios em Filmes) nem monta.
+        // Com chip ativo, linha sem sentido para a biblioteca (ex.: séries em Filmes) nem monta.
         if (cgflixRowQuery(kind, filter: filter, genre: '') != null)
           SliverToBoxAdapter(
             child: _StreamSection<CgflixRowData>(
               key: ValueKey('${kind.name}:$key'),
               stream: () => repository.watchRow(kind, filter: filter),
-              loading: CgflixSkeletonRow(wide: kind == CgflixRowKind.newEpisodes),
+              loading: const CgflixSkeletonRow(),
               builder: (data) => _ItemsRow(
                 title: cgflixRowTitle(kind, filter: filter),
                 items: data.items,
                 storageKey: '${kind.name}${filter?.cacheSuffix ?? ''}',
-                wide: kind == CgflixRowKind.newEpisodes,
               ),
             ),
           ),
@@ -366,11 +365,10 @@ class _StreamSectionState<T> extends State<_StreamSection<T>> {
 String _heroTag(String row, MediaItem item) => 'cgflix:$row:${item.globalKey}';
 
 class _ItemsRow extends StatelessWidget {
-  const _ItemsRow({required this.title, required this.items, required this.storageKey, this.wide = false});
+  const _ItemsRow({required this.title, required this.items, required this.storageKey});
   final String title;
   final List<MediaItem> items;
   final String storageKey;
-  final bool wide;
 
   @override
   Widget build(BuildContext context) {
@@ -378,24 +376,14 @@ class _ItemsRow extends StatelessWidget {
     return CgflixRow(
       title: title,
       storageKey: storageKey,
-      height: wide ? cgflixWideHeight + CgflixWideCard.titleBlockHeight : cgflixPosterHeight,
+      height: cgflixPosterHeight,
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        final client = cgflixClientFor(context, item);
-        if (wide) {
-          return CgflixWideCard(
-            item: item,
-            client: client,
-            showProgress: false,
-            onTap: () => showCgflixPreview(context, item),
-            onLongPress: () => showCgflixPreview(context, item),
-          );
-        }
         final tag = _heroTag(storageKey, item);
         return CgflixPosterCard(
           item: item,
-          client: client,
+          client: cgflixClientFor(context, item),
           heroTag: tag,
           onTap: () => showCgflixPreview(context, item, heroTag: tag),
           onLongPress: () => showCgflixPreview(context, item, heroTag: tag),

@@ -24,7 +24,6 @@ void main() {
         'Continuar assistindo',
         'Em alta no Brasil',
         'Lançamentos',
-        'Novos episódios',
         'Novidades em filmes',
         'Novidades em séries e animes',
       ]);
@@ -36,7 +35,8 @@ void main() {
       expect(releases['IncludeItemTypes'], 'Movie');
       expect(releases['SortBy'], startsWith('PremiereDate'));
       expect(releases['MaxPremiereDate'], startsWith('2026-10-07'));
-      expect(cgflixRowQuery(CgflixRowKind.newEpisodes)!['IsMissing'], 'false');
+      // Etapa 1E: sem a linha de episódios soltos.
+      expect(CgflixRowKind.values.map((k) => k.name), isNot(contains('newEpisodes')));
       expect(cgflixRowQuery(CgflixRowKind.newMovies)!['SortBy'], startsWith('DateCreated'));
       expect(cgflixRowQuery(CgflixRowKind.newShows)!['SortBy'], startsWith('DateLastContentAdded'));
       expect(cgflixRowQuery(CgflixRowKind.genre, genre: 'Comédia')!['Genres'], 'Comédia');
@@ -254,10 +254,9 @@ void main() {
     });
 
     test('linhas sem sentido para a biblioteca somem', () {
-      expect(cgflixRowQuery(CgflixRowKind.newEpisodes, filter: movies), isNull);
       expect(cgflixRowQuery(CgflixRowKind.newShows, filter: movies), isNull);
       expect(cgflixRowQuery(CgflixRowKind.newMovies, filter: animes), isNull);
-      expect(cgflixRowQuery(CgflixRowKind.newEpisodes, filter: animes)!['ParentId'], 'lib-animes');
+      expect(cgflixRowQuery(CgflixRowKind.newShows, filter: animes)!['ParentId'], 'lib-animes');
     });
 
     test('títulos das linhas falam do tipo escolhido', () {

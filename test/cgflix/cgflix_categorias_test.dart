@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:plezy/cgflix/home/cgflix_home_logic.dart';
 import 'package:plezy/cgflix/home/cgflix_home_repository.dart';
 import 'package:plezy/database/app_database.dart';
