@@ -42,6 +42,7 @@ class AboutScreen extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           cgflixVersionLabel(appVersion), // CGFLIX
+                          semanticsLabel: t.about.versionLabel(version: appVersion),
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: tokens(context).textMuted),
                         ),
                         const SizedBox(height: 16),
