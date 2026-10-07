@@ -110,3 +110,97 @@ jobs:
       - name: Limpar keystore
         if: always()
         run: rm -f android/app/upload-keystore.jks android/key.properties
+
+  # Etapa 1D: roteiro de navegação num emulador Android 34 com tela do motorola edge 70
+  # (1080×2400, ~400 dpi). Usa o app de teste test/cgflix/emulador/app_navegacao.dart (peças
+  # reais do CGFLIX, dados falsos, sem login em servidor nenhum). Gira para paisagem e volta em
+  # cada tela, guarda as capturas e falha com tela preta, overflow ou exceção no logcat.
+  # Só ferramentas do próprio Android SDK do runner (sem action de terceiros).
+  emulador:
+    name: Emulador (navegação, paisagem e capturas)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Java
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: "stable"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Cache do Gradle
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: cgflix-emulador-${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+      - name: Dependências
+        run: flutter pub get --enforce-lockfile --no-example
+
+      - name: Testes do roteiro (sem emulador)
+        run: python3 scripts/cgflix/test_emulador_navegacao.py
+
+      - name: Compilar APK de debug do roteiro
+        run: flutter build apk --debug --target-platform android-x64 -t test/cgflix/emulador/app_navegacao.dart
+
+      - name: Ligar KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Emulador Android 34 (perfil do edge 70)
+        run: |
+          SDKBIN="$ANDROID_HOME/cmdline-tools/latest/bin"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          "$SDKBIN/sdkmanager" --licenses < <(yes) > /dev/null
+          "$SDKBIN/sdkmanager" "platform-tools" "emulator" "system-images;android-34;google_apis;x86_64" > /dev/null
+          echo no | "$SDKBIN/avdmanager" create avd -n edge70 -k "system-images;android-34;google_apis;x86_64" --force
+          {
+            echo "hw.lcd.width=1080"
+            echo "hw.lcd.height=2400"
+            echo "hw.lcd.density=400"
+            echo "hw.keyboard=yes"
+            echo "hw.ramSize=4096"
+          } >> "$HOME/.android/avd/edge70.avd/config.ini"
+          nohup "$ANDROID_HOME/emulator/emulator" -avd edge70 -no-window -no-audio -no-boot-anim -no-snapshot \
+            -gpu swiftshader_indirect -camera-back none > emulator.log 2>&1 &
+          adb wait-for-device
+          booted=""
+          for _ in $(seq 1 120); do
+            if [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; then booted=1; break; fi
+            sleep 5
+          done
+          if [ -z "$booted" ]; then echo "O emulador não terminou de ligar."; tail -50 emulator.log; exit 1; fi
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
+          adb shell input keyevent 82
+          adb shell wm size
+          adb shell wm density
+
+      - name: Roteiro de navegação (Início → Séries → Busca → título → Voltar → menu → Baixados)
+        run: python3 scripts/cgflix/emulador_navegacao.py --apk build/app/outputs/flutter-apk/app-debug.apk --out build/cgflix-capturas
+
+      - name: Publicar capturas (retrato e paisagem) e logcat
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: cgflix-capturas
+          path: build/cgflix-capturas/
+          if-no-files-found: warn
