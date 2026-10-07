@@ -26,7 +26,6 @@ import 'profiles/profile_registry.dart';
 import 'profiles/profile_selection_policy.dart';
 import 'models/external_player_models.dart';
 import 'mixins/mounted_set_state_mixin.dart';
-import 'theme/mono_theme.dart';
 import 'profiles/plex_home_service.dart';
 import 'screens/auth_screen.dart';
 import 'screens/profile/pin_entry_dialog.dart';
@@ -183,8 +182,8 @@ void _bootstrapApp() {
       ),
       discard: (dependencies) => dependencies.appDatabase.close(),
       onCommitted: (dependencies) => _startNonessentialInitialization(dependencies.settings),
-      lightTheme: monoTheme(dark: false),
-      darkTheme: monoTheme(dark: true),
+      lightTheme: cgflixAppTheme(), // CGFLIX: tema único
+      darkTheme: cgflixAppTheme(), // CGFLIX: tema único
       resolveTheme: _resolveStartupTheme,
       // Android runs the Flutter surface in transparent mode over a window
       // whose background MainActivity already restored, so the loading frame
@@ -205,6 +204,7 @@ void _bootstrapApp() {
 Future<StartupThemeResolution> _resolveStartupTheme() async {
   final settings = await SettingsService.getInstance();
   await TvDetectionService.getInstance(forceTv: settings.read(SettingsService.forceTvMode));
+  await cgflixFixThemePref(settings); // CGFLIX: tema único
   final mode = settings.read(SettingsService.themeMode);
   return (themeMode: ThemeProvider.materialThemeModeFor(mode), darkTheme: ThemeProvider.darkThemeFor(mode));
 }
@@ -1856,9 +1856,9 @@ class _AppShell extends StatelessWidget {
                   child: MaterialApp(
                     title: t.app.title,
                     debugShowCheckedModeBanner: false,
-                    theme: themeProvider.lightTheme,
-                    darkTheme: themeProvider.darkTheme,
-                    themeMode: themeProvider.materialThemeMode,
+                    theme: cgflixAppTheme(), // CGFLIX: tema único (OLED), ignora o modo claro
+                    darkTheme: cgflixAppTheme(), // CGFLIX
+                    themeMode: cgflixMaterialThemeMode, // CGFLIX
                     navigatorKey: rootNavigatorKey,
                     navigatorObservers: [BackKeySuppressorObserver()],
                     home: SetupScreen(databaseRecoveryOutcome: databaseRecoveryOutcome),

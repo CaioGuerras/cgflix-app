@@ -35,7 +35,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
           initiallyExpanded: true,
           title: t.settings.display,
           children: [
-            _themeSelector(),
+            // CGFLIX: sem escolha de tema (só existe o OLED); seletor mantido no código do upstream.
             if (PlatformDetector.isAutomotive()) _displayScaleSelector(),
             if (Platform.isAndroid) _visualEffectsSelector(context),
           ],
@@ -182,6 +182,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
 
   // Writes the pref directly; ThemeProvider listens to the pref's listenable
   // and applies the change live. The Consumer only feeds the dynamic icon.
+  // ignore: unused_element
   Widget _themeSelector() {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {

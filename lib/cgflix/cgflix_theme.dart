@@ -4,9 +4,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../services/settings_service.dart' as settings;
+import '../theme/mono_theme.dart';
 import 'cgflix_style.dart';
 
 const cgflixFontFamily = 'Inter';
+
+/// Tema único do CGFLIX (Etapa 1D): preto OLED #07060a com roxo #a855f7/#9333ea, mesmo com o
+/// Android em modo claro. É o ÚNICO ponto de entrada de tema do app (`main.dart` usa só isto).
+/// Uma futura variante clara com destaque verde entraria aqui, como outro valor de
+/// [CgflixThemeVariant], sem espalhar cores pelo código (exigiria outra logo; não fazer agora).
+enum CgflixThemeVariant { oled }
+
+ThemeData cgflixAppTheme([CgflixThemeVariant variant = CgflixThemeVariant.oled]) => switch (variant) {
+  CgflixThemeVariant.oled => monoTheme(dark: true, oled: true),
+};
+
+/// O tema é sempre escuro: o modo claro/sistema do Android não muda nada.
+const cgflixMaterialThemeMode = ThemeMode.dark;
+
+/// Quem tinha escolhido outro tema no 1.1.0 volta para o OLED (a escolha saiu das
+/// Configurações). Também mantém a abertura nativa do Android no fundo preto.
+Future<void> cgflixFixThemePref(settings.SettingsService service) async {
+  if (service.read(settings.SettingsService.themeMode) != settings.ThemeMode.oled) {
+    await service.write(settings.SettingsService.themeMode, settings.ThemeMode.oled);
+  }
+}
 
 /// Troca de página no Android: entra deslizando de leve e aparecendo; a de baixo recua um
 /// pouco. 300 ms para ir, 250 ms para voltar (o gesto de voltar acompanha o dedo).
