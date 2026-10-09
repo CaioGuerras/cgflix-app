@@ -85,7 +85,6 @@ import 'utils/media_server_timeouts.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
 import 'cgflix/cgflix_intro.dart';
-import 'cgflix/cgflix_style.dart';
 import 'cgflix/cgflix_theme.dart';
 import 'i18n/app_locale_utils.dart';
 import 'i18n/strings.g.dart';
@@ -183,8 +182,8 @@ void _bootstrapApp() {
       ),
       discard: (dependencies) => dependencies.appDatabase.close(),
       onCommitted: (dependencies) => _startNonessentialInitialization(dependencies.settings),
-      lightTheme: cgflixAppTheme(), // CGFLIX: tema único
-      darkTheme: cgflixAppTheme(), // CGFLIX: tema único
+      lightTheme: cgflixLightTheme(), // CGFLIX: Heitor (claro)
+      darkTheme: cgflixDarkTheme(), // CGFLIX: Isis (escuro)
       resolveTheme: _resolveStartupTheme,
       // Android runs the Flutter surface in transparent mode over a window
       // whose background MainActivity already restored, so the loading frame
@@ -205,9 +204,9 @@ void _bootstrapApp() {
 Future<StartupThemeResolution> _resolveStartupTheme() async {
   final settings = await SettingsService.getInstance();
   await TvDetectionService.getInstance(forceTv: settings.read(SettingsService.forceTvMode));
-  await cgflixFixThemePref(settings); // CGFLIX: tema único
+  await cgflixFixThemePref(settings); // CGFLIX: Isis / Heitor / Automático
   final mode = settings.read(SettingsService.themeMode);
-  return (themeMode: ThemeProvider.materialThemeModeFor(mode), darkTheme: ThemeProvider.darkThemeFor(mode));
+  return (themeMode: cgflixMaterialThemeMode(mode), darkTheme: cgflixDarkTheme()); // CGFLIX
 }
 
 /// Wraps [step] so a failure names the gate phase it came from.
@@ -1857,9 +1856,9 @@ class _AppShell extends StatelessWidget {
                   child: MaterialApp(
                     title: t.app.title,
                     debugShowCheckedModeBanner: false,
-                    theme: cgflixAppTheme(), // CGFLIX: tema único (OLED), ignora o modo claro
-                    darkTheme: cgflixAppTheme(), // CGFLIX
-                    themeMode: cgflixMaterialThemeMode, // CGFLIX
+                    theme: cgflixLightTheme(), // CGFLIX: Heitor (claro, verde)
+                    darkTheme: cgflixDarkTheme(), // CGFLIX: Isis (escuro, roxo)
+                    themeMode: cgflixMaterialThemeMode(themeProvider.themeMode), // CGFLIX
                     navigatorKey: rootNavigatorKey,
                     navigatorObservers: [BackKeySuppressorObserver()],
                     home: SetupScreen(databaseRecoveryOutcome: databaseRecoveryOutcome),
@@ -1878,7 +1877,7 @@ class _AppShell extends StatelessWidget {
                       const SingleActivator(LogicalKeyboardKey.gameButtonB): const DismissIntent(),
                     },
                     builder: (context, child) {
-                      final shell = rootShell(child);
+                      final shell = cgflixSystemBars(context, rootShell(child)); // CGFLIX
                       if (!agentControlEnabled) return shell;
                       return AgentControlScope(
                         commandContext: () => rootNavigatorKey.currentState?.overlay?.context,
@@ -2357,7 +2356,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    const coralColor = CgflixColors.accent; // CGFLIX: roxo em vez do laranja do Plex
+    final coralColor = context.cgflix.accent; // CGFLIX: roxo/verde do tema em vez do laranja do Plex
     final height = MediaQuery.sizeOf(context).height;
     // The stacked layout below hangs its two rows off fixed ±170/180 offsets from the middle, which
     // needs roughly 700 logical pixels of height. A car at a large interface scale — and a phone in
@@ -2377,7 +2376,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
                   const SizedBox(height: 16),
                   Center(
                     child: _serverStatus.isEmpty
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),
@@ -2403,7 +2402,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
             top: height * 0.5 + 180,
             child: Center(
               child: _serverStatus.isEmpty
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),

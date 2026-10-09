@@ -33,6 +33,7 @@ import 'media_version_resolver.dart';
 import 'provider_extensions.dart';
 import 'quality_preset_labels.dart';
 import '../i18n/strings.g.dart';
+import '../cgflix/cgflix_theme.dart' show cgflixAlwaysDark; // CGFLIX
 
 const String kVideoPlayerRouteName = '/video_player';
 
@@ -44,7 +45,7 @@ class VideoPlayerRoute extends PageRouteBuilder<bool> {
   VideoPlayerRoute({required WidgetBuilder builder, this.watchTogetherLease})
     : super(
         settings: const RouteSettings(name: kVideoPlayerRouteName),
-        pageBuilder: (context, _, _) => builder(context),
+        pageBuilder: (context, _, _) => cgflixAlwaysDark(builder(context)), // CGFLIX: player sempre escuro
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       );
