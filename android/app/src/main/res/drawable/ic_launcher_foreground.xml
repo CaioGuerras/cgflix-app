@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Emblema CGFLIX ("C com play"), de cgflix-brand/cgflix-emblema.svg, dentro da zona segura do ícone adaptativo. -->
+<!-- CGFLIX: emblema "C com play" (cgflix-brand/cgflix-emblema.svg) no ícone adaptativo, com
+     ~70% da zona segura e nada fora dela. Gerado por cgflix-brand/gerar_icone_android.py. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="1000"
     android:viewportHeight="1000">
-    <group android:scaleX="0.62" android:scaleY="0.62" android:pivotX="500" android:pivotY="500">
+    <group android:scaleX="0.529" android:scaleY="0.529" android:pivotX="500" android:pivotY="500">
         <path
             android:pathData="M760.9,281A340,340 0,1 0,760.9,719"
             android:strokeWidth="128"

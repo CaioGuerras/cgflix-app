@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../cgflix/cgflix_navigation.dart';
+import '../../cgflix/cgflix_theme_picker.dart';
 import '../../i18n/strings.g.dart';
 import '../../providers/catalog_sources_provider.dart';
 import '../../providers/theme_provider.dart';
@@ -36,7 +37,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
           initiallyExpanded: true,
           title: t.settings.display,
           children: [
-            // CGFLIX: sem escolha de tema (só existe o OLED); seletor mantido no código do upstream.
+            if (!PlatformDetector.isTV()) const CgflixThemeSelector(), // CGFLIX: Isis / Heitor / Automático
             if (PlatformDetector.isAutomotive()) _displayScaleSelector(),
             if (Platform.isAndroid) _visualEffectsSelector(context),
           ],

@@ -1,15 +1,16 @@
 // App de teste do job "Emulador" do CI (Etapa 1D/1E). NÃO vai para o APK de verdade: o CI compila
 // este arquivo como alvo (`flutter build apk --debug -t test/cgflix/emulador/app_navegacao.dart`).
 //
-// Usa as peças reais do CGFLIX (tema único, barra do topo, menu do usuário, contas de altura do
+// Usa as peças reais do CGFLIX (temas Isis e Heitor, seguindo o modo claro/escuro do aparelho, barra do topo, menu do usuário, contas de altura do
 // destaque, transições, seção "Disponível para pedir" e "Meus pedidos") com dados falsos: nada de
 // login nem servidor. O roteiro em scripts/cgflix/emulador_navegacao.py toca nos itens pelo nome
-// (TalkBack/uiautomator), gira a tela e tira as capturas.
+// (TalkBack/uiautomator), gira a tela e tira as capturas; troca o modo do aparelho
+// (`cmd uimode night`) para capturar as mesmas telas nos dois temas.
 import 'package:flutter/material.dart';
 
 import 'package:plezy/cgflix/cgflix_layout.dart';
 import 'package:plezy/cgflix/cgflix_navigation.dart';
-import 'package:plezy/cgflix/cgflix_style.dart';
+import 'package:plezy/cgflix/cgflix_logo.dart';
 import 'package:plezy/cgflix/cgflix_theme.dart';
 import 'package:plezy/cgflix/requests/cgflix_requests_ui.dart';
 import 'package:plezy/cgflix/requests/cgflix_seerr.dart';
@@ -81,11 +82,19 @@ void main() {
   cgflixEnableEdgeToEdge();
   CgflixPages.search = (_) => const _BuscaFalsa();
   CgflixPages.downloads = (_) => const _PaginaSimples(titulo: 'Baixados', texto: 'Nenhum título baixado ainda');
-  CgflixPages.settings = () => MaterialPageRoute<void>(
-    builder: (_) => const _PaginaSimples(titulo: 'Configurações', texto: 'Configurações (falsas)'),
-  );
+  CgflixPages.settings = () => MaterialPageRoute<void>(builder: (_) => const _ConfiguracoesFalsas());
   CgflixRequests.debugOverride = _PedidosFalsos();
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, theme: cgflixAppTheme(), home: const _InicioFalsa()));
+  // Tema 1.4.0: aparelho escuro = Isis, claro = Heitor (como o "Automático" do app).
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: cgflixAppTheme(CgflixThemeVariant.heitor),
+      darkTheme: cgflixAppTheme(),
+      themeMode: ThemeMode.system,
+      builder: (context, child) => cgflixSystemBars(context, child!),
+      home: const _InicioFalsa(),
+    ),
+  );
 }
 
 class _InicioFalsa extends StatefulWidget {
@@ -104,7 +113,7 @@ class _InicioFalsaState extends State<_InicioFalsa> {
     final heroHeight = cgflixHeroHeight(media.size);
     final compact = cgflixHeroCompact(media.size);
     return Scaffold(
-      backgroundColor: CgflixColors.background,
+      backgroundColor: context.cgflix.background,
       body: Stack(
         children: [
           CustomScrollView(
@@ -112,11 +121,11 @@ class _InicioFalsaState extends State<_InicioFalsa> {
               SliverToBoxAdapter(
                 child: Container(
                   height: heroHeight,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topRight,
                       end: Alignment.bottomLeft,
-                      colors: [Color(0xFF3B1466), CgflixColors.background],
+                      colors: [context.cgflix.chipSelected, context.cgflix.background],
                     ),
                   ),
                   alignment: compact ? Alignment.bottomLeft : Alignment.bottomCenter,
@@ -131,7 +140,10 @@ class _InicioFalsaState extends State<_InicioFalsa> {
                       ),
                       const SizedBox(height: 12),
                       FilledButton(
-                        style: FilledButton.styleFrom(backgroundColor: CgflixColors.accentPressed),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: context.cgflix.action,
+                          foregroundColor: context.cgflix.onAction,
+                        ),
                         onPressed: () {},
                         child: const Text('Assistir'),
                       ),
@@ -198,7 +210,11 @@ class _LinhaFalsa extends StatelessWidget {
               separatorBuilder: (_, _) => const SizedBox(width: 8),
               itemBuilder: (context, i) => Container(
                 width: 120,
-                decoration: BoxDecoration(color: CgflixColors.surfaceHigh, borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(
+                  color: context.cgflix.surfaceHigh,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: context.cgflix.cardShadow,
+                ),
                 alignment: Alignment.bottomLeft,
                 padding: const EdgeInsets.all(8),
                 child: Text(titulos[i], maxLines: 2, overflow: TextOverflow.ellipsis),
@@ -251,7 +267,7 @@ class _TituloFalso extends StatelessWidget {
     final poster = AspectRatio(
       aspectRatio: 2 / 3,
       child: DecoratedBox(
-        decoration: BoxDecoration(color: CgflixColors.surfaceHigh, borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(color: context.cgflix.surfaceHigh, borderRadius: BorderRadius.circular(8)),
       ),
     );
     final info = Column(
@@ -262,7 +278,10 @@ class _TituloFalso extends StatelessWidget {
         const Text('2024 · 2h 46min · 14 anos · Dublado · Legendado'),
         const SizedBox(height: 16),
         FilledButton.icon(
-          style: FilledButton.styleFrom(backgroundColor: CgflixColors.accentPressed),
+          style: FilledButton.styleFrom(
+            backgroundColor: context.cgflix.action,
+            foregroundColor: context.cgflix.onAction,
+          ),
           onPressed: () {},
           icon: const Icon(Icons.play_arrow_rounded),
           label: const Text('Assistir'),
@@ -311,6 +330,70 @@ class _PaginaSimples extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(titulo)),
       body: Center(child: Text(texto)),
+    );
+  }
+}
+
+/// Configurações (falsas) com a escolha de tema como no app e o caminho para a tela de entrada.
+class _ConfiguracoesFalsas extends StatelessWidget {
+  const _ConfiguracoesFalsas();
+
+  @override
+  Widget build(BuildContext context) {
+    final tema = context.cgflix.isLight ? 'Heitor (claro, verde)' : 'Isis (escuro, roxo)';
+    return Scaffold(
+      appBar: AppBar(title: const Text('Configurações')),
+      body: ListView(
+        children: [
+          const ListTile(
+            title: Text('Aparência', style: TextStyle(fontWeight: FontWeight.w700)),
+          ),
+          ListTile(leading: const Icon(Icons.palette_rounded), title: const Text('Tema'), subtitle: Text(tema)),
+          const SwitchListTile(value: true, onChanged: null, title: Text('Abertura animada')),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.login_rounded),
+            title: const Text('Ver a tela de entrada'),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const _EntradaFalsa())),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Tela de entrada (falsa) com a marca do tema e o campo do servidor vazio.
+class _EntradaFalsa extends StatelessWidget {
+  const _EntradaFalsa();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(child: CgflixEmblem(size: 120)),
+                  const SizedBox(height: 24),
+                  const TextField(
+                    decoration: InputDecoration(labelText: 'Servidor Jellyfin', hintText: 'https://seu.servidor.com'),
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(onPressed: () {}, child: const Text('Conectar ao Jellyfin')),
+                  const SizedBox(height: 8),
+                  OutlinedButton(onPressed: () {}, child: const Text('Entrar com o Plex')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

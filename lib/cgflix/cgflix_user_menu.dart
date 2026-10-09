@@ -14,7 +14,7 @@ import '../screens/settings/about_screen.dart';
 import '../utils/dialogs.dart';
 import '../widgets/app_icon.dart';
 import 'cgflix_navigation.dart';
-import 'cgflix_style.dart';
+import 'cgflix_palette.dart';
 
 /// Itens do menu, na ordem em que aparecem (os testes conferem esta lista).
 enum CgflixUserMenuItem { switchUser, myRequests, downloads, settings, about, signOut }
@@ -25,7 +25,7 @@ Future<void> showCgflixUserMenu(BuildContext context) async {
     useRootNavigator: true,
     isScrollControlled: true,
     showDragHandle: true,
-    backgroundColor: CgflixColors.surface,
+    backgroundColor: context.cgflix.surface,
     constraints: const BoxConstraints(maxWidth: 560),
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
     builder: (_) => const CgflixUserMenuSheet(),
@@ -84,7 +84,7 @@ class CgflixUserMenuSheet extends StatelessWidget {
                   if (active != null)
                     ProfileAvatar(profile: active, size: 52, avatarUrl: profiles!.avatarUrlFor(active.id))
                   else
-                    const AppIcon(Symbols.account_circle_rounded, fill: 1, size: 52, color: CgflixColors.lilac),
+                    AppIcon(Symbols.account_circle_rounded, fill: 1, size: 52, color: context.cgflix.accentSoft),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -132,7 +132,7 @@ class CgflixUserMenuSheet extends StatelessWidget {
               title: 'Sobre o CGFLIX',
               onTap: () => pick(CgflixUserMenuItem.about),
             ),
-            const Divider(height: 16, color: Color(0x1FFFFFFF)),
+            Divider(height: 16, color: context.cgflix.divider),
             _MenuTile(
               key: const ValueKey('cgflix-menu-signOut'),
               icon: Symbols.logout_rounded,
@@ -157,7 +157,7 @@ class _MenuTile extends StatelessWidget {
     return ListTile(
       minTileHeight: 52,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      leading: AppIcon(icon, fill: 1, color: CgflixColors.lilac),
+      leading: AppIcon(icon, fill: 1, color: context.cgflix.accentSoft),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
       onTap: onTap,
     );

@@ -21,6 +21,7 @@ import '../utils/platform_detector.dart';
 import '../widgets/settings_section.dart';
 import '../widgets/app_icon.dart';
 import 'cgflix_logo.dart';
+import 'cgflix_palette.dart';
 import 'cgflix_style.dart';
 import 'cgflix_user_menu.dart';
 import 'requests/cgflix_requests_ui.dart';
@@ -218,23 +219,20 @@ class CgflixTopBar extends StatelessWidget {
 }
 
 /// Estados visíveis (o tema do upstream desliga o efeito de toque): pressionado, foco
-/// (teclado/controle) e mouse por cima.
-final cgflixPressedOverlay = WidgetStateProperty.resolveWith<Color?>((states) {
-  if (states.contains(WidgetState.pressed)) return Colors.white24;
-  if (states.contains(WidgetState.focused)) return CgflixColors.accent.withValues(alpha: 0.35);
-  if (states.contains(WidgetState.hovered)) return Colors.white10;
-  return null;
-});
+/// (teclado/controle) e mouse por cima, nas cores do tema atual.
+WidgetStateProperty<Color?> cgflixPressedOverlay(BuildContext context) {
+  final palette = context.cgflix;
+  return WidgetStateProperty.resolveWith<Color?>((states) {
+    if (states.contains(WidgetState.pressed)) return palette.pressed;
+    if (states.contains(WidgetState.focused)) return palette.focused;
+    if (states.contains(WidgetState.hovered)) return palette.hovered;
+    return null;
+  });
+}
 
 const _chipPadding = 12.0;
 const _slotPadding = 6.0;
-const _chipTextStyle = TextStyle(
-  color: Colors.white,
-  fontSize: 14,
-  height: 1.2,
-  fontWeight: FontWeight.w600,
-  fontFamily: 'Inter',
-);
+const _chipTextStyle = TextStyle(fontSize: 14, height: 1.2, fontWeight: FontWeight.w600, fontFamily: 'Inter');
 TextScaler _chipTextScaler(BuildContext context) => MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.3);
 
 /// Emblema do CGFLIX que abre o menu do usuário (o novo lugar do perfil).
@@ -279,6 +277,7 @@ class _TopChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = chip.selected;
+    final palette = context.cgflix;
     return Semantics(
       button: true,
       selected: selected,
@@ -299,8 +298,10 @@ class _TopChip extends StatelessWidget {
               curve: CgflixMotion.curve,
               height: _itemHeight,
               decoration: ShapeDecoration(
-                shape: StadiumBorder(side: BorderSide(color: selected ? CgflixColors.accent : Colors.white38)),
-                color: selected ? CgflixColors.accent.withValues(alpha: 0.28) : const Color(0x3307060A),
+                shape: StadiumBorder(
+                  side: BorderSide(color: selected ? palette.chipSelectedBorder : palette.glassBorder),
+                ),
+                color: selected ? palette.chipSelected : palette.glass,
               ),
               child: Material(
                 type: MaterialType.transparency,
@@ -308,7 +309,7 @@ class _TopChip extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: chip.onPressed,
-                  overlayColor: cgflixPressedOverlay,
+                  overlayColor: cgflixPressedOverlay(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: _chipPadding),
                     child: Center(
@@ -318,7 +319,7 @@ class _TopChip extends StatelessWidget {
                         maxLines: 1,
                         softWrap: false,
                         textScaler: _chipTextScaler(context),
-                        style: _chipTextStyle,
+                        style: _chipTextStyle.copyWith(color: palette.onGlass),
                       ),
                     ),
                   ),
@@ -355,15 +356,15 @@ class _RoundIconButton extends StatelessWidget {
             dimension: 48,
             child: Center(
               child: Material(
-                color: const Color(0x3307060A),
-                shape: const CircleBorder(side: BorderSide(color: Colors.white38)),
+                color: context.cgflix.glass,
+                shape: CircleBorder(side: BorderSide(color: context.cgflix.glassBorder)),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: onPressed,
-                  overlayColor: cgflixPressedOverlay,
+                  overlayColor: cgflixPressedOverlay(context),
                   child: SizedBox.square(
                     dimension: _itemHeight,
-                    child: Center(child: AppIcon(icon, size: 20, color: Colors.white)),
+                    child: Center(child: AppIcon(icon, size: 20, color: context.cgflix.onGlass)),
                   ),
                 ),
               ),
@@ -385,7 +386,7 @@ class CgflixOfflineTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final padding = MediaQuery.paddingOf(context);
     return ColoredBox(
-      color: CgflixColors.background,
+      color: context.cgflix.background,
       child: Padding(
         padding: EdgeInsets.fromLTRB(8 + padding.left, padding.top, 8 + padding.right, 0),
         child: SizedBox(
@@ -394,12 +395,12 @@ class CgflixOfflineTopBar extends StatelessWidget {
             children: [
               const CgflixUserMenuButton(),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Sem conexão',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: CgflixColors.textMuted, fontWeight: FontWeight.w600),
+                  style: TextStyle(color: context.cgflix.textMuted, fontWeight: FontWeight.w600),
                 ),
               ),
               TextButton.icon(

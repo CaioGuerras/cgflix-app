@@ -4,5 +4,5 @@
     <color name="splash_background">#07060a</color>
     <color name="splash_dark">#07060a</color>
     <color name="splash_oled">#07060a</color>
-    <color name="splash_light">#07060a</color>
+    <color name="splash_light">#f4fcee</color> <!-- CGFLIX: Heitor -->
 </resources>

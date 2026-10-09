@@ -5,6 +5,9 @@ Instala o APK de debug do app de teste (test/cgflix/emulador/app_navegacao.dart)
 Início → Filmes → Séries → Animes → Busca (com "Disponível para pedir") → Pedir → título → Voltar →
 menu do usuário → Meus pedidos → Baixados, gira para paisagem e volta em cada tela e guarda as
 capturas (retrato e paisagem). Etapa 1E: a barra não tem mais o ícone "Pedir" (o roteiro confere).
+Tema 1.4.0: o roteiro roda com o aparelho no modo escuro (Isis), passa por Configurações e pela
+tela de entrada, troca o aparelho para o modo claro e captura Início, título, Configurações e
+entrada de novo no tema Heitor (capturas "heitor-*").
 Falha se aparecer tela preta, "RenderFlex overflowed" ou exceção no logcat.
 
 Só usa a biblioteca padrão do Python e o adb do Android SDK.
@@ -112,6 +115,11 @@ def is_black_screen(png: bytes) -> bool:
     return lit_fraction(png) < 0.002
 
 
+def device_lost(stderr: str) -> bool:
+    """O adb perdeu o aparelho (e não um comando que falhou de verdade)?"""
+    return bool(re.search(r"device offline|no devices|device '.*' not found|device not found|closed", stderr))
+
+
 def logcat_failures(text: str) -> list[str]:
     return [line for line in text.splitlines() if any(p.search(line) for p in LOGCAT_FALHAS)]
 
@@ -125,14 +133,42 @@ class Device:
         self.out_dir = out_dir
         self.problems: list[str] = []
 
+    def reconnect(self) -> None:
+        """O emulador do CI às vezes some do adb no meio do roteiro ("device offline"/"no devices",
+        screencap com 255). Reconecta, espera o aparelho voltar e terminar de ligar."""
+        print("  (adb perdeu o emulador; reconectando)")
+        subprocess.run(["adb", "reconnect", "offline"], capture_output=True, check=False)
+        try:
+            subprocess.run(["adb", "wait-for-device"], capture_output=True, check=False, timeout=120)
+        except subprocess.TimeoutExpired:
+            return
+        deadline = time.time() + 120
+        while time.time() < deadline:
+            boot = subprocess.run(
+                ["adb", "shell", "getprop", "sys.boot_completed"], capture_output=True, text=True, check=False
+            )
+            if boot.stdout.strip() == "1":
+                time.sleep(2)
+                return
+            time.sleep(3)
+
     def adb(self, *args: str, check: bool = True) -> str:
         result = subprocess.run(["adb", *args], capture_output=True, text=True, check=False)
+        if result.returncode != 0 and device_lost(result.stderr):
+            self.reconnect()
+            result = subprocess.run(["adb", *args], capture_output=True, text=True, check=False)
         if check and result.returncode != 0:
             raise RuntimeError(f"adb {' '.join(args)} falhou: {result.stderr.strip()}")
         return result.stdout
 
     def screencap(self) -> bytes:
-        return subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True, check=True).stdout
+        for tentativa in range(2):
+            result = subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True, check=False)
+            if result.returncode == 0 and result.stdout.startswith(b"\x89PNG"):
+                return result.stdout
+            if tentativa == 0:
+                self.reconnect()
+        raise RuntimeError(f"screencap falhou: {result.stderr.decode(errors='replace').strip()}")
 
     def rotate(self, landscape: bool) -> None:
         self.adb("shell", "settings", "put", "system", "accelerometer_rotation", "0")
@@ -151,13 +187,17 @@ class Device:
     def find(self, pattern: str, timeout: float = 20) -> tuple[int, int]:
         regex = re.compile(pattern)
         deadline = time.time() + timeout
-        while time.time() < deadline:
+        while True:
+            # Sempre olha a tela ao menos uma vez depois do prazo (uma reconexão pode comer o prazo).
+            expired = time.time() >= deadline
             for node in self.nodes():
                 label = f"{node.get('content-desc', '')}\n{node.get('text', '')}"
                 if regex.search(label):
                     nums = [int(n) for n in re.findall(r"\d+", node.get("bounds", ""))]
                     if len(nums) == 4:
                         return (nums[0] + nums[2]) // 2, (nums[1] + nums[3]) // 2
+            if expired:
+                break
             time.sleep(1)
         raise RuntimeError(f"não achei na tela: {pattern}")
 
@@ -172,6 +212,11 @@ class Device:
         x, y = self.find(pattern)
         self.adb("shell", "input", "tap", str(x), str(y))
         time.sleep(1.5)
+
+    def night(self, dark: bool) -> None:
+        """Modo escuro/claro do aparelho (o app de teste segue: escuro = Isis, claro = Heitor)."""
+        self.adb("shell", "cmd", "uimode", "night", "yes" if dark else "no")
+        time.sleep(2.5)
 
     def back(self) -> None:
         self.adb("shell", "input", "keyevent", "4")
@@ -198,6 +243,7 @@ def run(apk: Path, out_dir: Path) -> int:
     dev.adb("install", "-r", "-t", str(apk))
     dev.adb("logcat", "-c")
     dev.rotate(False)
+    dev.night(True)
     dev.adb("shell", "monkey", "-p", APP_ID, "-c", "android.intent.category.LAUNCHER", "1")
 
     def sem_pedir_na_barra() -> None:
@@ -229,6 +275,24 @@ def run(apk: Path, out_dir: Path) -> int:
         ("10-meus-pedidos", lambda: (dev.tap(r"^Meus pedidos$"), dev.find(r"Aguardando aprovação"))),
         ("11-baixados", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Baixados$"))),
         ("12-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
+        ("13-configuracoes", lambda: (dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Isis"))),
+        ("14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Conectar ao Jellyfin"))),
+    ]
+
+    def para_o_heitor() -> None:
+        dev.back()
+        dev.back()
+        dev.night(False)
+        dev.find(r"^Menu do CGFLIX")
+
+    steps += [
+        ("heitor-01-inicio", para_o_heitor),
+        (
+            "heitor-07-titulo",
+            lambda: (dev.tap(r"^Buscar$"), dev.find(r"Disponível para pedir"), dev.tap(r"^Duna\nFilme")),
+        ),
+        ("heitor-13-configuracoes", lambda: (dev.back(), dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Heitor"))),
+        ("heitor-14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Conectar ao Jellyfin"))),
     ]
     for name, action in steps:
         print(f"• {name}")
@@ -236,7 +300,10 @@ def run(apk: Path, out_dir: Path) -> int:
             action()
         except RuntimeError as error:
             dev.problems.append(f"{name}: {error}")
-            dev.out_dir.joinpath(f"{name}-erro.png").write_bytes(dev.screencap())
+            try:
+                dev.out_dir.joinpath(f"{name}-erro.png").write_bytes(dev.screencap())
+            except RuntimeError as falha:
+                dev.problems.append(f"{name}: sem captura do erro ({falha})")
             break
         dev.shot(name)
 

@@ -7,6 +7,7 @@ import '../../media/media_kind.dart';
 import '../../media/media_server_client.dart';
 import '../../utils/media_image_helper.dart';
 import '../../widgets/optimized_media_image.dart';
+import '../cgflix_palette.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 
@@ -52,7 +53,7 @@ class _CgflixShimmerState extends State<CgflixShimmer> with SingleTickerProvider
           shaderCallback: (bounds) => LinearGradient(
             begin: Alignment(-1.0 + 3 * t - 1, 0),
             end: Alignment(-1.0 + 3 * t, 0),
-            colors: const [CgflixColors.surface, CgflixColors.surfaceHigh, CgflixColors.surface],
+            colors: [context.cgflix.surface, context.cgflix.surfaceHigh, context.cgflix.surface],
           ).createShader(bounds),
           child: child,
         );
@@ -71,7 +72,7 @@ class CgflixSkeletonBox extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     width: width,
     height: height,
-    decoration: BoxDecoration(color: CgflixColors.surface, borderRadius: BorderRadius.circular(radius)),
+    decoration: BoxDecoration(color: context.cgflix.surface, borderRadius: BorderRadius.circular(radius)),
   );
 }
 
@@ -243,7 +244,7 @@ class CgflixPosterCard extends StatelessWidget {
     Widget image = ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: ColoredBox(
-        color: CgflixColors.surface,
+        color: context.cgflix.surface,
         child: OptimizedMediaImage.poster(
           client: client,
           imagePath: cgflixPosterPath(item),
@@ -252,6 +253,11 @@ class CgflixPosterCard extends StatelessWidget {
           fadeInDuration: CgflixMotion.fast,
         ),
       ),
+    );
+    // Heitor: sombra suave no lugar do brilho roxo (na Isis a lista é vazia).
+    image = DecoratedBox(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), boxShadow: context.cgflix.cardShadow),
+      child: image,
     );
     if (heroTag != null) image = Hero(tag: heroTag!, child: image);
     return CgflixPressable(
@@ -307,38 +313,41 @@ class CgflixWideCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                width: cgflixWideWidth,
-                height: cgflixWideHeight,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ColoredBox(
-                      color: CgflixColors.surface,
-                      child: OptimizedMediaImage(
-                        client: client,
-                        imagePath: cgflixWidePath(item),
-                        width: cgflixWideWidth,
-                        height: cgflixWideHeight,
-                        imageType: ImageType.thumb,
-                        fadeInDuration: CgflixMotion.fast,
-                      ),
-                    ),
-                    if (progress != null)
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 3,
-                          color: CgflixColors.accent,
-                          backgroundColor: Colors.white24,
+            DecoratedBox(
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), boxShadow: context.cgflix.cardShadow),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  width: cgflixWideWidth,
+                  height: cgflixWideHeight,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      ColoredBox(
+                        color: context.cgflix.surface,
+                        child: OptimizedMediaImage(
+                          client: client,
+                          imagePath: cgflixWidePath(item),
+                          width: cgflixWideWidth,
+                          height: cgflixWideHeight,
+                          imageType: ImageType.thumb,
+                          fadeInDuration: CgflixMotion.fast,
                         ),
                       ),
-                  ],
+                      if (progress != null)
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            minHeight: 3,
+                            color: context.cgflix.accent,
+                            backgroundColor: context.cgflix.progressTrack,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -363,7 +372,7 @@ class CgflixWideCard extends StatelessWidget {
                           subtitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(color: CgflixColors.textMuted),
+                          style: theme.textTheme.bodySmall?.copyWith(color: context.cgflix.textMuted),
                         ),
                     ],
                   ),
@@ -407,7 +416,7 @@ class CgflixTop10Card extends StatelessWidget {
       foreground: Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3
-        ..color = CgflixColors.lilac,
+        ..color = context.cgflix.rankStroke,
     );
     return SizedBox(
       width: widthFor(rank),
@@ -421,8 +430,8 @@ class CgflixTop10Card extends StatelessWidget {
             child: ExcludeSemantics(
               child: Stack(
                 children: [
-                  // Preenchimento preto por baixo do contorno: o número "vaza" o fundo.
-                  Text(number, style: baseStyle.copyWith(color: CgflixColors.background)),
+                  // Preenchimento da cor do fundo por baixo do contorno: o número "vaza" o fundo.
+                  Text(number, style: baseStyle.copyWith(color: context.cgflix.background)),
                   Text(number, style: strokeStyle),
                 ],
               ),

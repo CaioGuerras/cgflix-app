@@ -18,7 +18,7 @@ import '../../utils/app_logger.dart';
 import '../../utils/global_key_utils.dart';
 import '../../utils/media_server_http_client.dart';
 import '../../widgets/app_icon.dart';
-import '../cgflix_style.dart';
+import '../cgflix_palette.dart';
 import 'cgflix_search_grouping.dart';
 
 // ---------------------------------------------------------------------------
@@ -48,13 +48,13 @@ class CgflixSourcePicker extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const AppIcon(Symbols.dns_rounded, size: 16, color: CgflixColors.textMuted),
+                AppIcon(Symbols.dns_rounded, size: 16, color: context.cgflix.textMuted),
                 const SizedBox(width: 6),
                 Text(
                   'Disponível em ${sources.length} servidores',
-                  style: const TextStyle(color: CgflixColors.textMuted, fontSize: 13, fontWeight: FontWeight.w500),
+                  style: TextStyle(color: context.cgflix.textMuted, fontSize: 13, fontWeight: FontWeight.w500),
                 ),
-                const AppIcon(Symbols.expand_more_rounded, size: 18, color: CgflixColors.textMuted),
+                AppIcon(Symbols.expand_more_rounded, size: 18, color: context.cgflix.textMuted),
               ],
             ),
           ),
@@ -67,7 +67,7 @@ class CgflixSourcePicker extends StatelessWidget {
     final chosen = await showModalBottomSheet<MediaItem>(
       context: context,
       useRootNavigator: true,
-      backgroundColor: CgflixColors.surface,
+      backgroundColor: context.cgflix.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (sheetContext) => SafeArea(
         child: Column(
@@ -82,7 +82,7 @@ class CgflixSourcePicker extends StatelessWidget {
                   source.globalKey == item.globalKey
                       ? Symbols.radio_button_checked_rounded
                       : Symbols.radio_button_unchecked_rounded,
-                  color: source.globalKey == item.globalKey ? CgflixColors.accent : CgflixColors.textMuted,
+                  color: source.globalKey == item.globalKey ? context.cgflix.accent : context.cgflix.textMuted,
                 ),
                 title: Text(source.serverName ?? 'Servidor'),
                 subtitle: _qualityLabel(source) == null ? null : Text(_qualityLabel(source)!),

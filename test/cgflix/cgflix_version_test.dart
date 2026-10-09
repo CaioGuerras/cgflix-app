@@ -9,11 +9,11 @@ void main() {
     expect(cgflixVersionLabel(''), 'CGFLIX');
   });
 
-  test('pubspec: versão 1.3.0 (Etapa 1E) com versionCode 500 (a 1D usou o 400)', () {
+  test('pubspec: versão 1.4.0 (tema Heitor) com versionCode 600 (a 1E usou o 500)', () {
     final pubspec = File('pubspec.yaml').readAsStringSync();
     final match = RegExp(r'^version:\s*([0-9.]+)\+(\d+)\s*$', multiLine: true).firstMatch(pubspec);
     expect(match, isNotNull);
-    expect(match!.group(1), '1.3.0');
-    expect(int.parse(match.group(2)!), 500); // a Play já tem o 400 da Etapa 1D
+    expect(match!.group(1), '1.4.0');
+    expect(int.parse(match.group(2)!), 600); // a Play já tem o 500 da Etapa 1E
   });
 }

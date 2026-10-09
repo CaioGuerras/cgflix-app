@@ -13,6 +13,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../services/settings_service.dart';
 import '../widgets/setting_tile.dart';
 import 'cgflix_logo.dart';
+import 'cgflix_palette.dart';
 
 /// Chave "Som de abertura" (Configurações › Avançado). Padrão: ligado.
 const cgflixIntroSoundPref = BoolPref('cgflix_intro_sound', defaultValue: true);
@@ -125,7 +126,7 @@ class _CgflixIntroEmblemState extends State<CgflixIntroEmblem> with SingleTicker
     return Semantics(
       label: 'CGFLIX',
       child: RepaintBoundary(
-        child: CustomPaint(size: Size.square(widget.size), painter: CgflixIntroPainter(_controller)),
+        child: CustomPaint(size: Size.square(widget.size), painter: CgflixIntroPainter(_controller, context.cgflix)),
       ),
     );
   }
@@ -134,10 +135,12 @@ class _CgflixIntroEmblemState extends State<CgflixIntroEmblem> with SingleTicker
 /// Desenha o emblema no progresso [t] (0..1): "C" de 0 a 0,55, brilho varrendo de 0,2 a 0,8,
 /// play crescendo de 0,5 a 0,75, leve respiro do conjunto no fim.
 class CgflixIntroPainter extends CustomPainter {
-  CgflixIntroPainter(this.animation) : super(repaint: animation);
+  CgflixIntroPainter(this.animation, [this.palette = CgflixPalette.isis]) : super(repaint: animation);
   final Animation<double> animation;
 
-  static const _arcGradient = [Color(0xFFF3E8FF), Color(0xFFC084FC), Color(0xFF9333EA), Color(0xFF581C87)];
+  /// Cores da marca do tema (Isis: roxo; Heitor: verde com o play escuro).
+  final CgflixPalette palette;
+
   static const _arcStops = [0.0, 0.3, 0.7, 1.0];
 
   double _interval(double t, double begin, double end, Curve curve) =>
@@ -166,14 +169,14 @@ class CgflixIntroPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 128
       ..strokeCap = StrokeCap.round
-      ..shader = const LinearGradient(
+      ..shader = LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: _arcGradient,
+        colors: palette.brandArc,
         stops: _arcStops,
       ).createShader(bounds);
 
-    // Brilho roxo por trás (aparece e some).
+    // Brilho da marca por trás (aparece e some).
     final glow = _interval(t, 0.15, 0.6, Curves.easeOut) * (1 - _interval(t, 0.75, 1.0, Curves.easeIn) * 0.6);
     if (draw > 0 && glow > 0) {
       canvas.drawPath(
@@ -182,7 +185,7 @@ class CgflixIntroPainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 170
           ..strokeCap = StrokeCap.round
-          ..color = const Color(0xFFA855F7).withValues(alpha: 0.45 * glow)
+          ..color = palette.brandGlow.withValues(alpha: palette.brandGlow.a * glow)
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 60),
       );
     }
@@ -202,7 +205,11 @@ class CgflixIntroPainter extends CustomPainter {
           ..shader = LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: [Colors.transparent, Colors.white.withValues(alpha: 0.55), Colors.transparent],
+            colors: [
+              palette.brandShine.withValues(alpha: 0),
+              palette.brandShine,
+              palette.brandShine.withValues(alpha: 0),
+            ],
           ).createShader(Rect.fromLTWH(x - 160, 0, 320, 1000)),
       );
     }
@@ -220,11 +227,11 @@ class CgflixIntroPainter extends CustomPainter {
         ..lineTo(668, 500)
         ..close();
       final fill = Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFFFFFFF), Color(0xFFEDE9FE), Color(0xFFC4B5FD)],
-          stops: [0.0, 0.55, 1.0],
+          colors: palette.brandPlay,
+          stops: const [0.0, 0.55, 1.0],
         ).createShader(const Rect.fromLTWH(420, 340, 280, 320));
       canvas.drawPath(triangle, fill);
       canvas.drawPath(
@@ -241,7 +248,8 @@ class CgflixIntroPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CgflixIntroPainter oldDelegate) => oldDelegate.animation != animation;
+  bool shouldRepaint(CgflixIntroPainter oldDelegate) =>
+      oldDelegate.animation != animation || oldDelegate.palette != palette;
 }
 
 /// Chave "Som de abertura" em Configurações › Avançado (só no Android, onde o som existe).

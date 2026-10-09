@@ -11,6 +11,7 @@ import '../../widgets/app_icon.dart';
 import '../../widgets/optimized_media_image.dart';
 import '../cgflix_layout.dart';
 import '../cgflix_navigation.dart';
+import '../cgflix_palette.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 import 'cgflix_home_logic.dart';
@@ -120,21 +121,16 @@ class _CgflixHeroState extends State<CgflixHero> {
                 ),
               ),
             ),
-            // Gradientes: em cima para a barra de status, embaixo para o texto e a Início.
-            const IgnorePointer(
+            // Véus: em cima para a barra de status, embaixo para o texto e a Início (escuro na
+            // Isis, claro no Heitor, para o texto do tema continuar legível sobre a foto).
+            IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xB307060A),
-                      Color(0x0007060A),
-                      Color(0x0007060A),
-                      Color(0xE607060A),
-                      CgflixColors.background,
-                    ],
-                    stops: [0, 0.22, 0.45, 0.85, 1],
+                    colors: context.cgflix.heroVeil,
+                    stops: const [0, 0.22, 0.45, 0.85, 1],
                   ),
                 ),
               ),
@@ -208,7 +204,7 @@ class _HeroInfo extends StatelessWidget {
         ),
         if (genres.isNotEmpty) ...[
           const SizedBox(height: 10),
-          Text(genres, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white70)),
+          Text(genres, style: theme.textTheme.bodyMedium?.copyWith(color: context.cgflix.textMuted)),
         ],
         const SizedBox(height: 14),
         // Wrap: com fonte grande (até 200%) os botões descem de linha em vez de cortar.
@@ -219,19 +215,19 @@ class _HeroInfo extends StatelessWidget {
           children: [
             FilledButton.icon(
               style: FilledButton.styleFrom(
-                // Roxo #9333ea: texto branco com contraste 5,4:1 (o #a855f7 dava 3,96:1, abaixo de 4,5).
-                backgroundColor: CgflixColors.accentPressed,
-                foregroundColor: Colors.white,
+                // Isis: roxo #9333ea com branco (5,4:1); Heitor: verde #006e28 com branco (6,1:1).
+                backgroundColor: context.cgflix.action,
+                foregroundColor: context.cgflix.onAction,
                 minimumSize: const Size(132, 48),
-              ).copyWith(overlayColor: cgflixPressedOverlay),
+              ).copyWith(overlayColor: cgflixPressedOverlay(context)),
               onPressed: () => cgflixPlay(context, item),
               icon: const AppIcon(Symbols.play_arrow_rounded, fill: 1),
               label: const Text('Assistir'),
             ),
             FilledButton.tonalIcon(
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0x33FFFFFF),
-                foregroundColor: Colors.white,
+                backgroundColor: context.cgflix.secondaryAction,
+                foregroundColor: context.cgflix.onSecondaryAction,
                 minimumSize: const Size(132, 44),
               ),
               onPressed: () => showCgflixPreview(context, item),

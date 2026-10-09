@@ -15,6 +15,7 @@ import '../../services/jellyfin_client.dart';
 import '../../utils/app_logger.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/optimized_media_image.dart';
+import '../cgflix_palette.dart';
 import '../cgflix_style.dart';
 import '../home/cgflix_cards.dart';
 import 'cgflix_seerr.dart';
@@ -152,15 +153,15 @@ class _CgflixRequestSectionState extends State<CgflixRequestSection> {
   Widget build(BuildContext context) {
     final Widget child = switch (_state) {
       _SectionState.loading => const _SectionSkeleton(key: ValueKey('carregando')),
-      _SectionState.unavailable => const Padding(
-        key: ValueKey('indisponivel'),
-        padding: EdgeInsets.fromLTRB(20, 16, 20, 24),
+      _SectionState.unavailable => Padding(
+        key: const ValueKey('indisponivel'),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         child: Row(
           children: [
-            AppIcon(Symbols.cloud_off_rounded, size: 18, color: CgflixColors.textMuted),
-            SizedBox(width: 8),
+            AppIcon(Symbols.cloud_off_rounded, size: 18, color: context.cgflix.textMuted),
+            const SizedBox(width: 8),
             Expanded(
-              child: Text(cgflixRequestsUnavailableMessage, style: TextStyle(color: CgflixColors.textMuted)),
+              child: Text(cgflixRequestsUnavailableMessage, style: TextStyle(color: context.cgflix.textMuted)),
             ),
           ],
         ),
@@ -180,11 +181,11 @@ class _CgflixRequestSectionState extends State<CgflixRequestSection> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
             child: Text(
               'Ainda não temos. Peça e avisamos quando chegar.',
-              style: TextStyle(color: CgflixColors.textMuted, fontSize: 13),
+              style: TextStyle(color: context.cgflix.textMuted, fontSize: 13),
             ),
           ),
           for (final item in _items)
@@ -246,19 +247,19 @@ class CgflixRequestTile extends StatelessWidget {
     final Widget action = switch (item.state) {
       CgflixRequestState.requestable => FilledButton.icon(
         style: FilledButton.styleFrom(
-          backgroundColor: CgflixColors.accentPressed,
-          foregroundColor: Colors.white,
+          backgroundColor: context.cgflix.action,
+          foregroundColor: context.cgflix.onAction,
           minimumSize: const Size(96, 48),
           padding: const EdgeInsets.symmetric(horizontal: 14),
         ),
         onPressed: busy ? null : onRequest,
         icon: busy
-            ? const SizedBox(
+            ? SizedBox(
                 width: 16,
                 height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                child: CircularProgressIndicator(strokeWidth: 2, color: context.cgflix.onAction),
               )
-            : const AppIcon(Symbols.add_rounded, size: 18, color: Colors.white),
+            : AppIcon(Symbols.add_rounded, size: 18, color: context.cgflix.onAction),
         label: Text('Pedir', semanticsLabel: 'Pedir ${item.title}'),
       ),
       CgflixRequestState.requested => const CgflixStatusBadge(label: 'Pedido', icon: Symbols.schedule_rounded),
@@ -274,7 +275,7 @@ class CgflixRequestTile extends StatelessWidget {
               width: 56,
               height: 84,
               child: ColoredBox(
-                color: CgflixColors.surfaceHigh,
+                color: context.cgflix.surfaceHigh,
                 child: OptimizedMediaImage.poster(imagePath: item.posterUrl, width: 56, height: 84),
               ),
             ),
@@ -291,7 +292,7 @@ class CgflixRequestTile extends StatelessWidget {
                   style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
-                Text(subtitle, style: const TextStyle(color: CgflixColors.textMuted, fontSize: 13)),
+                Text(subtitle, style: TextStyle(color: context.cgflix.textMuted, fontSize: 13)),
               ],
             ),
           ),
@@ -304,13 +305,17 @@ class CgflixRequestTile extends StatelessWidget {
 }
 
 class CgflixStatusBadge extends StatelessWidget {
-  const CgflixStatusBadge({super.key, required this.label, required this.icon, this.color = CgflixColors.lilac});
+  const CgflixStatusBadge({super.key, required this.label, required this.icon, this.color});
   final String label;
   final IconData icon;
-  final Color color;
+
+  /// Cor do selo; sem ela, o destaque suave do tema (lilás na Isis, verde no Heitor).
+  final Color? color;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => _build(color ?? context.cgflix.accentSoft);
+
+  Widget _build(Color color) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
     decoration: BoxDecoration(
       color: color.withValues(alpha: 0.14),
@@ -345,7 +350,7 @@ Future<List<int>?> showCgflixSeasonPicker(
   useRootNavigator: true,
   isScrollControlled: true,
   showDragHandle: true,
-  backgroundColor: CgflixColors.surface,
+  backgroundColor: context.cgflix.surface,
   constraints: const BoxConstraints(maxWidth: 560),
   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
   builder: (_) => CgflixSeasonPickerSheet(backend: backend, item: item),
@@ -394,9 +399,9 @@ class _CgflixSeasonPickerSheetState extends State<CgflixSeasonPickerSheet> {
     final allPicked = open.isNotEmpty && open.every((s) => _picked.contains(s.number));
     final Widget body;
     if (_failed) {
-      body = const Padding(
-        padding: EdgeInsets.all(24),
-        child: Text(cgflixRequestsUnavailableMessage, style: TextStyle(color: CgflixColors.textMuted)),
+      body = Padding(
+        padding: const EdgeInsets.all(24),
+        child: Text(cgflixRequestsUnavailableMessage, style: TextStyle(color: context.cgflix.textMuted)),
       );
     } else if (seasons == null) {
       body = const Padding(
@@ -421,7 +426,7 @@ class _CgflixSeasonPickerSheetState extends State<CgflixSeasonPickerSheet> {
                 title: Text(season.name),
                 subtitle: Text(
                   season.lockedLabel ?? (season.episodes == null ? '' : '${season.episodes} episódios'),
-                  style: const TextStyle(color: CgflixColors.textMuted),
+                  style: TextStyle(color: context.cgflix.textMuted),
                 ),
                 onChanged: season.lockedLabel != null
                     ? null
@@ -452,8 +457,8 @@ class _CgflixSeasonPickerSheetState extends State<CgflixSeasonPickerSheet> {
             child: FilledButton(
               key: const ValueKey('cgflix-temporadas-pedir'),
               style: FilledButton.styleFrom(
-                backgroundColor: CgflixColors.accentPressed,
-                foregroundColor: Colors.white,
+                backgroundColor: context.cgflix.action,
+                foregroundColor: context.cgflix.onAction,
                 minimumSize: const Size.fromHeight(48),
               ),
               onPressed: count == 0
@@ -542,7 +547,7 @@ class _CgflixMyRequestsScreenState extends State<CgflixMyRequestsScreen> {
             );
           }
           return RefreshIndicator(
-            color: CgflixColors.accent,
+            color: context.cgflix.accent,
             onRefresh: _refresh,
             child: content is ListView
                 ? content
@@ -571,12 +576,12 @@ class _CenteredMessage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AppIcon(icon, size: 48, color: CgflixColors.textMuted),
+          AppIcon(icon, size: 48, color: context.cgflix.textMuted),
           const SizedBox(height: 12),
           Text(
             text,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: CgflixColors.textMuted),
+            style: TextStyle(color: context.cgflix.textMuted),
           ),
         ],
       ),
@@ -627,12 +632,11 @@ class _MyRequestTileState extends State<_MyRequestTile> {
               ? 'Temporada ${request.seasons.single}'
               : '${request.seasons.length} temporadas');
     final (color, icon) = switch (request.status) {
-      CgflixMyRequestStatus.available => (const Color(0xFF4ADE80), Symbols.check_circle_rounded),
-      CgflixMyRequestStatus.partiallyAvailable => (const Color(0xFF4ADE80), Symbols.check_rounded),
-      CgflixMyRequestStatus.declined ||
-      CgflixMyRequestStatus.failed => (const Color(0xFFF87171), Symbols.block_rounded),
-      CgflixMyRequestStatus.downloading => (CgflixColors.lilac, Symbols.download_rounded),
-      _ => (CgflixColors.lilac, Symbols.schedule_rounded),
+      CgflixMyRequestStatus.available => (context.cgflix.success, Symbols.check_circle_rounded),
+      CgflixMyRequestStatus.partiallyAvailable => (context.cgflix.success, Symbols.check_rounded),
+      CgflixMyRequestStatus.declined || CgflixMyRequestStatus.failed => (context.cgflix.danger, Symbols.block_rounded),
+      CgflixMyRequestStatus.downloading => (context.cgflix.accentSoft, Symbols.download_rounded),
+      _ => (context.cgflix.accentSoft, Symbols.schedule_rounded),
     };
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -644,7 +648,7 @@ class _MyRequestTileState extends State<_MyRequestTile> {
               width: 48,
               height: 72,
               child: ColoredBox(
-                color: CgflixColors.surfaceHigh,
+                color: context.cgflix.surfaceHigh,
                 child: OptimizedMediaImage.poster(imagePath: info?.posterUrl, width: 48, height: 72),
               ),
             ),
@@ -663,7 +667,7 @@ class _MyRequestTileState extends State<_MyRequestTile> {
                 const SizedBox(height: 4),
                 Text(
                   [if (info?.year != null) '${info!.year}', kind, ?seasons].join(' · '),
-                  style: const TextStyle(color: CgflixColors.textMuted, fontSize: 13),
+                  style: TextStyle(color: context.cgflix.textMuted, fontSize: 13),
                 ),
                 const SizedBox(height: 6),
                 CgflixStatusBadge(label: cgflixMyRequestStatusLabel(request.status), icon: icon, color: color),

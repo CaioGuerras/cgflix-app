@@ -10,6 +10,7 @@ import '../../utils/media_image_helper.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/optimized_media_image.dart';
 import '../cgflix_navigation.dart';
+import '../cgflix_palette.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 
@@ -46,7 +47,7 @@ Future<void> showCgflixPreview(BuildContext context, MediaItem item, {String? he
     context: context,
     useRootNavigator: true,
     isScrollControlled: true,
-    backgroundColor: CgflixColors.surface,
+    backgroundColor: context.cgflix.surface,
     clipBehavior: Clip.antiAlias,
     showDragHandle: false,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -139,13 +140,13 @@ class _CgflixPreviewState extends State<_CgflixPreview> {
                     imageType: ImageType.art,
                     fadeInDuration: CgflixMotion.medium,
                   ),
-                  const DecoratedBox(
+                  DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Color(0x00120E1A), CgflixColors.surface],
-                        stops: [0, 0.45, 1],
+                        colors: context.cgflix.sheetVeil,
+                        stops: const [0, 0.45, 1],
                       ),
                     ),
                   ),
@@ -175,9 +176,12 @@ class _CgflixPreviewState extends State<_CgflixPreview> {
                     right: 8,
                     child: IconButton.filledTonal(
                       tooltip: 'Fechar',
-                      style: IconButton.styleFrom(backgroundColor: Colors.black54),
+                      style: IconButton.styleFrom(
+                        backgroundColor: context.cgflix.photoButton,
+                        foregroundColor: context.cgflix.onPhotoButton,
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const AppIcon(Symbols.close_rounded, fill: 1),
+                      icon: AppIcon(Symbols.close_rounded, fill: 1, color: context.cgflix.onPhotoButton),
                     ),
                   ),
                 ],
@@ -196,11 +200,11 @@ class _CgflixPreviewState extends State<_CgflixPreview> {
                   if (meta.isNotEmpty)
                     Text(
                       meta.join('  ·  '),
-                      style: theme.textTheme.bodyMedium?.copyWith(color: CgflixColors.textMuted),
+                      style: theme.textTheme.bodyMedium?.copyWith(color: context.cgflix.textMuted),
                     ),
                   if (genres.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(genres, style: theme.textTheme.bodySmall?.copyWith(color: CgflixColors.lilac)),
+                    Text(genres, style: theme.textTheme.bodySmall?.copyWith(color: context.cgflix.accentSoft)),
                   ],
                   if (overview.isNotEmpty) ...[
                     const SizedBox(height: 10),
@@ -222,11 +226,11 @@ class _CgflixPreviewState extends State<_CgflixPreview> {
                       Expanded(
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
-                            // Roxo #9333ea: contraste 5,4:1 com o texto branco.
-                            backgroundColor: CgflixColors.accentPressed,
-                            foregroundColor: Colors.white,
+                            // Roxo #9333ea (Isis) ou verde #006e28 (Heitor), texto branco (≥ 5,4:1).
+                            backgroundColor: context.cgflix.action,
+                            foregroundColor: context.cgflix.onAction,
                             minimumSize: const Size.fromHeight(48),
-                          ).copyWith(overlayColor: cgflixPressedOverlay),
+                          ).copyWith(overlayColor: cgflixPressedOverlay(context)),
                           onPressed: () => _closeThen(
                             (host) => isShow
                                 ? cgflixOpenDetails(host, item, heroTag: widget.heroTag)

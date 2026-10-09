@@ -3,8 +3,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Emblema do app. O SVG é o de `cgflix-brand/` sem o filtro de brilho
-/// (o flutter_svg não renderiza filtros).
+import 'cgflix_palette.dart';
+
+/// Emblema do app. O SVG é o de `cgflix-brand/` (ou `cgflix-brand/heitor/` no tema Heitor)
+/// sem o filtro de brilho (o flutter_svg não renderiza filtros).
 class CgflixEmblem extends StatelessWidget {
   final double size;
 
@@ -12,5 +14,5 @@ class CgflixEmblem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      SvgPicture.asset('assets/cgflix_emblema.svg', width: size, height: size, semanticsLabel: 'CGFLIX');
+      SvgPicture.asset(context.cgflix.emblemAsset, width: size, height: size, semanticsLabel: 'CGFLIX');
 }

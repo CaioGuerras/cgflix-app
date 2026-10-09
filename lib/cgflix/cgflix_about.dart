@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../widgets/app_icon.dart';
-import 'cgflix_style.dart';
+import 'cgflix_palette.dart';
 
 const cgflixDedicationText = 'Feito com amor, para Isis e Heitor';
 
-/// Coração roxo (Isis) e verde (Heitor).
+/// Coração roxo (Isis) e verde (Heitor), os dois em qualquer tema.
 class CgflixDedicationHearts extends StatelessWidget {
   const CgflixDedicationHearts({super.key, this.size = 22, this.spacing = 8});
   final double size;
@@ -19,9 +19,9 @@ class CgflixDedicationHearts extends StatelessWidget {
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        AppIcon(Symbols.favorite_rounded, fill: 1, color: CgflixColors.accent, size: size),
+        AppIcon(Symbols.favorite_rounded, fill: 1, color: CgflixPalette.isis.accent, size: size),
         SizedBox(width: spacing),
-        AppIcon(Symbols.favorite_rounded, fill: 1, color: CgflixColors.dedication, size: size),
+        AppIcon(Symbols.favorite_rounded, fill: 1, color: context.cgflix.dedication, size: size),
       ],
     ),
   );
