@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../cgflix/cgflix_advanced.dart';
 import '../../cgflix/cgflix_collapsible.dart';
+import '../../cgflix/cgflix_theme_picker.dart';
 import '../../cgflix/cgflix_trakt.dart';
 import '../../focus/focus_memory_tracker.dart';
 import '../../focus/focusable_text_field.dart';
@@ -291,7 +292,8 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
       builder: (context, themeProvider, _) => SettingValueBuilder<int>(
         pref: settings.SettingsService.libraryDensity,
         builder: (context, libraryDensity, _) {
-          final summary = '${themeModeLabel(themeProvider.themeMode)} · ${t.settings.libraryDensity} $libraryDensity';
+          final summary =
+              '${cgflixThemeName(themeProvider.themeMode)} · ${t.settings.libraryDensity} $libraryDensity'; // CGFLIX: nome do tema
           return SettingNavigationTile(
             focusNode: _focusTracker.get(_kAppearance),
             icon: Symbols.palette_rounded,
