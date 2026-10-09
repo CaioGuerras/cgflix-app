@@ -1,25 +1,6 @@
-// Identidade visual e movimento do CGFLIX (Etapa 1B). Um lugar só para cores,
-// curvas e durações, para todas as telas novas andarem no mesmo ritmo.
+// Movimento do CGFLIX (Etapa 1B): curvas e durações num lugar só, para todas as telas novas
+// andarem no mesmo ritmo. As cores ficam em cgflix_palette.dart (temas Isis e Heitor).
 import 'package:flutter/animation.dart';
-
-abstract final class CgflixColors {
-  /// Fundo preto OLED.
-  static const background = Color(0xFF07060A);
-
-  /// Superfícies (cartões, painéis, chips).
-  static const surface = Color(0xFF120E1A);
-  static const surfaceHigh = Color(0xFF1C1626);
-
-  /// Roxo de destaque e o tom "pressionado".
-  static const accent = Color(0xFFA855F7);
-  static const accentPressed = Color(0xFF9333EA);
-  static const lilac = Color(0xFFC084FC);
-
-  /// Verde: só na dedicatória.
-  static const dedication = Color(0xFF22C55E);
-
-  static const textMuted = Color(0xB3FFFFFF);
-}
 
 /// Movimento: tudo entre 250 e 350 ms, sempre com curva ease-out (nada de corte seco).
 abstract final class CgflixMotion {
