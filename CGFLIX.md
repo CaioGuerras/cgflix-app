@@ -192,6 +192,33 @@ pelo campo `biblioteca`; sem nenhum dos dois, Filmes separa pelo tipo e Séries/
 6. Rodar de novo o workflow "CGFLIX Android" (ou fazer um push): o APK novo mostra **Configurações › Serviços › Trakt**.
    Sem os secrets, o Trakt fica escondido (o app nunca usa a chave do Plezy).
 
+## Tema Heitor (claro, verde) e escolha de tema (versão 1.4.0, versionCode 600)
+
+O app tinha um tema só, **Isis** (escuro, preto e roxo). Entra o **Heitor**: claro (fundo `#f4fcee`, nunca
+branco puro), verde no lugar do roxo e logo própria. Escolha em **Configurações → Aparência → Tema**:
+Isis (escuro, roxo) / Heitor (claro, verde) / Automático (segue o aparelho). Padrão: Isis. Fica guardado no
+aparelho (preferência `themeMode` do upstream: Isis = `oled`, Heitor = `light`, Automático = `system`) e troca na
+hora. TV fica sempre Isis; **player, abertura do vídeo e controles do player são sempre escuros**.
+
+Paleta do Heitor (Material 3, semente `#34C759`, `SchemeContent`, escrita à mão): surface `#f4fcee`, cartões
+`#ffffff`, barras `#e8f0e3`/`#e2ebde`, texto `#161d16` (16,4:1) e `#3d4a3c` (8,9:1), primary `#006e28` (botões, aba
+ativa, foco), primaryContainer `#34c759`, secondaryContainer `#b0efb0`, outline `#6d7b6b`/`#bccbb8`, tertiary
+`#006495`, error `#ba1a1a`. Contraste conferido em `test/cgflix/cgflix_contraste_test.dart`.
+
+| Arquivo | Mudança |
+|---|---|
+| `pubspec.yaml`, `lib/cgflix/cgflix_version.dart`, `test/cgflix/cgflix_version_test.dart` | `version: 1.4.0+600`; asset `cgflix_emblema_heitor.svg` |
+| `lib/cgflix/cgflix_palette.dart` (novo) | `ColorScheme` Isis (fundo `#000`, OLED) e Heitor; `CgflixPalette` (`ThemeExtension`: véus sobre foto, vidro da barra, estados, foco, selos, sombra dos cartões, degradês e emblema da marca) e o atalho `context.cgflix` |
+| `lib/cgflix/cgflix_theme.dart`, `lib/main.dart` | `cgflixAppTheme(variante)`; Heitor com botões, campos, abas, navegação (ícone ativo preenchido em `primary`), chips, barras do sistema com ícones escuros; `cgflixAlwaysDark` (player), `cgflixSystemBars` |
+| `lib/cgflix/cgflix_theme_picker.dart` (novo), `settings/appearance_settings_screen.dart`, `settings/settings_screen.dart` | linha "Tema" (Isis / Heitor / Automático) e o nome do tema no resumo da Aparência |
+| `lib/utils/video_player_navigation.dart` | player sempre escuro (1 linha) |
+| `lib/cgflix/cgflix_navigation.dart`, `cgflix_logo.dart`, `cgflix_intro.dart`, `cgflix_about.dart`, `cgflix_detail.dart`, `cgflix_user_menu.dart`, `cgflix_trakt.dart`, `home/*`, `search/*`, `requests/cgflix_requests_ui.dart` | nenhuma cor solta: tudo de `context.cgflix`; véu claro no destaque e na prévia, barra do topo translúcida, sombra suave nos cartões (no lugar do brilho roxo), emblema Heitor, abertura animada nas cores do tema, coração roxo + verde nos dois temas |
+| `cgflix-brand/heitor/*` (novo), `gerar_heitor.py`, `assets/cgflix_emblema_heitor.svg` | marca Heitor: o mesmo desenho, só a troca de cores da ordem |
+| `android/.../res/drawable/splash_icon_heitor.xml` (novo), `drawable-television/…`, `values*/colors.xml`, `values*-v31/styles.xml`, `shared/ThemeHelper.kt` (1 linha) | abertura do sistema segue o aparelho: escura com a marca Isis, clara (`#f4fcee`) com a Heitor; TV sempre Isis |
+| `cgflix-brand/gerar_icone_android.py` (novo), `drawable/ic_launcher_foreground.xml`, `ic_launcher_monochrome.xml`, `mipmap-*/ic_launcher.png` | ícone adaptativo: emblema a 70% da zona segura (escala 0,529), nada fora dela, fundo `#07060a`, camada monocromática (Android 13+); ícone único (Isis) |
+| `test/cgflix/cgflix_contraste_test.dart`, `cgflix_temas_telas_test.dart` (novos), `cgflix_theme_test.dart` | contraste (texto ≥ 4,5:1, bordas/ícones ≥ 3:1); Início, Detalhes, Configurações e Login nos dois temas; troca na hora |
+| `test/cgflix/emulador/app_navegacao.dart`, `scripts/cgflix/emulador_navegacao.py` | app de teste segue o modo do aparelho; roteiro captura Início, título, Configurações e Entrada nos dois temas (`heitor-*`) |
+
 ## Como gerar o APK
 
 - **No GitHub**: aba *Actions* → "CGFLIX Android" → artifact `cgflix-apk` (`cgflix-arm64-v8a.apk` serve para quase todos os celulares e TV box atuais; `armeabi-v7a` para aparelhos antigos de 32 bits).
