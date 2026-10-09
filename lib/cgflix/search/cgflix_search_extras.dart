@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/platform_detector.dart';
 import '../../widgets/app_icon.dart';
+import '../cgflix_palette.dart';
 import '../cgflix_style.dart';
 import '../home/cgflix_cards.dart';
 import '../requests/cgflix_requests_ui.dart';
@@ -122,11 +123,11 @@ class _CgflixSearchIdleState extends State<CgflixSearchIdle> {
                     ListTile(
                       dense: true,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      leading: const AppIcon(Symbols.history_rounded, color: CgflixColors.textMuted),
+                      leading: AppIcon(Symbols.history_rounded, color: context.cgflix.textMuted),
                       title: Text(term, maxLines: 1, overflow: TextOverflow.ellipsis),
                       trailing: IconButton(
                         tooltip: 'Tirar do histórico',
-                        icon: const AppIcon(Symbols.close_rounded, size: 18, color: CgflixColors.textMuted),
+                        icon: AppIcon(Symbols.close_rounded, size: 18, color: context.cgflix.textMuted),
                         onPressed: () => _remove(term),
                       ),
                       onTap: () {

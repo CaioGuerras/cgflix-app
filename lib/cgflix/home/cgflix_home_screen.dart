@@ -25,6 +25,7 @@ import '../../utils/app_logger.dart';
 import '../../widgets/app_icon.dart';
 import '../cgflix_layout.dart';
 import '../cgflix_navigation.dart';
+import '../cgflix_palette.dart';
 import '../cgflix_style.dart';
 import 'cgflix_actions.dart';
 import 'cgflix_cards.dart';
@@ -210,7 +211,7 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
     final heroHeight = cgflixHeroHeight(media.size);
 
     return Scaffold(
-      backgroundColor: CgflixColors.background,
+      backgroundColor: context.cgflix.background,
       body: Stack(
         children: [
           AnimatedOpacity(
@@ -218,8 +219,8 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
             duration: CgflixMotion.filterFade,
             curve: CgflixMotion.curve,
             child: RefreshIndicator(
-              color: CgflixColors.accent,
-              backgroundColor: CgflixColors.surface,
+              color: context.cgflix.accent,
+              backgroundColor: context.cgflix.surface,
               edgeOffset: media.padding.top + 56,
               onRefresh: _pullToRefresh,
               child: CustomScrollView(
@@ -469,7 +470,7 @@ class _ContinueWatchingRowState extends State<_ContinueWatchingRow> {
     final remove = await showModalBottomSheet<bool>(
       context: context,
       useRootNavigator: true,
-      backgroundColor: CgflixColors.surface,
+      backgroundColor: context.cgflix.surface,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (sheetContext) => SafeArea(
         child: Column(
@@ -604,7 +605,7 @@ class _HeroSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CgflixShimmer(
-      child: Container(height: height, color: CgflixColors.surface),
+      child: Container(height: height, color: context.cgflix.surface),
     );
   }
 }
@@ -682,12 +683,13 @@ class _TopBarState extends State<_TopBar> {
         duration: CgflixMotion.fast,
         curve: CgflixMotion.curve,
         child: DecoratedBox(
-          decoration: const BoxDecoration(
+          // Barra do topo translúcida: véu escuro (Isis) ou claro (Heitor).
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xE607060A), Color(0x9907060A), Color(0x0007060A)],
-              stops: [0, 0.55, 1],
+              colors: context.cgflix.topVeil,
+              stops: const [0, 0.55, 1],
             ),
           ),
           child: Padding(

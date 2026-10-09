@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../media/media_item.dart';
 import '../media/media_kind.dart';
 import '../media/media_stream.dart';
-import 'cgflix_style.dart';
+import 'cgflix_palette.dart';
 import 'home/cgflix_actions.dart';
 
 /// Fundo da página "voando" a partir do cartão que a abriu (quando foi um cartão do CGFLIX).
@@ -69,12 +69,12 @@ class _Badge extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(6),
-      border: Border.all(color: CgflixColors.lilac),
-      color: CgflixColors.accent.withValues(alpha: 0.18),
+      border: Border.all(color: context.cgflix.badgeBorder),
+      color: context.cgflix.badge,
     ),
     child: Text(
       label,
-      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+      style: TextStyle(color: context.cgflix.onBadge, fontSize: 12, fontWeight: FontWeight.w700),
     ),
   );
 }

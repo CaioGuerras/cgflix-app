@@ -2402,11 +2402,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
             top: height * 0.5 + 180,
             child: Center(
               child: _serverStatus.isEmpty
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: coralColor),
-                    )
+                  ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: coralColor))
                   : _buildServerStatusList(context),
             ),
           ),

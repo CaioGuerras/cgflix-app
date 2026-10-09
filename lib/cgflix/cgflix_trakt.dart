@@ -19,7 +19,7 @@ import '../services/trackers/trakt/trakt_constants.dart';
 import '../utils/app_logger.dart';
 import '../utils/external_ids.dart';
 import '../widgets/app_icon.dart';
-import 'cgflix_style.dart';
+import 'cgflix_palette.dart';
 
 /// Client id do app "CGFLIX" no trakt.tv (vazio = Trakt escondido).
 const cgflixTraktClientId = String.fromEnvironment('TRAKT_CLIENT_ID');
@@ -134,7 +134,7 @@ class _CgflixTraktCommentsState extends State<CgflixTraktComments> {
               width: double.infinity,
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: CgflixColors.surface, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: context.cgflix.surface, borderRadius: BorderRadius.circular(12)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -149,9 +149,9 @@ class _CgflixTraktCommentsState extends State<CgflixTraktComments> {
                         ),
                       ),
                       if (comment.likes > 0) ...[
-                        const AppIcon(Symbols.favorite_rounded, size: 14, fill: 1, color: CgflixColors.lilac),
+                        AppIcon(Symbols.favorite_rounded, size: 14, fill: 1, color: context.cgflix.accentSoft),
                         const SizedBox(width: 4),
-                        Text('${comment.likes}', style: const TextStyle(color: CgflixColors.textMuted, fontSize: 12)),
+                        Text('${comment.likes}', style: TextStyle(color: context.cgflix.textMuted, fontSize: 12)),
                       ],
                     ],
                   ),

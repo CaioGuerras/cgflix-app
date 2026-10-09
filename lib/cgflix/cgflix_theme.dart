@@ -197,20 +197,30 @@ ThemeData _heitor(ThemeData branded) {
     popupMenuTheme: branded.popupMenuTheme.copyWith(color: s.surfaceContainer, surfaceTintColor: Colors.transparent),
     elevatedButtonTheme: ElevatedButtonThemeData(style: filled),
     filledButtonTheme: FilledButtonThemeData(style: filled),
-    textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: s.primary).merge(
-      ButtonStyle(mouseCursor: clickable),
-    )),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(foregroundColor: s.primary).merge(ButtonStyle(mouseCursor: clickable)),
+    ),
     outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(foregroundColor: s.primary, side: BorderSide(color: s.outline)).merge(
-        ButtonStyle(mouseCursor: clickable),
-      ),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: s.primary,
+        side: BorderSide(color: s.outline),
+      ).merge(ButtonStyle(mouseCursor: clickable)),
     ),
     inputDecorationTheme: branded.inputDecorationTheme.copyWith(
       fillColor: s.surfaceContainerHigh,
       hintStyle: TextStyle(color: s.onSurfaceVariant),
-      border: OutlineInputBorder(borderRadius: fieldRadius, borderSide: BorderSide(color: s.outline)),
-      enabledBorder: OutlineInputBorder(borderRadius: fieldRadius, borderSide: BorderSide(color: s.outline)),
-      focusedBorder: OutlineInputBorder(borderRadius: fieldRadius, borderSide: BorderSide(color: s.primary, width: 2)),
+      border: OutlineInputBorder(
+        borderRadius: fieldRadius,
+        borderSide: BorderSide(color: s.outline),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: fieldRadius,
+        borderSide: BorderSide(color: s.outline),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: fieldRadius,
+        borderSide: BorderSide(color: s.primary, width: 2),
+      ),
     ),
     sliderTheme: branded.sliderTheme.copyWith(
       activeTrackColor: s.primary,
@@ -318,10 +328,8 @@ SystemUiOverlayStyle cgflixSystemOverlay(Brightness brightness) {
 
 /// Barras do sistema de acordo com o tema da tela (vale para as telas sem AppBar, como a Início).
 /// Gancho no `builder` do MaterialApp.
-Widget cgflixSystemBars(BuildContext context, Widget child) => AnnotatedRegion<SystemUiOverlayStyle>(
-  value: cgflixSystemOverlay(Theme.of(context).brightness),
-  child: child,
-);
+Widget cgflixSystemBars(BuildContext context, Widget child) =>
+    AnnotatedRegion<SystemUiOverlayStyle>(value: cgflixSystemOverlay(Theme.of(context).brightness), child: child);
 
 /// Player, abertura do vídeo e controles do player: sempre escuros (Isis), nos dois temas.
 /// Folhas e diálogos abertos de dentro do player herdam este tema.

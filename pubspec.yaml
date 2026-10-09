@@ -144,6 +144,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/cgflix_emblema.svg
+    - assets/cgflix_emblema_heitor.svg
     - assets/plezy.png
     - assets/plezy_adaptive_foreground.svg
     - assets/plex_chevron.svg
