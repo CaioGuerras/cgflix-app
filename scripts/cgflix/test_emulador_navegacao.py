@@ -56,6 +56,13 @@ class LogcatTest(unittest.TestCase):
         )
         self.assertEqual(len(nav.logcat_failures(log)), 2)
 
+    def test_adb_perdeu_o_aparelho(self) -> None:
+        self.assertTrue(nav.device_lost("error: device offline"))
+        self.assertTrue(nav.device_lost("adb: no devices/emulators found"))
+        self.assertTrue(nav.device_lost("error: device 'emulator-5554' not found"))
+        self.assertFalse(nav.device_lost("Error: Activity class does not exist"))
+        self.assertFalse(nav.device_lost(""))
+
     def test_log_limpo(self) -> None:
         self.assertEqual(nav.logcat_failures("I/flutter: Início pronta"), [])
 
