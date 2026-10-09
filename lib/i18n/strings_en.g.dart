@@ -101,8 +101,8 @@ class Translations$app$en {
 
 	// Translations
 
-	/// en: 'Plezy'
-	String get title => 'Plezy';
+	/// en: 'CGFLIX'
+	String get title => 'CGFLIX';
 }
 
 // Path: auth
@@ -7359,7 +7359,7 @@ class Translations$services$libraryFilter$en {
 extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'Plezy',
+			'app.title' => 'CGFLIX',
 			'auth.signInWithPlex' => 'Sign in with Plex',
 			'auth.showQRCode' => 'Show QR Code',
 			'auth.authenticate' => 'Authenticate',

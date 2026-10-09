@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../cgflix/cgflix_defaults.dart';
 import '../media/ids.dart';
 import '../media/playback_rate.dart';
 import '../media/media_version_preference.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/services.dart';
 import '../models/hotkey_model.dart';
 import 'image_cache_service.dart';
 import 'package:plezy/utils/app_logger.dart';
-import '../i18n/app_locale_utils.dart';
 import '../i18n/strings.g.dart';
 import '../models/mpv_config_models.dart';
 import '../models/player_setting_scope.dart';
@@ -352,7 +352,7 @@ class _SkipMarkerModePref extends LegacyBoolEnumPref<SkipMarkerMode> {
 class _AppLocalePref extends Pref<AppLocale> {
   const _AppLocalePref() : super('app_locale');
   @override
-  AppLocale get resolvedDefault => resolvePreferredAppLocale(PlatformDispatcher.instance.locales);
+  AppLocale get resolvedDefault => cgflixResolveDefaultLocale(PlatformDispatcher.instance.locales); // CGFLIX
   @override
   AppLocale fromJson(Object? value) => AppLocale.values.firstWhere((v) => v.name == value);
   @override
@@ -617,7 +617,7 @@ class SettingsService extends BaseSharedPreferencesService {
 
   /// Episode advance follows the server's per-episode audio/subtitle
   /// selections instead of carrying the current choice over (#1717).
-  static const followServerTrackSelections = BoolPref('follow_server_track_selections');
+  static const followServerTrackSelections = BoolPref('follow_server_track_selections', defaultValue: true); // CGFLIX
   static const showChapterMarkersOnTimeline = BoolPref('show_chapter_markers_on_timeline', defaultValue: true);
   static const clickVideoTogglesPlayback = BoolPref('click_video_toggles_playback');
   static const skipIntroMode = _SkipMarkerModePref('skip_intro_mode', legacyKey: _legacyAutoSkipIntroKey);
@@ -885,7 +885,7 @@ class SettingsService extends BaseSharedPreferencesService {
   );
   static final displaySwitchDelay = IntPref('display_switch_delay', transform: (v) => v.clamp(0, 10));
 
-  static ThemeMode _tvAwareThemeModeDefault() => PlatformDetector.isTV() ? ThemeMode.oled : ThemeMode.system;
+  static ThemeMode _tvAwareThemeModeDefault() => ThemeMode.oled; // CGFLIX: tema escuro OLED em todos os aparelhos
   static const themeMode = EnumPref<ThemeMode>(
     'theme_mode',
     values: ThemeMode.values,

@@ -81,5 +81,9 @@
     "Repair offered: ${repairable ? 'yes' : 'no'}": "English bug-report diagnostic",
     "Message: $message": "English bug-report diagnostic",
     "Stack trace:": "English bug-report diagnostic"
+  },
+  "lib/cgflix/cgflix_about.dart": {
+    "Feito com amor, para Isis e Heitor": "Dedicatória fixa do CGFLIX (não é traduzida)",
+    "O CGFLIX é baseado no Plezy (github.com/edde746/plezy), software livre sob a licença GPL-3.0.": "Crédito legal fixo ao projeto original (GPL-3.0)"
   }
 }

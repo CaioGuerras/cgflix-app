@@ -65,7 +65,8 @@ void main() {
     expect(find.text(t.auth.localDataRecoveryRequired), findsOneWidget);
     expect(find.text(t.auth.signInWithPlex), findsOneWidget);
     expect(find.text(t.auth.connectToMediaBrowser(product: 'Jellyfin')), findsOneWidget);
-    expect(find.text(t.auth.connectToMediaBrowser(product: 'Emby')), findsOneWidget);
+    // CGFLIX: Emby não é mais oferecido na entrada.
+    expect(find.text(t.auth.connectToMediaBrowser(product: 'Emby')), findsNothing);
   });
 
   testWidgets('fresh AuthScreen has normal actions without recovery notice', (tester) async {
@@ -75,6 +76,6 @@ void main() {
     expect(find.text(t.auth.localDataRecoveryRequired), findsNothing);
     expect(find.text(t.auth.signInWithPlex), findsOneWidget);
     expect(find.text(t.auth.connectToMediaBrowser(product: 'Jellyfin')), findsOneWidget);
-    expect(find.text(t.auth.connectToMediaBrowser(product: 'Emby')), findsOneWidget);
+    expect(find.text(t.auth.connectToMediaBrowser(product: 'Emby')), findsNothing);
   });
 }

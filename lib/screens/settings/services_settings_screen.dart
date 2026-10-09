@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../cgflix/cgflix_trakt.dart';
 import '../../i18n/strings.g.dart';
 import '../../models/catalog/catalog_item.dart';
 import '../../providers/seerr_account_provider.dart';
@@ -39,7 +40,12 @@ class ServicesSettingsScreen extends StatelessWidget {
                 ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
-            SettingsGroup(children: [for (final info in TrackerServiceInfo.all) _TrackerHubRow(info), _seerr()]),
+            SettingsGroup(
+              children: [
+                for (final info in TrackerServiceInfo.all) _TrackerHubRow(info),
+                if (cgflixShowsSeerrService) _seerr(), // CGFLIX: pedidos entram sozinhos pela busca
+              ],
+            ),
             if (DiscordRPCService.isAvailable)
               SettingsGroup(
                 title: t.services.integrations,

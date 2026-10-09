@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../cgflix/cgflix_trakt.dart';
 import '../../i18n/strings.g.dart';
 import '../../models/catalog/catalog_item.dart';
 import '../../providers/trackers_provider.dart';
@@ -60,7 +61,9 @@ class TrackerServiceInfo {
 
   /// Display order shared by every list. Built per call because [displayName]
   /// reads the active locale.
-  static List<TrackerServiceInfo> get all => [
+  static List<TrackerServiceInfo> get all => _all.where((i) => cgflixShowsTracker(i.service)).toList(); // CGFLIX
+
+  static List<TrackerServiceInfo> get _all => [
     TrackerServiceInfo(
       service: TrackerService.trakt,
       displayName: t.trakt.title,

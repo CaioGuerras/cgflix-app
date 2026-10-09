@@ -18,7 +18,7 @@ Plano do Caio (resumo): Android primeiro; iPhone fica para depois; PC (Windows) 
 ## Regras do fork
 1. **Diferença mínima do original** (para puxar as atualizações do upstream toda semana sem conflito): marca, endereço sugerido
    e padrões em arquivos próprios/isolados; não reformatar nem renomear o que não precisa.
-2. **Sem servidor embutido**: `https://netflix.docaio.com.br` vem SUGERIDO/pré-preenchido e é editável ("Outro servidor").
+2. **Sem servidor embutido nem pré-preenchido** (decisão da Etapa 1A, por segurança): o campo do Jellyfin começa vazio, com a dica neutra `https://seu.servidor.com`.
 3. Sem segredos, tokens, chaves ou telemetria no código, nos logs e nos workflows.
 4. Manter a licença e os créditos do projeto original (tela "Sobre" + README). Nome e logo do app passam a ser **CGFLIX**;
    não usar o nome/logo do upstream como marca do app.
@@ -31,7 +31,7 @@ Plano do Caio (resumo): Android primeiro; iPhone fica para depois; PC (Windows) 
 1. Ler o projeto (README, `pubspec.yaml`, `android/`, workflows existentes) e entender como o upstream gera o APK.
 2. Marca: nome exibido "CGFLIX", `applicationId` Android `br.com.docaio.cgflix` (sem conflitar com o Plezy instalado),
    ícone a partir de `cgflix-brand/cgflix-icone-512.png`/`cgflix-icone.svg` (adaptive icon), splash com fundo `#07060a`.
-3. Tela de entrada: servidor Jellyfin com `https://netflix.docaio.com.br` **sugerido** (pré-preenchido, editável); Plex continua
+3. Tela de entrada: servidor Jellyfin com campo vazio (nada pré-preenchido, desde a Etapa 1A); Plex continua
    disponível como no original. Idioma padrão PT-BR quando o app tiver tradução (não quebrar os outros idiomas).
 4. **GitHub Actions** `.github/workflows/cgflix-android.yml`: a cada push no `main` e em PRs, gerar o APK de release (assinado
    com chave de debug por enquanto; deixar pronto para receber um keystore por secrets depois) e publicar como artifact; em tags

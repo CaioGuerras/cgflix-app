@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:plezy/cgflix/cgflix_trakt.dart';
 import 'package:plezy/connection/connection_registry.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/i18n/strings.g.dart';
@@ -42,12 +43,19 @@ import 'package:plezy/widgets/dialog_action_button.dart';
 import 'package:plezy/widgets/focusable_list_tile.dart';
 import 'package:plezy/widgets/loading_indicator_box.dart';
 import 'package:plezy/widgets/setting_tile.dart';
+import 'package:plezy/cgflix/cgflix_collapsible.dart';
 import 'package:provider/provider.dart';
 
 import '../../test_helpers/io_fakes.dart';
 import '../../test_helpers/prefs.dart';
 
 void main() {
+  setUpAll(() => cgflixDebugShowAllServices = true); // CGFLIX: todos os serviços, como no Plezy
+  tearDownAll(() => cgflixDebugShowAllServices = false);
+  // CGFLIX: as seções das Configurações começam fechadas; estes testes olham as opções por dentro.
+  setUpAll(() => CgflixCollapsibleCard.debugExpandAll = true);
+  tearDownAll(() => CgflixCollapsibleCard.debugExpandAll = false);
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late PathProviderPlatform originalPathProvider;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../cgflix/cgflix_navigation.dart';
 import '../../i18n/strings.g.dart';
 import '../../providers/catalog_sources_provider.dart';
 import '../../providers/theme_provider.dart';
@@ -29,11 +30,13 @@ class AppearanceSettingsScreen extends StatelessWidget {
     final hasExplore = context.watch<CatalogSourcesProvider?>()?.hasAnySource ?? false;
     return SettingsPage(
       title: Text(t.settings.appearance),
-      children: [
+      collapsible: true, // CGFLIX
+      children: cgflixAppearanceGroups(context, [
         SettingsGroup(
+          initiallyExpanded: true,
           title: t.settings.display,
           children: [
-            _themeSelector(),
+            // CGFLIX: sem escolha de tema (só existe o OLED); seletor mantido no código do upstream.
             if (PlatformDetector.isAutomotive()) _displayScaleSelector(),
             if (Platform.isAndroid) _visualEffectsSelector(context),
           ],
@@ -174,12 +177,13 @@ class AppearanceSettingsScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 24),
-      ],
+      ]),
     );
   }
 
   // Writes the pref directly; ThemeProvider listens to the pref's listenable
   // and applies the change live. The Consumer only feeds the dynamic icon.
+  // ignore: unused_element
   Widget _themeSelector() {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {

@@ -1,3 +1,4 @@
+import '../cgflix/cgflix_defaults.dart';
 import 'dart:async';
 import '../media/ids.dart';
 
@@ -852,7 +853,12 @@ class DataAggregationService {
     required Set<String> excludedLibraryIds,
   }) async {
     try {
-      return await client.searchPeople(query, abort: abort, excludedLibraryIds: excludedLibraryIds);
+      return await client.searchPeople(
+        query,
+        limit: cgflixSearchPeopleLimit, // CGFLIX: menos confirmações por termo
+        abort: abort,
+        excludedLibraryIds: excludedLibraryIds,
+      );
     } catch (e, stackTrace) {
       if (_isCancellation(e)) {
         appLogger.d('People search cancelled on $serverId');

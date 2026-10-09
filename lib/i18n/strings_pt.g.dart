@@ -99,7 +99,7 @@ class _Translations$app$pt extends Translations$app$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Plezy';
+	@override String get title => 'CGFLIX';
 }
 
 // Path: auth
@@ -124,7 +124,7 @@ class _Translations$auth$pt extends Translations$auth$en {
 	@override String get quickConnectWaiting => 'Aguardando aprovação…';
 	@override String get quickConnectCancel => 'Cancelar';
 	@override String get quickConnectExpired => 'Quick Connect expirou. Tente novamente.';
-	@override String get localDataRecoveryRequired => 'O Plezy não conseguiu recuperar com segurança os dados locais de acesso e de reproduções pendentes. Entre novamente.';
+	@override String get localDataRecoveryRequired => 'O CGFLIX não conseguiu recuperar com segurança os dados locais de acesso e de reproduções pendentes. Entre novamente.';
 	@override String get pinCheckRejected => 'A verificação do PIN do Plex foi rejeitada';
 }
 
@@ -226,7 +226,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 
 	// Translations
 	@override String get title => 'Configurações';
-	@override String get supportDeveloper => 'Apoie o Plezy';
+	@override String get supportDeveloper => 'Apoie o CGFLIX';
 	@override String get supportDeveloperDescription => 'Doe via Liberapay para financiar o desenvolvimento';
 	@override String get language => 'Idioma';
 	@override String get theme => 'Tema';
@@ -360,7 +360,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get resetSettings => 'Redefinir Configurações';
 	@override String get resetSettingsDescription => 'Restaurar configurações padrão. Não pode ser desfeito.';
 	@override String get resetSettingsSuccess => 'Configurações redefinidas com sucesso';
-	@override String get backup => 'Backup';
+	@override String get backup => 'Cópia de segurança';
 	@override String get exportSettings => 'Exportar Configurações';
 	@override String get exportSettingsDescription => 'Salvar suas preferências em um arquivo';
 	@override String get exportSettingsSuccess => 'Configurações exportadas';
@@ -368,9 +368,10 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get importSettingsDescription => 'Restaurar preferências a partir de um arquivo';
 	@override String get importSettingsConfirm => 'Isso substituirá suas configurações atuais. Continuar?';
 	@override String get importSettingsSuccess => 'Configurações importadas';
-	@override String get importSettingsInvalidFile => 'Este arquivo não é uma exportação válida do Plezy';
+	@override String get importSettingsInvalidFile => 'Este arquivo não é uma exportação válida do CGFLIX';
 	@override String get importSettingsNoUser => 'Entre na conta antes de importar as configurações';
 	@override String get shortcutsReset => 'Atalhos redefinidos para o padrão';
+	@override String get resetShortcutsConfirm => 'Isto troca os seus atalhos personalizados pelos padrões. Continuar?';
 	@override String get about => 'Sobre';
 	@override String get aboutDescription => 'Informações do app e licenças';
 	@override String get updates => 'Atualizações';
@@ -456,6 +457,14 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get audioPassthroughDescription => 'Enviar o áudio Dolby/DTS ao receptor ou à TV sem recodificação, preservando o som surround. Desative se não houver som.';
 	@override String get audioPassthroughDescriptionAppleTv => 'Usar o decodificador Dolby nativo da Apple para Dolby Digital Plus, incluindo Atmos. DTS e TrueHD continuam sendo reproduzidos como PCM multicanal. Desative se não houver som.';
 	@override String get audioPassthroughOverriddenByNormalization => 'Desativada enquanto a normalização de intensidade sonora estiver ativa';
+	@override String get audioChannelLimit => 'Canais de áudio';
+	@override String get audioChannelLimitDescription => 'Mistura o áudio para caixas de som, fones ou sistemas HDMI que não tocam todos os canais';
+	@override String get audioChannelLimitOriginal => 'Original';
+	@override String get audioChannelLimitOriginalDescription => 'Toca todos os canais da faixa';
+	@override String get audioChannelLimitSurround51 => 'Até 5.1';
+	@override String get audioChannelLimitSurround51Description => 'Mistura 7.1 em 5.1 para TVs e receivers que só aceitam PCM 5.1. A passagem direta não muda.';
+	@override String get audioChannelLimitStereo => 'Estéreo';
+	@override String get audioChannelLimitStereoDescription => 'Mistura em dois canais para caixas de som estéreo ou fones. Desliga a passagem direta.';
 	@override String get downmixCenterBoost => 'Reforço do canal central';
 	@override String downmixCenterBoostValue({required Object db}) => '${db} dB';
 	@override String get downmixCenterBoostLabel => 'Reforço (dB)';
@@ -489,7 +498,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get forceTvMode => 'Forçar modo TV';
 	@override String get forceTvModeDescription => 'Forçar o layout de TV em dispositivos sem detecção automática. Requer reiniciar o app.';
 	@override String get startInFullscreen => 'Iniciar em tela cheia';
-	@override String get startInFullscreenDescription => 'Abrir o Plezy em modo de tela cheia ao iniciar';
+	@override String get startInFullscreenDescription => 'Abrir o CGFLIX em modo de tela cheia ao iniciar';
 	@override String get exitFullscreenOnPlayerClose => 'Sair da tela cheia ao fechar o reprodutor';
 	@override String get exitFullscreenOnPlayerCloseDescription => 'Sair automaticamente da tela cheia ao fechar o reprodutor de vídeo';
 	@override String get autoHidePerformanceOverlay => 'Ocultar automaticamente o painel de desempenho';
@@ -538,7 +547,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get playerScopeGlobal => 'Em todos os lugares';
 	@override String get playerScopeLibrary => 'Por biblioteca';
 	@override String get playerScopeTitle => 'Por série ou filme';
-	@override String get exportDialogTitle => 'Exportar configurações do Plezy';
+	@override String get exportDialogTitle => 'Exportar configurações do CGFLIX';
 }
 
 // Path: search
@@ -552,6 +561,7 @@ class _Translations$search$pt extends Translations$search$en {
 	@override String get tryDifferentTerm => 'Tente um termo de busca diferente';
 	@override String get searchYourMedia => 'Buscar suas mídias';
 	@override String get enterTitleActorOrKeyword => 'Insira um título, ator ou palavra-chave';
+	@override String get people => 'Pessoas';
 }
 
 // Path: hotkeys
@@ -736,8 +746,8 @@ class _Translations$mediaMenu$pt extends Translations$mediaMenu$en {
 		one: 'Mais ${n} episódio está armazenado no mesmo arquivo e também será excluído:',
 		other: 'Mais ${n} episódios estão armazenados no mesmo arquivo e também serão excluídos:',
 	);
-	@override String get deleteScopeUnverifiedProbeFailed => 'O Plezy não conseguiu verificar quais arquivos serão removidos, então pode excluir mais do que o item acima. Cancele e tente novamente, ou exclua mesmo assim.';
-	@override String get deleteScopeUnverifiedNoFileInfo => 'Seu servidor não forneceu detalhes do arquivo para este item, então o Plezy não pode verificar quais arquivos serão removidos. Pode excluir mais do que o item acima.';
+	@override String get deleteScopeUnverifiedProbeFailed => 'O CGFLIX não conseguiu verificar quais arquivos serão removidos, então pode excluir mais do que o item acima. Cancele e tente novamente, ou exclua mesmo assim.';
+	@override String get deleteScopeUnverifiedNoFileInfo => 'Seu servidor não forneceu detalhes do arquivo para este item, então o CGFLIX não pode verificar quais arquivos serão removidos. Pode excluir mais do que o item acima.';
 	@override String get mediaDeletedSuccessfully => 'Item de mídia excluído com sucesso';
 	@override String get mediaFailedToDelete => 'Falha ao excluir item de mídia';
 	@override String get rate => 'Avaliar';
@@ -971,14 +981,14 @@ class _Translations$messages$pt extends Translations$messages$en {
 	@override String get failedToCreatePlayQueueNoItems => 'Falha ao criar a fila de reprodução — nenhum item';
 	@override String failedPlayback({required Object action, required Object error}) => 'Falha ao ${action}: ${error}';
 	@override String get switchingToCompatiblePlayer => 'Alternando para um reprodutor compatível...';
-	@override String get serverLimitTitle => 'Falha na reprodução';
-	@override String get serverLimitBody => 'Erro do servidor (HTTP 500). Um limite de largura de banda ou transcodificação provavelmente rejeitou esta sessão. Peça ao proprietário do servidor para ajustá-lo.';
+	@override String get serverLimitTitle => 'Não deu para tocar agora';
+	@override String get serverLimitBody => 'O servidor recusou este play. O mais comum é o limite de 2 telas ao mesmo tempo: feche o CGFLIX em outro aparelho (ou espere um minuto) e tente de novo. Se continuar, avise o Caio.';
 	@override String get mediaUnreadableTitle => 'Arquivo indisponível';
 	@override String get mediaUnreadableBody => 'O servidor encontrou este item, mas não conseguiu ler o arquivo (HTTP 404). O arquivo provavelmente foi movido, excluído ou o armazenamento está offline. Peça ao responsável pelo servidor para verificar o arquivo e reexaminar a biblioteca.';
 	@override String get serverBusyTitle => 'Transmissão indisponível';
 	@override String get serverBusyBody => 'O servidor continuou se recusando a transmitir este arquivo (HTTP 503). Ele pode estar reiniciando ou ocupado, ou o armazenamento do arquivo pode estar offline. Tente novamente em instantes — se isso continuar acontecendo, peça ao proprietário do servidor para verificar o servidor e o armazenamento do arquivo.';
-	@override String get playbackNotAllowedTitle => 'Reprodução não permitida';
-	@override String get playbackNotAllowedBody => 'O servidor se recusou a transmitir este item (HTTP 403). Sua conta pode não ter permissão para reproduzi-lo, ou o servidor pode permitir a reprodução apenas na própria rede local.';
+	@override String get playbackNotAllowedTitle => 'Limite de telas ou sem permissão';
+	@override String get playbackNotAllowedBody => 'O servidor não deixou tocar este título. Cada conta assiste em até 2 telas ao mesmo tempo: feche o CGFLIX em outro aparelho e tente de novo. Se não for isso, sua conta pode não ter acesso a este título.';
 	@override String get logsUploaded => 'Logs enviados';
 	@override String get logsUploadFailed => 'Falha ao enviar logs';
 	@override String get logId => 'ID do log';
@@ -1070,7 +1080,7 @@ class _Translations$profiles$pt extends Translations$profiles$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get addPlezyProfile => 'Adicionar perfil Plezy';
+	@override String get addPlezyProfile => 'Adicionar perfil CGFLIX';
 	@override String get switchingProfile => 'Mudando perfil…';
 	@override String get deleteThisProfileTitle => 'Excluir este perfil?';
 	@override String deleteThisProfileMessage({required Object displayName}) => 'Remover ${displayName}. As conexões não serão afetadas.';
@@ -1080,6 +1090,8 @@ class _Translations$profiles$pt extends Translations$profiles$en {
 	@override String get signOut => 'Sair';
 	@override String get signOutPlexTitle => 'Sair do Plex?';
 	@override String signOutPlexMessage({required Object displayName}) => 'Remover ${displayName} e todos os usuários do Plex Home? Você pode entrar novamente quando quiser.';
+	@override String get signOutPlexDeleteDownloads => 'Apagar também os baixados';
+	@override String get signOutPlexDeleteDownloadsDescription => 'Se não apagar, eles ficam neste aparelho e voltam quando você entrar de novo nesta conta.';
 	@override String get signedOutPlex => 'Saiu do Plex.';
 	@override String get signOutFailed => 'Falha ao sair.';
 	@override String get sectionTitle => 'Perfis';
@@ -1152,7 +1164,7 @@ class _Translations$connections$pt extends Translations$connections$en {
 	@override String accessDeniedMany({required Object count}) => '${count} servidores negaram acesso a esta conta';
 	@override String get signInAgain => 'Entrar novamente';
 	@override String editMediaBrowserTitle({required Object product}) => 'Editar conexão do ${product}';
-	@override String editMediaBrowserIntro({required Object serverName}) => 'Adicione ou remova URLs para ${serverName}. O Plezy usará a URL acessível com menor latência.';
+	@override String editMediaBrowserIntro({required Object serverName}) => 'Adicione ou remova URLs para ${serverName}. O CGFLIX usará a URL acessível com menor latência.';
 }
 
 // Path: accountPreferences
@@ -1166,7 +1178,7 @@ class _Translations$accountPreferences$pt extends Translations$accountPreference
 	@override String hubSubtitleSingle({required Object account}) => 'Opções de áudio, legendas e biblioteca salvas em ${account}';
 	@override String hubSubtitleMultiple({required Object count}) => 'Opções de áudio, legendas e biblioteca salvas em ${count} contas';
 	@override String get pickAccount => 'Cada conta armazena suas próprias preferências. Escolha a que deseja editar.';
-	@override String get storedOnAccount => 'Estas opções são salvas na própria conta, então todos os apps conectados a ela as utilizam — inclusive o Plezy nos seus outros dispositivos.';
+	@override String get storedOnAccount => 'Estas opções são salvas na própria conta, então todos os apps conectados a ela as utilizam — inclusive o CGFLIX nos seus outros dispositivos.';
 	@override String get noAccounts => 'Nenhuma conta para configurar';
 	@override String get noAccountsHint => 'Entre no Plex ou conecte um servidor Jellyfin ou Emby, e as preferências armazenadas nessa conta aparecerão aqui.';
 	@override String get unavailable => 'Não foi possível acessar esta conta';
@@ -1222,13 +1234,13 @@ class _Translations$discover$pt extends Translations$discover$en {
 	@override String get cast => 'Elenco';
 	@override String get extras => 'Trailers e extras';
 	@override String get studio => 'Estúdio';
-	@override String get rating => 'Avaliação';
+	@override String get rating => 'Classificação indicativa';
 	@override String get director => 'Diretor';
 	@override String get directors => 'Diretores';
 	@override String get movie => 'Filme';
 	@override String get tvShow => 'Série de TV';
 	@override String minutesLeft({required Object minutes}) => '${minutes} min restantes';
-	@override String get moreLikeThis => 'Títulos semelhantes';
+	@override String get moreLikeThis => 'Mais como este';
 	@override String titleCount({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n,
 		one: '${n} título',
 		other: '${n} títulos',
@@ -1315,6 +1327,7 @@ class _Translations$libraries$pt extends Translations$libraries$en {
 	@override late final _Translations$libraries$groupings$pt groupings = _Translations$libraries$groupings$pt._(_root);
 	@override late final _Translations$libraries$filterCategories$pt filterCategories = _Translations$libraries$filterCategories$pt._(_root);
 	@override late final _Translations$libraries$sortLabels$pt sortLabels = _Translations$libraries$sortLabels$pt._(_root);
+	@override late final _Translations$libraries$advancedFilters$pt advancedFilters = _Translations$libraries$advancedFilters$pt._(_root);
 }
 
 // Path: about
@@ -1327,7 +1340,7 @@ class _Translations$about$pt extends Translations$about$en {
 	@override String get title => 'Sobre';
 	@override String get openSourceLicenses => 'Licenças de código aberto';
 	@override String versionLabel({required Object version}) => 'Versão ${version}';
-	@override String get appDescription => 'Um belo cliente de Plex, Jellyfin e Emby feito com Flutter';
+	@override String get appDescription => 'Os filmes e séries da família, em qualquer tela';
 	@override String get viewLicensesDescription => 'Ver as licenças de bibliotecas de terceiros';
 }
 
@@ -1376,9 +1389,9 @@ class _Translations$startup$pt extends Translations$startup$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get failedTitle => 'O Plezy não conseguiu iniciar';
+	@override String get failedTitle => 'O CGFLIX não conseguiu iniciar';
 	@override String get failedBody => 'Algo deu errado durante a inicialização. Os detalhes abaixo identificam o que falhou.';
-	@override String get failedBodyRepairable => 'O arquivo de configurações salvo do Plezy está danificado e precisa ser reconstruído antes que o Plezy possa iniciar. Tentar novamente não vai ajudar — escolha Reparar armazenamento.';
+	@override String get failedBodyRepairable => 'O arquivo de configurações salvo do CGFLIX está danificado e precisa ser reconstruído antes que o CGFLIX possa iniciar. Tentar novamente não vai ajudar — escolha Reparar armazenamento.';
 	@override String get phaseLabel => 'Etapa';
 	@override String get showDetails => 'Mostrar detalhes';
 	@override String get hideDetails => 'Ocultar detalhes';
@@ -1387,16 +1400,16 @@ class _Translations$startup$pt extends Translations$startup$en {
 	@override String get uploadDetails => 'Enviar detalhes';
 	@override String get repairStorage => 'Reparar armazenamento';
 	@override String get repairTitle => 'Reparar dados armazenados?';
-	@override String get repairBodyCommon => 'O arquivo de configurações do Plezy está danificado e não pode ser lido. Reparar redefine todas as configurações para o padrão.';
+	@override String get repairBodyCommon => 'O arquivo de configurações do CGFLIX está danificado e não pode ser lido. Reparar redefine todas as configurações para o padrão.';
 	@override String get repairBodyOneCredential => 'Um login salvo está danificado e não pode ser lido. Reparar remove apenas ele; suas outras configurações permanecem intactas.';
 	@override String get repairBodySignInsKept => 'Seus servidores e perfis devem permanecer conectados.';
 	@override String get repairBodySignInsLost => 'A chave que protege seus logins salvos não pode ser recuperada deste arquivo, então você terá que entrar novamente em todos os servidores e perfis. Nada no seu servidor de mídia é afetado.';
-	@override String get repairBodySessionsUncertain => 'Os rastreadores (MAL, AniList, Simkl, Trakt) e o Seerr são armazenados separadamente e podem ou não ser preservados. O Plezy informará exatamente o que foi mantido.';
+	@override String get repairBodySessionsUncertain => 'Os rastreadores (MAL, AniList, Simkl, Trakt) e o Seerr são armazenados separadamente e podem ou não ser preservados. O CGFLIX informará exatamente o que foi mantido.';
 	@override String get repairConfirm => 'Reparar';
 	@override String get repairSucceeded => 'Armazenamento reparado';
 	@override String get repairNeedsRestart => 'Armazenamento reparado — reinício necessário';
-	@override String get restartRequiredBody => 'Seus dados foram reparados, mas o Plezy precisa iniciar do zero antes de usá-los. Feche o Plezy e abra-o novamente.';
-	@override String get quitPlezy => 'Sair do Plezy';
+	@override String get restartRequiredBody => 'Seus dados foram reparados, mas o CGFLIX precisa iniciar do zero antes de usá-los. Feche o CGFLIX e abra-o novamente.';
+	@override String get quitPlezy => 'Sair do CGFLIX';
 	@override String get repairFailed => 'Falha no reparo';
 	@override String get repairKeptSignIns => 'Seus servidores e perfis ainda estão conectados.';
 	@override String get repairLostSignIns => 'A chave que protege seus logins salvos não pôde ser recuperada. Você terá que entrar novamente em todos os servidores e perfis.';
@@ -1405,7 +1418,7 @@ class _Translations$startup$pt extends Translations$startup$en {
 	@override String get backupWarning => 'Ele contém suas credenciais de login. Não envie nem compartilhe.';
 	@override String get deleteBackup => 'Excluir cópia';
 	@override String get backupDeleted => 'Cópia excluída.';
-	@override String get previousFailureTitle => 'O Plezy falhou ao iniciar da última vez';
+	@override String get previousFailureTitle => 'O CGFLIX falhou ao iniciar da última vez';
 }
 
 // Path: licenses
@@ -1429,7 +1442,7 @@ class _Translations$navigation$pt extends Translations$navigation$en {
 
 	// Translations
 	@override String get libraries => 'Bibliotecas';
-	@override String get downloads => 'Downloads';
+	@override String get downloads => 'Baixados';
 	@override String get liveTv => 'TV ao Vivo';
 	@override String get explore => 'Explorar';
 }
@@ -1774,7 +1787,7 @@ class _Translations$downloads$pt extends Translations$downloads$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Downloads';
+	@override String get title => 'Baixados';
 	@override String get manage => 'Gerenciar';
 	@override String get tvShows => 'Séries de TV';
 	@override String get movies => 'Filmes';
@@ -1966,6 +1979,13 @@ class _Translations$performanceOverlay$pt extends Translations$performanceOverla
 	@override String get rotation => 'Rotação';
 	@override String get dvSource => 'Fonte DV';
 	@override String get dvPath => 'Caminho DV';
+	@override String get dvRouteDecoder => 'Decodificador Dolby Vision';
+	@override String get dvRouteDecoderP81 => 'Decodificador Dolby Vision (P7→8.1)';
+	@override String get dvRouteBaseLayer => 'Camada base';
+	@override String get dvRouteBaseLayerHdr10 => 'Camada base HDR10';
+	@override String get dvRouteBaseLayerHlg => 'Camada base HLG';
+	@override String get dvRouteBaseLayerSdr => 'Camada base SDR';
+	@override String get dvRouteReshaped => 'RPU remodelada (gpu-next)';
 	@override String get p7Conversion => 'Conv. P7';
 	@override String get sampleRate => 'Taxa de amostragem';
 	@override String get pixelFormat => 'Formato de pixel';
@@ -2155,11 +2175,11 @@ class _Translations$trakt$pt extends Translations$trakt$en {
 	@override String get connected => 'Conectado';
 	@override String connectedAs({required Object username}) => 'Conectado como @${username}';
 	@override String get disconnectConfirm => 'Desconectar a conta do Trakt?';
-	@override String get disconnectConfirmBody => 'O Plezy deixará de enviar eventos ao Trakt. Você pode reconectar quando quiser.';
+	@override String get disconnectConfirmBody => 'O CGFLIX deixará de enviar eventos ao Trakt. Você pode reconectar quando quiser.';
 	@override String get scrobble => 'Scrobbling em tempo real';
 	@override String get scrobbleDescription => 'Envia eventos de reprodução, pausa e parada ao Trakt durante a exibição.';
 	@override String get watchedSync => 'Sincronizar status de assistido';
-	@override String get watchedSyncDescription => 'Ao marcar itens como assistidos no Plezy, eles também serão marcados no Trakt.';
+	@override String get watchedSyncDescription => 'Ao marcar itens como assistidos no CGFLIX, eles também serão marcados no Trakt.';
 }
 
 // Path: seerr
@@ -2178,10 +2198,10 @@ class _Translations$seerr$pt extends Translations$seerr$en {
 	@override String get signInWithEmby => 'Entrar com Emby';
 	@override String get signInWithLocal => 'Usar uma conta local';
 	@override String get email => 'E-mail';
-	@override String get noSignInMethods => 'Esta instância do Seerr não oferece nenhum método de acesso compatível com o Plezy.';
+	@override String get noSignInMethods => 'Esta instância do Seerr não oferece nenhum método de acesso compatível com o CGFLIX.';
 	@override String get instance => 'Instância';
 	@override String get disconnectConfirm => 'Desconectar Seerr?';
-	@override String get disconnectConfirmBody => 'O Plezy esquecerá esta instância do Seerr. Reconecte quando quiser.';
+	@override String get disconnectConfirmBody => 'O CGFLIX esquecerá esta instância do Seerr. Reconecte quando quiser.';
 	@override String get request => 'Solicitar';
 	@override String get request4k => 'Solicitar em 4K';
 	@override String get seasons => 'Temporadas';
@@ -2206,7 +2226,7 @@ class _Translations$seerr$pt extends Translations$seerr$en {
 	@override String get statusBlocklisted => 'Na lista de bloqueio';
 	@override String couldNotReach({required Object url, required Object error}) => 'Não foi possível acessar ${url}: ${error}';
 	@override String noInstanceAtUrl({required Object url, required Object status}) => 'Nenhuma instância do Seerr em ${url} (HTTP ${status})';
-	@override String get behindAuthProxy => 'Um proxy reverso com autenticação (SSO ou autenticação HTTP) respondeu no lugar do Seerr. O Plezy não consegue entrar através dele: permita que o caminho /api/v1 do Seerr ignore o proxy para este aplicativo, ou use um endereço que alcance o Seerr diretamente.';
+	@override String get behindAuthProxy => 'Um proxy reverso com autenticação (SSO ou autenticação HTTP) respondeu no lugar do Seerr. O CGFLIX não consegue entrar através dele: permita que o caminho /api/v1 do Seerr ignore o proxy para este aplicativo, ou use um endereço que alcance o Seerr diretamente.';
 	@override String get invalidUrl => 'Insira um endereço de servidor como https://seerr.example.com';
 	@override String get quickConnectUnsupported => 'Esta instância do Seerr não oferece suporte a Quick Connect. Ela precisa do Seerr 3.4 ou mais recente.';
 	@override String get notInitialized => 'Esta instância do Seerr não concluiu a configuração inicial';
@@ -2236,9 +2256,10 @@ class _Translations$services$pt extends Translations$services$en {
 	@override String get scrobble => 'Registrar progresso automaticamente';
 	@override String get scrobbleDescription => 'Atualiza sua lista quando você termina um episódio ou filme.';
 	@override String disconnectConfirm({required Object service}) => 'Desconectar ${service}?';
-	@override String disconnectConfirmBody({required Object service}) => 'O Plezy deixará de atualizar ${service}. Reconecte quando quiser.';
+	@override String disconnectConfirmBody({required Object service}) => 'O CGFLIX deixará de atualizar ${service}. Reconecte quando quiser.';
 	@override String connectFailed({required Object service}) => 'Não foi possível conectar ao ${service}. Tente novamente.';
 	@override late final _Translations$services$names$pt names = _Translations$services$names$pt._(_root);
+	@override late final _Translations$services$simklReconnect$pt simklReconnect = _Translations$services$simklReconnect$pt._(_root);
 	@override late final _Translations$services$deviceCode$pt deviceCode = _Translations$services$deviceCode$pt._(_root);
 	@override late final _Translations$services$oauthProxy$pt oauthProxy = _Translations$services$oauthProxy$pt._(_root);
 	@override late final _Translations$services$pendingAuth$pt pendingAuth = _Translations$services$pendingAuth$pt._(_root);
@@ -2522,6 +2543,7 @@ class _Translations$libraries$filterCategories$pt extends Translations$libraries
 	@override String get unwatched => 'Não assistidos';
 	@override String get unplayed => 'Não reproduzidos';
 	@override String get favorites => 'Favoritos';
+	@override String get filePath => 'Caminho do arquivo';
 }
 
 // Path: libraries.sortLabels
@@ -2554,6 +2576,41 @@ class _Translations$libraries$sortLabels$pt extends Translations$libraries$sortL
 	@override String get dateDownloaded => 'Data de download';
 	@override String get size => 'Tamanho';
 	@override String get library => 'Biblioteca';
+}
+
+// Path: libraries.advancedFilters
+class _Translations$libraries$advancedFilters$pt extends Translations$libraries$advancedFilters$en {
+	_Translations$libraries$advancedFilters$pt._(TranslationsPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get include => 'Incluir';
+	@override String get exclude => 'Excluir';
+	@override String get any => 'Qualquer';
+	@override String get yes => 'Sim';
+	@override String get no => 'Não';
+	@override String not({required Object value}) => 'Não ${value}';
+	@override String valueCount({required Object count}) => '${count} selecionados';
+	@override String valueCountExcluded({required Object count}) => '${count} excluídos';
+	@override String get searchValues => 'Buscar valores';
+	@override String get noValues => 'Nenhum valor';
+	@override String get matchContains => 'Contém';
+	@override String get matchNotContains => 'Não contém';
+	@override String get matchIs => 'É';
+	@override String get matchIsNot => 'Não é';
+	@override String get matchBeginsWith => 'Começa com';
+	@override String get matchEndsWith => 'Termina com';
+	@override String get textHint => 'Digite para filtrar';
+	@override String get from => 'De';
+	@override String get to => 'Até';
+	@override String range({required Object from, required Object to}) => '${from} a ${to}';
+	@override String atLeast({required Object value}) => '${value} ou mais';
+	@override String atMost({required Object value}) => 'Até ${value}';
+	@override String dateLastDays({required Object count}) => 'Últimos ${count} dias';
+	@override String get dateLastYear => 'Último ano';
+	@override String dateOlderThanDays({required Object count}) => 'Há mais de ${count} dias';
+	@override String get dateOlderThanYear => 'Há mais de um ano';
 }
 
 // Path: explore.rows
@@ -2705,6 +2762,7 @@ class _Translations$explore$creditRole$pt extends Translations$explore$creditRol
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
+	@override String get actor => 'Ator/Atriz';
 	@override String get director => 'Diretor';
 	@override String get writer => 'Roteirista';
 	@override String get producer => 'Produtor';
@@ -2826,14 +2884,14 @@ class _Translations$downloads$backgroundWarning$pt extends Translations$download
 	@override String get bannerAction => 'Detalhes';
 	@override String get sheetTitle => 'Os downloads em segundo plano estão bloqueados';
 	@override String get sheetTitleDegraded => 'Os downloads em segundo plano podem ser limitados';
-	@override String get sheetIntro => 'O Android está impedindo que o Plezy faça downloads de forma confiável em segundo plano.';
-	@override String get sheetIntroDegraded => 'Seu dispositivo está limitando quando o Plezy pode fazer downloads em segundo plano.';
-	@override String get reasonBackgroundRestricted => 'O uso em segundo plano do Plezy está restrito. Defina o uso da bateria ou o uso em segundo plano como "Sem restrições".';
-	@override String get reasonStandbyRestricted => 'O Android colocou o Plezy em um modo de espera restrito. Defina o uso da bateria como "Sem restrições".';
+	@override String get sheetIntro => 'O Android está impedindo que o CGFLIX faça downloads de forma confiável em segundo plano.';
+	@override String get sheetIntroDegraded => 'Seu dispositivo está limitando quando o CGFLIX pode fazer downloads em segundo plano.';
+	@override String get reasonBackgroundRestricted => 'O uso em segundo plano do CGFLIX está restrito. Defina o uso da bateria ou o uso em segundo plano como "Sem restrições".';
+	@override String get reasonStandbyRestricted => 'O Android colocou o CGFLIX em um modo de espera restrito. Defina o uso da bateria como "Sem restrições".';
 	@override String get reasonDownloadChannelBlocked => 'As notificações de download estão desativadas; por isso, o progresso e os controles podem ficar indisponíveis.';
 	@override String get reasonNotificationsDisabled => 'As notificações estão desativadas. No Android 13 ou mais recente, elas são necessárias para downloads longos em segundo plano.';
 	@override String get reasonDataSaver => 'A Economia de dados está ativada e bloqueia downloads em segundo plano usando dados móveis. Os downloads ainda devem funcionar no Wi-Fi.';
-	@override String get reasonOemUnknown => 'Os downloads foram interrompidos várias vezes enquanto o Plezy estava em segundo plano. Verifique as configurações de bateria ou uso em segundo plano do Plezy.';
+	@override String get reasonOemUnknown => 'Os downloads foram interrompidos várias vezes enquanto o CGFLIX estava em segundo plano. Verifique as configurações de bateria ou uso em segundo plano do CGFLIX.';
 	@override String get openSettings => 'Abrir configurações';
 	@override String get stillNotWorking => 'Ajuda específica para o dispositivo';
 	@override String get stillNotWorkingDescription => 'Veja as instruções para seu dispositivo ou, se o problema persistir, envie um log em Configurações › Ver Logs.';
@@ -2887,19 +2945,19 @@ class _Translations$companionRemote$pairing$pt extends Translations$companionRem
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get discoveryDescription => 'Dispositivos Plezy com a mesma conta Plex aparecem aqui';
+	@override String get discoveryDescription => 'Dispositivos CGFLIX com a mesma conta Plex aparecem aqui';
 	@override String get hostAddressHint => '192.168.1.100:48632';
 	@override String get connecting => 'Conectando...';
 	@override String get searchingForDevices => 'Procurando dispositivos...';
 	@override String get noDevicesFound => 'Nenhum dispositivo encontrado na sua rede';
-	@override String get noDevicesHint => 'Abra o Plezy no desktop e use a mesma rede Wi-Fi';
+	@override String get noDevicesHint => 'Abra o CGFLIX no desktop e use a mesma rede Wi-Fi';
 	@override String get availableDevices => 'Dispositivos disponíveis';
 	@override String get manualConnection => 'Conexão manual';
 	@override String get cryptoInitFailed => 'Não foi possível iniciar a conexão segura. Entre no Plex primeiro.';
 	@override String get validationHostRequired => 'Insira o endereço do host';
 	@override String get validationHostFormat => 'O formato deve ser IP:porta (ex.: 192.168.1.100:48632)';
 	@override String get connectionTimedOut => 'A conexão atingiu o tempo limite. Use a mesma rede nos dois dispositivos.';
-	@override String get sessionNotFound => 'Dispositivo não encontrado. Verifique se o Plezy está em execução no host.';
+	@override String get sessionNotFound => 'Dispositivo não encontrado. Verifique se o CGFLIX está em execução no host.';
 	@override String get authFailed => 'Falha na autenticação. Ambos os dispositivos precisam da mesma conta Plex.';
 	@override String failedToConnect({required Object error}) => 'Falha ao conectar: ${error}';
 }
@@ -2971,6 +3029,17 @@ class _Translations$services$names$pt extends Translations$services$names$en {
 	@override String get mdblist => 'MDBList';
 }
 
+// Path: services.simklReconnect
+class _Translations$services$simklReconnect$pt extends Translations$services$simklReconnect$en {
+	_Translations$services$simklReconnect$pt._(TranslationsPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Reconectar o Simkl';
+	@override String get subtitle => 'O Simkl vai desativar o tipo de login desta conexão. Reconectar abre o simkl.com para você autorizar o CGFLIX — o CGFLIX nunca vê a sua senha. Seu histórico continua no Simkl.';
+}
+
 // Path: services.deviceCode
 class _Translations$services$deviceCode$pt extends Translations$services$deviceCode$en {
 	_Translations$services$deviceCode$pt._(TranslationsPt root) : this._root = root, super.internal(root);
@@ -2978,7 +3047,7 @@ class _Translations$services$deviceCode$pt extends Translations$services$deviceC
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String title({required Object service}) => 'Ativar o Plezy no ${service}';
+	@override String title({required Object service}) => 'Ativar o CGFLIX no ${service}';
 	@override String get instructions => 'Leia o código QR ou acesse o endereço abaixo e insira este código:';
 	@override String openToActivate({required Object service}) => 'Abrir ${service} para ativar';
 	@override String get copyCode => 'Copiar código de ativação';
@@ -3038,7 +3107,7 @@ class _Translations$services$libraryFilter$pt extends Translations$services$libr
 extension on TranslationsPt {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
-			'app.title' => 'Plezy',
+			'app.title' => 'CGFLIX',
 			'auth.signInWithPlex' => 'Entrar com Plex',
 			'auth.showQRCode' => 'Mostrar código QR',
 			'auth.authenticate' => 'Autenticar',
@@ -3054,7 +3123,7 @@ extension on TranslationsPt {
 			'auth.quickConnectWaiting' => 'Aguardando aprovação…',
 			'auth.quickConnectCancel' => 'Cancelar',
 			'auth.quickConnectExpired' => 'Quick Connect expirou. Tente novamente.',
-			'auth.localDataRecoveryRequired' => 'O Plezy não conseguiu recuperar com segurança os dados locais de acesso e de reproduções pendentes. Entre novamente.',
+			'auth.localDataRecoveryRequired' => 'O CGFLIX não conseguiu recuperar com segurança os dados locais de acesso e de reproduções pendentes. Entre novamente.',
 			'auth.pinCheckRejected' => 'A verificação do PIN do Plex foi rejeitada',
 			'common.cancel' => 'Cancelar',
 			'common.save' => 'Salvar',
@@ -3141,7 +3210,7 @@ extension on TranslationsPt {
 			'update.latestVersion' => 'Você está na versão mais recente',
 			'update.checkFailed' => 'Falha ao verificar atualizações',
 			'settings.title' => 'Configurações',
-			'settings.supportDeveloper' => 'Apoie o Plezy',
+			'settings.supportDeveloper' => 'Apoie o CGFLIX',
 			'settings.supportDeveloperDescription' => 'Doe via Liberapay para financiar o desenvolvimento',
 			'settings.language' => 'Idioma',
 			'settings.theme' => 'Tema',
@@ -3275,7 +3344,7 @@ extension on TranslationsPt {
 			'settings.resetSettings' => 'Redefinir Configurações',
 			'settings.resetSettingsDescription' => 'Restaurar configurações padrão. Não pode ser desfeito.',
 			'settings.resetSettingsSuccess' => 'Configurações redefinidas com sucesso',
-			'settings.backup' => 'Backup',
+			'settings.backup' => 'Cópia de segurança',
 			'settings.exportSettings' => 'Exportar Configurações',
 			'settings.exportSettingsDescription' => 'Salvar suas preferências em um arquivo',
 			'settings.exportSettingsSuccess' => 'Configurações exportadas',
@@ -3283,9 +3352,10 @@ extension on TranslationsPt {
 			'settings.importSettingsDescription' => 'Restaurar preferências a partir de um arquivo',
 			'settings.importSettingsConfirm' => 'Isso substituirá suas configurações atuais. Continuar?',
 			'settings.importSettingsSuccess' => 'Configurações importadas',
-			'settings.importSettingsInvalidFile' => 'Este arquivo não é uma exportação válida do Plezy',
+			'settings.importSettingsInvalidFile' => 'Este arquivo não é uma exportação válida do CGFLIX',
 			'settings.importSettingsNoUser' => 'Entre na conta antes de importar as configurações',
 			'settings.shortcutsReset' => 'Atalhos redefinidos para o padrão',
+			'settings.resetShortcutsConfirm' => 'Isto troca os seus atalhos personalizados pelos padrões. Continuar?',
 			'settings.about' => 'Sobre',
 			'settings.aboutDescription' => 'Informações do app e licenças',
 			'settings.updates' => 'Atualizações',
@@ -3371,6 +3441,14 @@ extension on TranslationsPt {
 			'settings.audioPassthroughDescription' => 'Enviar o áudio Dolby/DTS ao receptor ou à TV sem recodificação, preservando o som surround. Desative se não houver som.',
 			'settings.audioPassthroughDescriptionAppleTv' => 'Usar o decodificador Dolby nativo da Apple para Dolby Digital Plus, incluindo Atmos. DTS e TrueHD continuam sendo reproduzidos como PCM multicanal. Desative se não houver som.',
 			'settings.audioPassthroughOverriddenByNormalization' => 'Desativada enquanto a normalização de intensidade sonora estiver ativa',
+			'settings.audioChannelLimit' => 'Canais de áudio',
+			'settings.audioChannelLimitDescription' => 'Mistura o áudio para caixas de som, fones ou sistemas HDMI que não tocam todos os canais',
+			'settings.audioChannelLimitOriginal' => 'Original',
+			'settings.audioChannelLimitOriginalDescription' => 'Toca todos os canais da faixa',
+			'settings.audioChannelLimitSurround51' => 'Até 5.1',
+			'settings.audioChannelLimitSurround51Description' => 'Mistura 7.1 em 5.1 para TVs e receivers que só aceitam PCM 5.1. A passagem direta não muda.',
+			'settings.audioChannelLimitStereo' => 'Estéreo',
+			'settings.audioChannelLimitStereoDescription' => 'Mistura em dois canais para caixas de som estéreo ou fones. Desliga a passagem direta.',
 			'settings.downmixCenterBoost' => 'Reforço do canal central',
 			'settings.downmixCenterBoostValue' => ({required Object db}) => '${db} dB',
 			'settings.downmixCenterBoostLabel' => 'Reforço (dB)',
@@ -3404,7 +3482,7 @@ extension on TranslationsPt {
 			'settings.forceTvMode' => 'Forçar modo TV',
 			'settings.forceTvModeDescription' => 'Forçar o layout de TV em dispositivos sem detecção automática. Requer reiniciar o app.',
 			'settings.startInFullscreen' => 'Iniciar em tela cheia',
-			'settings.startInFullscreenDescription' => 'Abrir o Plezy em modo de tela cheia ao iniciar',
+			'settings.startInFullscreenDescription' => 'Abrir o CGFLIX em modo de tela cheia ao iniciar',
 			'settings.exitFullscreenOnPlayerClose' => 'Sair da tela cheia ao fechar o reprodutor',
 			'settings.exitFullscreenOnPlayerCloseDescription' => 'Sair automaticamente da tela cheia ao fechar o reprodutor de vídeo',
 			'settings.autoHidePerformanceOverlay' => 'Ocultar automaticamente o painel de desempenho',
@@ -3453,11 +3531,12 @@ extension on TranslationsPt {
 			'settings.playerScopeGlobal' => 'Em todos os lugares',
 			'settings.playerScopeLibrary' => 'Por biblioteca',
 			'settings.playerScopeTitle' => 'Por série ou filme',
-			'settings.exportDialogTitle' => 'Exportar configurações do Plezy',
+			'settings.exportDialogTitle' => 'Exportar configurações do CGFLIX',
 			'search.hint' => 'Buscar filmes, séries, músicas...',
 			'search.tryDifferentTerm' => 'Tente um termo de busca diferente',
 			'search.searchYourMedia' => 'Buscar suas mídias',
 			'search.enterTitleActorOrKeyword' => 'Insira um título, ator ou palavra-chave',
+			'search.people' => 'Pessoas',
 			'hotkeys.setShortcutFor' => ({required Object actionName}) => 'Definir Atalho para ${actionName}',
 			'hotkeys.clearShortcut' => 'Limpar atalho',
 			'hotkeys.noShortcutSet' => 'Nenhum atalho definido',
@@ -3540,6 +3619,8 @@ extension on TranslationsPt {
 			'fileInfo.dolbyVision' => 'Dolby Vision',
 			'fileInfo.dolbyVisionLevel' => 'Nível Dolby Vision',
 			'fileInfo.dolbyVisionVersion' => 'Versão Dolby Vision',
+			_ => null,
+		} ?? switch (path) {
 			'fileInfo.dolbyVisionLayers' => 'Camadas Dolby Vision',
 			'fileInfo.baseLayerCompatibility' => 'Compatibilidade da camada base',
 			'fileInfo.avcBitstream' => 'Bitstream AVC',
@@ -3550,8 +3631,6 @@ extension on TranslationsPt {
 			'fileInfo.streamId' => 'ID do fluxo',
 			'fileInfo.language' => 'Idioma',
 			'fileInfo.languageCode' => 'Código do idioma',
-			_ => null,
-		} ?? switch (path) {
 			'fileInfo.streamTitle' => 'Título da faixa',
 			'fileInfo.channels' => 'Canais',
 			'fileInfo.sampleRate' => 'Taxa de amostragem',
@@ -3632,8 +3711,8 @@ extension on TranslationsPt {
 			'mediaMenu.deleteEpisodeCountWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Isso exclui o ${n} episódio e o arquivo dele.', other: 'Isso exclui todos os ${n} episódios e os arquivos deles.', ), 
 			'mediaMenu.deleteMultiPartWarning' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Este item está armazenado como ${n} arquivo, que será excluído.', other: 'Este item está armazenado em ${n} arquivos, e todos eles serão excluídos.', ), 
 			'mediaMenu.deleteSharedFileHeading' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: 'Mais ${n} episódio está armazenado no mesmo arquivo e também será excluído:', other: 'Mais ${n} episódios estão armazenados no mesmo arquivo e também serão excluídos:', ), 
-			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'O Plezy não conseguiu verificar quais arquivos serão removidos, então pode excluir mais do que o item acima. Cancele e tente novamente, ou exclua mesmo assim.',
-			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Seu servidor não forneceu detalhes do arquivo para este item, então o Plezy não pode verificar quais arquivos serão removidos. Pode excluir mais do que o item acima.',
+			'mediaMenu.deleteScopeUnverifiedProbeFailed' => 'O CGFLIX não conseguiu verificar quais arquivos serão removidos, então pode excluir mais do que o item acima. Cancele e tente novamente, ou exclua mesmo assim.',
+			'mediaMenu.deleteScopeUnverifiedNoFileInfo' => 'Seu servidor não forneceu detalhes do arquivo para este item, então o CGFLIX não pode verificar quais arquivos serão removidos. Pode excluir mais do que o item acima.',
 			'mediaMenu.mediaDeletedSuccessfully' => 'Item de mídia excluído com sucesso',
 			'mediaMenu.mediaFailedToDelete' => 'Falha ao excluir item de mídia',
 			'mediaMenu.rate' => 'Avaliar',
@@ -3817,14 +3896,14 @@ extension on TranslationsPt {
 			'messages.failedToCreatePlayQueueNoItems' => 'Falha ao criar a fila de reprodução — nenhum item',
 			'messages.failedPlayback' => ({required Object action, required Object error}) => 'Falha ao ${action}: ${error}',
 			'messages.switchingToCompatiblePlayer' => 'Alternando para um reprodutor compatível...',
-			'messages.serverLimitTitle' => 'Falha na reprodução',
-			'messages.serverLimitBody' => 'Erro do servidor (HTTP 500). Um limite de largura de banda ou transcodificação provavelmente rejeitou esta sessão. Peça ao proprietário do servidor para ajustá-lo.',
+			'messages.serverLimitTitle' => 'Não deu para tocar agora',
+			'messages.serverLimitBody' => 'O servidor recusou este play. O mais comum é o limite de 2 telas ao mesmo tempo: feche o CGFLIX em outro aparelho (ou espere um minuto) e tente de novo. Se continuar, avise o Caio.',
 			'messages.mediaUnreadableTitle' => 'Arquivo indisponível',
 			'messages.mediaUnreadableBody' => 'O servidor encontrou este item, mas não conseguiu ler o arquivo (HTTP 404). O arquivo provavelmente foi movido, excluído ou o armazenamento está offline. Peça ao responsável pelo servidor para verificar o arquivo e reexaminar a biblioteca.',
 			'messages.serverBusyTitle' => 'Transmissão indisponível',
 			'messages.serverBusyBody' => 'O servidor continuou se recusando a transmitir este arquivo (HTTP 503). Ele pode estar reiniciando ou ocupado, ou o armazenamento do arquivo pode estar offline. Tente novamente em instantes — se isso continuar acontecendo, peça ao proprietário do servidor para verificar o servidor e o armazenamento do arquivo.',
-			'messages.playbackNotAllowedTitle' => 'Reprodução não permitida',
-			'messages.playbackNotAllowedBody' => 'O servidor se recusou a transmitir este item (HTTP 403). Sua conta pode não ter permissão para reproduzi-lo, ou o servidor pode permitir a reprodução apenas na própria rede local.',
+			'messages.playbackNotAllowedTitle' => 'Limite de telas ou sem permissão',
+			'messages.playbackNotAllowedBody' => 'O servidor não deixou tocar este título. Cada conta assiste em até 2 telas ao mesmo tempo: feche o CGFLIX em outro aparelho e tente de novo. Se não for isso, sua conta pode não ter acesso a este título.',
 			'messages.logsUploaded' => 'Logs enviados',
 			'messages.logsUploadFailed' => 'Falha ao enviar logs',
 			'messages.logId' => 'ID do log',
@@ -3880,7 +3959,7 @@ extension on TranslationsPt {
 			'mpvConfig.removeLine' => 'Remover linha',
 			'mpvConfig.embeddedVoHint' => 'vo, gpu-context e gpu-api são ignorados no Linux: o vídeo incorporado é sempre renderizado via vo=libmpv no plano de vídeo, e gpu-next (necessário para shaders de computação como ArtCNN) não pode ser executado incorporado.',
 			'dialog.confirmAction' => 'Confirmar Ação',
-			'profiles.addPlezyProfile' => 'Adicionar perfil Plezy',
+			'profiles.addPlezyProfile' => 'Adicionar perfil CGFLIX',
 			'profiles.switchingProfile' => 'Mudando perfil…',
 			'profiles.deleteThisProfileTitle' => 'Excluir este perfil?',
 			'profiles.deleteThisProfileMessage' => ({required Object displayName}) => 'Remover ${displayName}. As conexões não serão afetadas.',
@@ -3890,6 +3969,8 @@ extension on TranslationsPt {
 			'profiles.signOut' => 'Sair',
 			'profiles.signOutPlexTitle' => 'Sair do Plex?',
 			'profiles.signOutPlexMessage' => ({required Object displayName}) => 'Remover ${displayName} e todos os usuários do Plex Home? Você pode entrar novamente quando quiser.',
+			'profiles.signOutPlexDeleteDownloads' => 'Apagar também os baixados',
+			'profiles.signOutPlexDeleteDownloadsDescription' => 'Se não apagar, eles ficam neste aparelho e voltam quando você entrar de novo nesta conta.',
 			'profiles.signedOutPlex' => 'Saiu do Plex.',
 			'profiles.signOutFailed' => 'Falha ao sair.',
 			'profiles.sectionTitle' => 'Perfis',
@@ -3953,12 +4034,12 @@ extension on TranslationsPt {
 			'connections.accessDeniedMany' => ({required Object count}) => '${count} servidores negaram acesso a esta conta',
 			'connections.signInAgain' => 'Entrar novamente',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Editar conexão do ${product}',
-			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Adicione ou remova URLs para ${serverName}. O Plezy usará a URL acessível com menor latência.',
+			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Adicione ou remova URLs para ${serverName}. O CGFLIX usará a URL acessível com menor latência.',
 			'accountPreferences.sectionTitle' => 'Preferências da conta',
 			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Opções de áudio, legendas e biblioteca salvas em ${account}',
 			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Opções de áudio, legendas e biblioteca salvas em ${count} contas',
 			'accountPreferences.pickAccount' => 'Cada conta armazena suas próprias preferências. Escolha a que deseja editar.',
-			'accountPreferences.storedOnAccount' => 'Estas opções são salvas na própria conta, então todos os apps conectados a ela as utilizam — inclusive o Plezy nos seus outros dispositivos.',
+			'accountPreferences.storedOnAccount' => 'Estas opções são salvas na própria conta, então todos os apps conectados a ela as utilizam — inclusive o CGFLIX nos seus outros dispositivos.',
 			'accountPreferences.noAccounts' => 'Nenhuma conta para configurar',
 			'accountPreferences.noAccountsHint' => 'Entre no Plex ou conecte um servidor Jellyfin ou Emby, e as preferências armazenadas nessa conta aparecerão aqui.',
 			'accountPreferences.unavailable' => 'Não foi possível acessar esta conta',
@@ -4028,13 +4109,13 @@ extension on TranslationsPt {
 			'discover.cast' => 'Elenco',
 			'discover.extras' => 'Trailers e extras',
 			'discover.studio' => 'Estúdio',
-			'discover.rating' => 'Avaliação',
+			'discover.rating' => 'Classificação indicativa',
 			'discover.director' => 'Diretor',
 			'discover.directors' => 'Diretores',
 			'discover.movie' => 'Filme',
 			'discover.tvShow' => 'Série de TV',
 			'discover.minutesLeft' => ({required Object minutes}) => '${minutes} min restantes',
-			'discover.moreLikeThis' => 'Títulos semelhantes',
+			'discover.moreLikeThis' => 'Mais como este',
 			'discover.titleCount' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${n} título', other: '${n} títulos', ), 
 			'errors.searchFailed' => ({required Object error}) => 'Falha na busca: ${error}',
 			'errors.searchUnavailable' => 'A busca não conseguiu alcançar nenhum servidor de mídia.',
@@ -4052,6 +4133,8 @@ extension on TranslationsPt {
 			'errors.reasonUnreachable' => 'não foi possível alcançar o servidor',
 			'errors.reasonRefused' => 'o servidor recusou a solicitação',
 			'errors.reasonNotFound' => 'o item não está mais no servidor',
+			_ => null,
+		} ?? switch (path) {
 			'errors.reasonServerError' => 'o servidor relatou um erro',
 			'errors.reasonCancelled' => 'a solicitação foi cancelada',
 			'errors.reasonUnexpected' => 'ocorreu um erro inesperado',
@@ -4064,8 +4147,6 @@ extension on TranslationsPt {
 			'libraries.refreshMetadata' => 'Atualizar Metadados',
 			'libraries.emptyTrash' => 'Esvaziar Lixeira',
 			'libraries.emptyingTrash' => ({required Object title}) => 'Esvaziando lixeira de "${title}"...',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.trashEmptied' => ({required Object title}) => 'Lixeira esvaziada de "${title}"',
 			'libraries.failedToEmptyTrash' => ({required Object error}) => 'Falha ao esvaziar lixeira: ${error}',
 			'libraries.analyzing' => ({required Object title}) => 'Analisando "${title}"...',
@@ -4119,6 +4200,7 @@ extension on TranslationsPt {
 			'libraries.filterCategories.unwatched' => 'Não assistidos',
 			'libraries.filterCategories.unplayed' => 'Não reproduzidos',
 			'libraries.filterCategories.favorites' => 'Favoritos',
+			'libraries.filterCategories.filePath' => 'Caminho do arquivo',
 			'libraries.sortLabels.title' => 'Título',
 			'libraries.sortLabels.dateAdded' => 'Data de adição',
 			'libraries.sortLabels.releaseDate' => 'Data de lançamento',
@@ -4142,10 +4224,36 @@ extension on TranslationsPt {
 			'libraries.sortLabels.dateDownloaded' => 'Data de download',
 			'libraries.sortLabels.size' => 'Tamanho',
 			'libraries.sortLabels.library' => 'Biblioteca',
+			'libraries.advancedFilters.include' => 'Incluir',
+			'libraries.advancedFilters.exclude' => 'Excluir',
+			'libraries.advancedFilters.any' => 'Qualquer',
+			'libraries.advancedFilters.yes' => 'Sim',
+			'libraries.advancedFilters.no' => 'Não',
+			'libraries.advancedFilters.not' => ({required Object value}) => 'Não ${value}',
+			'libraries.advancedFilters.valueCount' => ({required Object count}) => '${count} selecionados',
+			'libraries.advancedFilters.valueCountExcluded' => ({required Object count}) => '${count} excluídos',
+			'libraries.advancedFilters.searchValues' => 'Buscar valores',
+			'libraries.advancedFilters.noValues' => 'Nenhum valor',
+			'libraries.advancedFilters.matchContains' => 'Contém',
+			'libraries.advancedFilters.matchNotContains' => 'Não contém',
+			'libraries.advancedFilters.matchIs' => 'É',
+			'libraries.advancedFilters.matchIsNot' => 'Não é',
+			'libraries.advancedFilters.matchBeginsWith' => 'Começa com',
+			'libraries.advancedFilters.matchEndsWith' => 'Termina com',
+			'libraries.advancedFilters.textHint' => 'Digite para filtrar',
+			'libraries.advancedFilters.from' => 'De',
+			'libraries.advancedFilters.to' => 'Até',
+			'libraries.advancedFilters.range' => ({required Object from, required Object to}) => '${from} a ${to}',
+			'libraries.advancedFilters.atLeast' => ({required Object value}) => '${value} ou mais',
+			'libraries.advancedFilters.atMost' => ({required Object value}) => 'Até ${value}',
+			'libraries.advancedFilters.dateLastDays' => ({required Object count}) => 'Últimos ${count} dias',
+			'libraries.advancedFilters.dateLastYear' => 'Último ano',
+			'libraries.advancedFilters.dateOlderThanDays' => ({required Object count}) => 'Há mais de ${count} dias',
+			'libraries.advancedFilters.dateOlderThanYear' => 'Há mais de um ano',
 			'about.title' => 'Sobre',
 			'about.openSourceLicenses' => 'Licenças de código aberto',
 			'about.versionLabel' => ({required Object version}) => 'Versão ${version}',
-			'about.appDescription' => 'Um belo cliente de Plex, Jellyfin e Emby feito com Flutter',
+			'about.appDescription' => 'Os filmes e séries da família, em qualquer tela',
 			'about.viewLicensesDescription' => 'Ver as licenças de bibliotecas de terceiros',
 			'serverSelection.noServersFoundForAccount' => ({required Object username, required Object email}) => 'Nenhum servidor encontrado para ${username} (${email})',
 			'serverSelection.failedToLoadServers' => ({required Object error}) => 'Falha ao carregar servidores: ${error}',
@@ -4158,9 +4266,9 @@ extension on TranslationsPt {
 			'logs.clearLogs' => 'Limpar Logs',
 			'logs.copyLogs' => 'Copiar Logs',
 			'logs.uploadLogs' => 'Enviar Logs',
-			'startup.failedTitle' => 'O Plezy não conseguiu iniciar',
+			'startup.failedTitle' => 'O CGFLIX não conseguiu iniciar',
 			'startup.failedBody' => 'Algo deu errado durante a inicialização. Os detalhes abaixo identificam o que falhou.',
-			'startup.failedBodyRepairable' => 'O arquivo de configurações salvo do Plezy está danificado e precisa ser reconstruído antes que o Plezy possa iniciar. Tentar novamente não vai ajudar — escolha Reparar armazenamento.',
+			'startup.failedBodyRepairable' => 'O arquivo de configurações salvo do CGFLIX está danificado e precisa ser reconstruído antes que o CGFLIX possa iniciar. Tentar novamente não vai ajudar — escolha Reparar armazenamento.',
 			'startup.phaseLabel' => 'Etapa',
 			'startup.showDetails' => 'Mostrar detalhes',
 			'startup.hideDetails' => 'Ocultar detalhes',
@@ -4169,16 +4277,16 @@ extension on TranslationsPt {
 			'startup.uploadDetails' => 'Enviar detalhes',
 			'startup.repairStorage' => 'Reparar armazenamento',
 			'startup.repairTitle' => 'Reparar dados armazenados?',
-			'startup.repairBodyCommon' => 'O arquivo de configurações do Plezy está danificado e não pode ser lido. Reparar redefine todas as configurações para o padrão.',
+			'startup.repairBodyCommon' => 'O arquivo de configurações do CGFLIX está danificado e não pode ser lido. Reparar redefine todas as configurações para o padrão.',
 			'startup.repairBodyOneCredential' => 'Um login salvo está danificado e não pode ser lido. Reparar remove apenas ele; suas outras configurações permanecem intactas.',
 			'startup.repairBodySignInsKept' => 'Seus servidores e perfis devem permanecer conectados.',
 			'startup.repairBodySignInsLost' => 'A chave que protege seus logins salvos não pode ser recuperada deste arquivo, então você terá que entrar novamente em todos os servidores e perfis. Nada no seu servidor de mídia é afetado.',
-			'startup.repairBodySessionsUncertain' => 'Os rastreadores (MAL, AniList, Simkl, Trakt) e o Seerr são armazenados separadamente e podem ou não ser preservados. O Plezy informará exatamente o que foi mantido.',
+			'startup.repairBodySessionsUncertain' => 'Os rastreadores (MAL, AniList, Simkl, Trakt) e o Seerr são armazenados separadamente e podem ou não ser preservados. O CGFLIX informará exatamente o que foi mantido.',
 			'startup.repairConfirm' => 'Reparar',
 			'startup.repairSucceeded' => 'Armazenamento reparado',
 			'startup.repairNeedsRestart' => 'Armazenamento reparado — reinício necessário',
-			'startup.restartRequiredBody' => 'Seus dados foram reparados, mas o Plezy precisa iniciar do zero antes de usá-los. Feche o Plezy e abra-o novamente.',
-			'startup.quitPlezy' => 'Sair do Plezy',
+			'startup.restartRequiredBody' => 'Seus dados foram reparados, mas o CGFLIX precisa iniciar do zero antes de usá-los. Feche o CGFLIX e abra-o novamente.',
+			'startup.quitPlezy' => 'Sair do CGFLIX',
 			'startup.repairFailed' => 'Falha no reparo',
 			'startup.repairKeptSignIns' => 'Seus servidores e perfis ainda estão conectados.',
 			'startup.repairLostSignIns' => 'A chave que protege seus logins salvos não pôde ser recuperada. Você terá que entrar novamente em todos os servidores e perfis.',
@@ -4187,13 +4295,13 @@ extension on TranslationsPt {
 			'startup.backupWarning' => 'Ele contém suas credenciais de login. Não envie nem compartilhe.',
 			'startup.deleteBackup' => 'Excluir cópia',
 			'startup.backupDeleted' => 'Cópia excluída.',
-			'startup.previousFailureTitle' => 'O Plezy falhou ao iniciar da última vez',
+			'startup.previousFailureTitle' => 'O CGFLIX falhou ao iniciar da última vez',
 			'licenses.relatedPackages' => 'Pacotes Relacionados',
 			'licenses.license' => 'Licença',
 			'licenses.licenseNumber' => ({required Object number}) => 'Licença ${number}',
 			'licenses.licensesCount' => ({required Object count}) => '${count} licenças',
 			'navigation.libraries' => 'Bibliotecas',
-			'navigation.downloads' => 'Downloads',
+			'navigation.downloads' => 'Baixados',
 			'navigation.liveTv' => 'TV ao Vivo',
 			'navigation.explore' => 'Explorar',
 			'explore.title' => 'Explorar',
@@ -4293,6 +4401,7 @@ extension on TranslationsPt {
 			'explore.sourceMaterial.webComic' => 'Webcomic',
 			'explore.sourceMaterial.musicRelease' => 'Música',
 			'explore.sourceMaterial.otherMedia' => 'Outro',
+			'explore.creditRole.actor' => 'Ator/Atriz',
 			'explore.creditRole.director' => 'Diretor',
 			'explore.creditRole.writer' => 'Roteirista',
 			'explore.creditRole.producer' => 'Produtor',
@@ -4538,6 +4647,8 @@ extension on TranslationsPt {
 			'watchTogether.hostTransferFailed' => ({required Object name}) => 'Não foi possível tornar ${name} o anfitrião',
 			'watchTogether.watchingWithOthers' => 'Assistindo com outras pessoas',
 			'watchTogether.endSession' => 'Encerrar sessão',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.leaveSession' => 'Sair da sessão',
 			'watchTogether.endSessionQuestion' => 'Encerrar sessão?',
 			'watchTogether.leaveSessionQuestion' => 'Sair da sessão?',
@@ -4578,8 +4689,6 @@ extension on TranslationsPt {
 			'watchTogether.renameRoom' => 'Renomear sala',
 			'watchTogether.removeRoom' => 'Remover',
 			'watchTogether.guestSwitchUnavailable' => 'Não foi possível trocar — servidor indisponível para sincronização',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.guestSwitchFailed' => 'Não foi possível trocar — conteúdo não encontrado neste servidor',
 			'watchTogether.defaultDisplayName' => 'Usuário',
 			'watchTogether.errors.timedOut' => 'O servidor de retransmissão não respondeu a tempo',
@@ -4587,7 +4696,7 @@ extension on TranslationsPt {
 			'watchTogether.errors.invalidRelayResponse' => 'O servidor de retransmissão enviou uma resposta inesperada',
 			'watchTogether.errors.sessionEnded' => 'O anfitrião encerrou a sessão',
 			'watchTogether.errors.sessionUnavailable' => 'Não foi possível retomar esta sessão. Entre em uma sala ou crie uma para continuar.',
-			'downloads.title' => 'Downloads',
+			'downloads.title' => 'Baixados',
 			'downloads.manage' => 'Gerenciar',
 			'downloads.tvShows' => 'Séries de TV',
 			'downloads.movies' => 'Filmes',
@@ -4668,14 +4777,14 @@ extension on TranslationsPt {
 			'downloads.backgroundWarning.bannerAction' => 'Detalhes',
 			'downloads.backgroundWarning.sheetTitle' => 'Os downloads em segundo plano estão bloqueados',
 			'downloads.backgroundWarning.sheetTitleDegraded' => 'Os downloads em segundo plano podem ser limitados',
-			'downloads.backgroundWarning.sheetIntro' => 'O Android está impedindo que o Plezy faça downloads de forma confiável em segundo plano.',
-			'downloads.backgroundWarning.sheetIntroDegraded' => 'Seu dispositivo está limitando quando o Plezy pode fazer downloads em segundo plano.',
-			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'O uso em segundo plano do Plezy está restrito. Defina o uso da bateria ou o uso em segundo plano como "Sem restrições".',
-			'downloads.backgroundWarning.reasonStandbyRestricted' => 'O Android colocou o Plezy em um modo de espera restrito. Defina o uso da bateria como "Sem restrições".',
+			'downloads.backgroundWarning.sheetIntro' => 'O Android está impedindo que o CGFLIX faça downloads de forma confiável em segundo plano.',
+			'downloads.backgroundWarning.sheetIntroDegraded' => 'Seu dispositivo está limitando quando o CGFLIX pode fazer downloads em segundo plano.',
+			'downloads.backgroundWarning.reasonBackgroundRestricted' => 'O uso em segundo plano do CGFLIX está restrito. Defina o uso da bateria ou o uso em segundo plano como "Sem restrições".',
+			'downloads.backgroundWarning.reasonStandbyRestricted' => 'O Android colocou o CGFLIX em um modo de espera restrito. Defina o uso da bateria como "Sem restrições".',
 			'downloads.backgroundWarning.reasonDownloadChannelBlocked' => 'As notificações de download estão desativadas; por isso, o progresso e os controles podem ficar indisponíveis.',
 			'downloads.backgroundWarning.reasonNotificationsDisabled' => 'As notificações estão desativadas. No Android 13 ou mais recente, elas são necessárias para downloads longos em segundo plano.',
 			'downloads.backgroundWarning.reasonDataSaver' => 'A Economia de dados está ativada e bloqueia downloads em segundo plano usando dados móveis. Os downloads ainda devem funcionar no Wi-Fi.',
-			'downloads.backgroundWarning.reasonOemUnknown' => 'Os downloads foram interrompidos várias vezes enquanto o Plezy estava em segundo plano. Verifique as configurações de bateria ou uso em segundo plano do Plezy.',
+			'downloads.backgroundWarning.reasonOemUnknown' => 'Os downloads foram interrompidos várias vezes enquanto o CGFLIX estava em segundo plano. Verifique as configurações de bateria ou uso em segundo plano do CGFLIX.',
 			'downloads.backgroundWarning.openSettings' => 'Abrir configurações',
 			'downloads.backgroundWarning.stillNotWorking' => 'Ajuda específica para o dispositivo',
 			'downloads.backgroundWarning.stillNotWorkingDescription' => 'Veja as instruções para seu dispositivo ou, se o problema persistir, envie um log em Configurações › Ver Logs.',
@@ -4738,19 +4847,19 @@ extension on TranslationsPt {
 			'companionRemote.session.stopServer' => 'Parar servidor',
 			'companionRemote.session.minimize' => 'Minimizar',
 			'companionRemote.session.manualAddressHint' => 'Endereço de conexão manual:',
-			'companionRemote.pairing.discoveryDescription' => 'Dispositivos Plezy com a mesma conta Plex aparecem aqui',
+			'companionRemote.pairing.discoveryDescription' => 'Dispositivos CGFLIX com a mesma conta Plex aparecem aqui',
 			'companionRemote.pairing.hostAddressHint' => '192.168.1.100:48632',
 			'companionRemote.pairing.connecting' => 'Conectando...',
 			'companionRemote.pairing.searchingForDevices' => 'Procurando dispositivos...',
 			'companionRemote.pairing.noDevicesFound' => 'Nenhum dispositivo encontrado na sua rede',
-			'companionRemote.pairing.noDevicesHint' => 'Abra o Plezy no desktop e use a mesma rede Wi-Fi',
+			'companionRemote.pairing.noDevicesHint' => 'Abra o CGFLIX no desktop e use a mesma rede Wi-Fi',
 			'companionRemote.pairing.availableDevices' => 'Dispositivos disponíveis',
 			'companionRemote.pairing.manualConnection' => 'Conexão manual',
 			'companionRemote.pairing.cryptoInitFailed' => 'Não foi possível iniciar a conexão segura. Entre no Plex primeiro.',
 			'companionRemote.pairing.validationHostRequired' => 'Insira o endereço do host',
 			'companionRemote.pairing.validationHostFormat' => 'O formato deve ser IP:porta (ex.: 192.168.1.100:48632)',
 			'companionRemote.pairing.connectionTimedOut' => 'A conexão atingiu o tempo limite. Use a mesma rede nos dois dispositivos.',
-			'companionRemote.pairing.sessionNotFound' => 'Dispositivo não encontrado. Verifique se o Plezy está em execução no host.',
+			'companionRemote.pairing.sessionNotFound' => 'Dispositivo não encontrado. Verifique se o CGFLIX está em execução no host.',
 			'companionRemote.pairing.authFailed' => 'Falha na autenticação. Ambos os dispositivos precisam da mesma conta Plex.',
 			'companionRemote.pairing.failedToConnect' => ({required Object error}) => 'Falha ao conectar: ${error}',
 			'companionRemote.remote.disconnectConfirm' => 'Deseja desconectar da sessão remota?',
@@ -4826,6 +4935,13 @@ extension on TranslationsPt {
 			'performanceOverlay.rotation' => 'Rotação',
 			'performanceOverlay.dvSource' => 'Fonte DV',
 			'performanceOverlay.dvPath' => 'Caminho DV',
+			'performanceOverlay.dvRouteDecoder' => 'Decodificador Dolby Vision',
+			'performanceOverlay.dvRouteDecoderP81' => 'Decodificador Dolby Vision (P7→8.1)',
+			'performanceOverlay.dvRouteBaseLayer' => 'Camada base',
+			'performanceOverlay.dvRouteBaseLayerHdr10' => 'Camada base HDR10',
+			'performanceOverlay.dvRouteBaseLayerHlg' => 'Camada base HLG',
+			'performanceOverlay.dvRouteBaseLayerSdr' => 'Camada base SDR',
+			'performanceOverlay.dvRouteReshaped' => 'RPU remodelada (gpu-next)',
 			'performanceOverlay.p7Conversion' => 'Conv. P7',
 			'performanceOverlay.sampleRate' => 'Taxa de amostragem',
 			'performanceOverlay.pixelFormat' => 'Formato de pixel',
@@ -4970,11 +5086,11 @@ extension on TranslationsPt {
 			'trakt.connected' => 'Conectado',
 			'trakt.connectedAs' => ({required Object username}) => 'Conectado como @${username}',
 			'trakt.disconnectConfirm' => 'Desconectar a conta do Trakt?',
-			'trakt.disconnectConfirmBody' => 'O Plezy deixará de enviar eventos ao Trakt. Você pode reconectar quando quiser.',
+			'trakt.disconnectConfirmBody' => 'O CGFLIX deixará de enviar eventos ao Trakt. Você pode reconectar quando quiser.',
 			'trakt.scrobble' => 'Scrobbling em tempo real',
 			'trakt.scrobbleDescription' => 'Envia eventos de reprodução, pausa e parada ao Trakt durante a exibição.',
 			'trakt.watchedSync' => 'Sincronizar status de assistido',
-			'trakt.watchedSyncDescription' => 'Ao marcar itens como assistidos no Plezy, eles também serão marcados no Trakt.',
+			'trakt.watchedSyncDescription' => 'Ao marcar itens como assistidos no CGFLIX, eles também serão marcados no Trakt.',
 			'seerr.title' => 'Seerr',
 			'seerr.connectTitle' => 'Conectar ao Seerr',
 			'seerr.serverUrl' => 'URL do servidor',
@@ -4984,10 +5100,10 @@ extension on TranslationsPt {
 			'seerr.signInWithEmby' => 'Entrar com Emby',
 			'seerr.signInWithLocal' => 'Usar uma conta local',
 			'seerr.email' => 'E-mail',
-			'seerr.noSignInMethods' => 'Esta instância do Seerr não oferece nenhum método de acesso compatível com o Plezy.',
+			'seerr.noSignInMethods' => 'Esta instância do Seerr não oferece nenhum método de acesso compatível com o CGFLIX.',
 			'seerr.instance' => 'Instância',
 			'seerr.disconnectConfirm' => 'Desconectar Seerr?',
-			'seerr.disconnectConfirmBody' => 'O Plezy esquecerá esta instância do Seerr. Reconecte quando quiser.',
+			'seerr.disconnectConfirmBody' => 'O CGFLIX esquecerá esta instância do Seerr. Reconecte quando quiser.',
 			'seerr.request' => 'Solicitar',
 			'seerr.request4k' => 'Solicitar em 4K',
 			'seerr.seasons' => 'Temporadas',
@@ -5012,7 +5128,7 @@ extension on TranslationsPt {
 			'seerr.statusBlocklisted' => 'Na lista de bloqueio',
 			'seerr.couldNotReach' => ({required Object url, required Object error}) => 'Não foi possível acessar ${url}: ${error}',
 			'seerr.noInstanceAtUrl' => ({required Object url, required Object status}) => 'Nenhuma instância do Seerr em ${url} (HTTP ${status})',
-			'seerr.behindAuthProxy' => 'Um proxy reverso com autenticação (SSO ou autenticação HTTP) respondeu no lugar do Seerr. O Plezy não consegue entrar através dele: permita que o caminho /api/v1 do Seerr ignore o proxy para este aplicativo, ou use um endereço que alcance o Seerr diretamente.',
+			'seerr.behindAuthProxy' => 'Um proxy reverso com autenticação (SSO ou autenticação HTTP) respondeu no lugar do Seerr. O CGFLIX não consegue entrar através dele: permita que o caminho /api/v1 do Seerr ignore o proxy para este aplicativo, ou use um endereço que alcance o Seerr diretamente.',
 			'seerr.invalidUrl' => 'Insira um endereço de servidor como https://seerr.example.com',
 			'seerr.quickConnectUnsupported' => 'Esta instância do Seerr não oferece suporte a Quick Connect. Ela precisa do Seerr 3.4 ou mais recente.',
 			'seerr.notInitialized' => 'Esta instância do Seerr não concluiu a configuração inicial',
@@ -5033,16 +5149,20 @@ extension on TranslationsPt {
 			'services.scrobble' => 'Registrar progresso automaticamente',
 			'services.scrobbleDescription' => 'Atualiza sua lista quando você termina um episódio ou filme.',
 			'services.disconnectConfirm' => ({required Object service}) => 'Desconectar ${service}?',
-			'services.disconnectConfirmBody' => ({required Object service}) => 'O Plezy deixará de atualizar ${service}. Reconecte quando quiser.',
+			'services.disconnectConfirmBody' => ({required Object service}) => 'O CGFLIX deixará de atualizar ${service}. Reconecte quando quiser.',
 			'services.connectFailed' => ({required Object service}) => 'Não foi possível conectar ao ${service}. Tente novamente.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
 			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',
-			'services.deviceCode.title' => ({required Object service}) => 'Ativar o Plezy no ${service}',
+			'services.simklReconnect.title' => 'Reconectar o Simkl',
+			'services.simklReconnect.subtitle' => 'O Simkl vai desativar o tipo de login desta conexão. Reconectar abre o simkl.com para você autorizar o CGFLIX — o CGFLIX nunca vê a sua senha. Seu histórico continua no Simkl.',
+			'services.deviceCode.title' => ({required Object service}) => 'Ativar o CGFLIX no ${service}',
 			'services.deviceCode.instructions' => 'Leia o código QR ou acesse o endereço abaixo e insira este código:',
 			'services.deviceCode.openToActivate' => ({required Object service}) => 'Abrir ${service} para ativar',
+			_ => null,
+		} ?? switch (path) {
 			'services.deviceCode.copyCode' => 'Copiar código de ativação',
 			'services.deviceCode.waitingForAuthorization' => 'Aguardando autorização…',
 			'services.deviceCode.codeCopied' => 'Código copiado',
@@ -5092,8 +5212,6 @@ extension on TranslationsPt {
 			'addServer.borrowFromAnotherProfile' => 'Pegar emprestado de outro perfil',
 			'addServer.borrowFromAnotherProfileSubtitle' => 'Reutilize a conexão de outro perfil. Perfis protegidos por PIN exigem PIN.',
 			'addServer.invalidCredentials' => 'Usuário ou senha inválidos',
-			_ => null,
-		} ?? switch (path) {
 			'addServer.authResponseNotJson' => 'A resposta de autenticação não era um JSON válido',
 			'addServer.authResponseIncomplete' => 'A resposta de login do servidor estava incompleta',
 			'addServer.quickConnectRejected' => 'O Quick Connect foi rejeitado pelo servidor',

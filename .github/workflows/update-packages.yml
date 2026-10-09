@@ -12,6 +12,8 @@ on:
 
 jobs:
   resolve-release:
+    # CGFLIX: depende de segredos do upstream (assinatura, Sentry, winget); só roda no repositório original.
+    if: github.repository == 'edde746/plezy'
     runs-on: ubuntu-latest
     permissions:
       contents: read

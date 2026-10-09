@@ -8,10 +8,15 @@ import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
 import 'package:plezy/models/player_setting_scope.dart';
 import 'package:plezy/utils/platform_detector.dart';
+import 'package:plezy/cgflix/cgflix_collapsible.dart';
 
 import '../../test_helpers/prefs.dart';
 
 void main() {
+  // CGFLIX: as seções das Configurações começam fechadas; estes testes olham as opções por dentro.
+  setUpAll(() => CgflixCollapsibleCard.debugExpandAll = true);
+  tearDownAll(() => CgflixCollapsibleCard.debugExpandAll = false);
+
   setUp(() async {
     resetSharedPreferencesForTest(initialAsync: {'music_quality_preset': 'medium'});
     SettingsService.resetForTesting();

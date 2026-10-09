@@ -1,7 +1,7 @@
 name: plezy
 description: "A beautiful Plex and Jellyfin client for Flutter"
 publish_to: "none"
-version: 2.22.0+152
+version: 1.3.0+500
 
 environment:
   # Dart floor stays 3.12: freezed 3.x emits `final` constructor parameters,
@@ -143,6 +143,7 @@ dependency_overrides:
 flutter:
   uses-material-design: true
   assets:
+    - assets/cgflix_emblema.svg
     - assets/plezy.png
     - assets/plezy_adaptive_foreground.svg
     - assets/plex_chevron.svg
@@ -170,3 +171,15 @@ flutter:
     - family: Go Noto Current Hangul
       fonts:
         - asset: assets/go-noto-kurrent-hangul.ttf
+    # CGFLIX: fonte Inter (igual ao site), licença OFL em assets/fonts/Inter-LICENSE.txt
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Inter-ExtraBold.ttf
+          weight: 800

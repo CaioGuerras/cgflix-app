@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../cgflix/cgflix_defaults.dart';
+import '../cgflix/search/cgflix_search_extras.dart';
+import '../cgflix/search/cgflix_search_grouping.dart';
 import '../exceptions/media_server_exceptions.dart';
 import '../focus/focusable_text_field.dart';
 import '../i18n/strings.g.dart';
@@ -152,8 +155,9 @@ class _SearchScreenState extends State<SearchScreen>
           message: 'Search was cancelled before any server completed',
         );
       }
-      _pendingSearchOutcome = (query: query, result: result);
-      return result.hits;
+      final unified = cgflixUnifySearchResult(result, query); // CGFLIX: um cartão por título/pessoa
+      _pendingSearchOutcome = (query: query, result: unified);
+      return unified.hits;
     } finally {
       if (identical(_activeSearchAbort, abort)) _activeSearchAbort = null;
     }
@@ -209,6 +213,8 @@ class _SearchScreenState extends State<SearchScreen>
     _candidateKinds = _kindsIn(_searchCandidates);
     if (!_hasCandidatesFor(_selectedFilter)) _selectedFilter = const _AllResults();
     _filteredResults = _rankFilteredResults(_selectedFilter, query);
+
+    if (results.isNotEmpty) cgflixRememberSearch(query); // CGFLIX: histórico
 
     if (matched != null && matched.failedServerIds.isNotEmpty) {
       showAppSnackBar(context, t.messages.searchPartialResults);
@@ -501,7 +507,7 @@ class _SearchScreenState extends State<SearchScreen>
   Widget _buildResultsList(BuildContext context) {
     final multiServer = context.watch<MultiServerProvider>();
     final libraries = context.watch<LibrariesProvider>();
-    final showServerName = multiServer.totalServerCount > 1;
+    final showServerName = !cgflixUnifiedSearch && multiServer.totalServerCount > 1; // CGFLIX
     final showChips = _showFilterChips;
     final visible = _visibleResults;
     return buildResultsSliver(
@@ -546,7 +552,9 @@ class _SearchScreenState extends State<SearchScreen>
         child: CustomScrollView(
           primary: false,
           slivers: [
-            DesktopSliverAppBar(title: Text(t.common.search), floating: true),
+            // CGFLIX: no celular a busca abre por cima da Início, com Voltar
+            if (!PlatformDetector.isMobile(context) || (ModalRoute.of(context)?.canPop ?? false))
+              DesktopSliverAppBar(title: Text(t.common.search), floating: true),
             SliverToBoxAdapter(
               child: SearchInputField(
                 controller: searchController,
@@ -569,14 +577,22 @@ class _SearchScreenState extends State<SearchScreen>
               ),
             ),
             if (isSearching)
-              LoadingIndicatorBox.sliver
+              PlatformDetector.isMobile(context)
+                  ? const CgflixSearchSkeleton()
+                  : LoadingIndicatorBox
+                        .sliver // CGFLIX
             else if (!hasSearched)
               SliverFillRemaining(
-                child: StateMessageWidget(
-                  message: t.search.searchYourMedia,
-                  subtitle: t.search.enterTitleActorOrKeyword,
-                  icon: Symbols.search_rounded,
-                  iconSize: 80,
+                // CGFLIX: buscas recentes no celular
+                child: CgflixSearchIdle(
+                  enabled: PlatformDetector.isMobile(context),
+                  onPick: (term) => searchController.text = term,
+                  child: StateMessageWidget(
+                    message: t.search.searchYourMedia,
+                    subtitle: t.search.enterTitleActorOrKeyword,
+                    icon: Symbols.search_rounded,
+                    iconSize: 80,
+                  ),
                 ),
               )
             else if (lastSearchFailed)
@@ -585,16 +601,22 @@ class _SearchScreenState extends State<SearchScreen>
               )
             else if (searchResults.isEmpty)
               SliverFillRemaining(
-                child: StateMessageWidget(
-                  message: t.messages.noResultsFound,
-                  subtitle: t.search.tryDifferentTerm,
-                  icon: Symbols.search_off_rounded,
-                  iconSize: 80,
+                // CGFLIX: "Disponível para pedir" (Seerr) quando não acha nada
+                child: CgflixRequestPrompt(
+                  enabled: PlatformDetector.isMobile(context),
+                  query: lastSearchedQuery,
+                  child: StateMessageWidget(
+                    message: t.messages.noResultsFound,
+                    subtitle: t.search.tryDifferentTerm,
+                    icon: Symbols.search_off_rounded,
+                    iconSize: 80,
+                  ),
                 ),
               )
             else ...[
               if (_showFilterChips) _buildFilterChips(),
               _buildResultsList(context),
+              cgflixRequestSliver(context, lastSearchedQuery), // CGFLIX: "Disponível para pedir"
             ],
           ],
         ),

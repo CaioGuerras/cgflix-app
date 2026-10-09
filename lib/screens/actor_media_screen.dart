@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../cgflix/search/cgflix_sources.dart';
 import '../media/ids.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import '../media/library_query.dart';
@@ -89,6 +90,16 @@ class _ActorMediaScreenState extends BaseMediaListDetailScreen<ActorMediaScreen>
 
   @override
   Future<LibraryPage<MediaItem>> fetchPage(int start, int size, AbortController? abort) {
+    final merged = cgflixMergedPersonPage(
+      context,
+      serverId: widget.serverId,
+      personId: widget.personId,
+      personName: widget.actorName,
+      start: start,
+      size: size,
+      abort: abort,
+    ); // CGFLIX: todos os servidores
+    if (merged != null) return merged;
     return _mediaClient.fetchPersonMediaPage(widget.personId, start: start, size: size, abort: abort);
   }
 

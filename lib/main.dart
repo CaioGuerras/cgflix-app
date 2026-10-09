@@ -11,7 +11,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'connection/connection.dart';
 import 'connection/connection_bootstrap.dart';
@@ -27,7 +26,6 @@ import 'profiles/profile_registry.dart';
 import 'profiles/profile_selection_policy.dart';
 import 'models/external_player_models.dart';
 import 'mixins/mounted_set_state_mixin.dart';
-import 'theme/mono_theme.dart';
 import 'profiles/plex_home_service.dart';
 import 'screens/auth_screen.dart';
 import 'screens/profile/pin_entry_dialog.dart';
@@ -86,6 +84,9 @@ import 'utils/media_server_http_client.dart';
 import 'utils/media_server_timeouts.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
+import 'cgflix/cgflix_intro.dart';
+import 'cgflix/cgflix_style.dart';
+import 'cgflix/cgflix_theme.dart';
 import 'i18n/app_locale_utils.dart';
 import 'i18n/strings.g.dart';
 import 'widgets/app_icon.dart';
@@ -169,6 +170,7 @@ void _bootstrapApp() {
   // Off the critical path: the version label only decorates a diagnostic.
   unawaited(_primeDiagnosticsVersion());
 
+  if (Platform.isAndroid) cgflixEnableEdgeToEdge(); // CGFLIX: barras transparentes
   AndroidExitDiagnostics.markStartupPhase(AndroidStartupPhase.runApp);
   runApp(
     StartupBootstrap<_StartupDependencies>(
@@ -181,8 +183,8 @@ void _bootstrapApp() {
       ),
       discard: (dependencies) => dependencies.appDatabase.close(),
       onCommitted: (dependencies) => _startNonessentialInitialization(dependencies.settings),
-      lightTheme: monoTheme(dark: false),
-      darkTheme: monoTheme(dark: true),
+      lightTheme: cgflixAppTheme(), // CGFLIX: tema único
+      darkTheme: cgflixAppTheme(), // CGFLIX: tema único
       resolveTheme: _resolveStartupTheme,
       // Android runs the Flutter surface in transparent mode over a window
       // whose background MainActivity already restored, so the loading frame
@@ -203,6 +205,7 @@ void _bootstrapApp() {
 Future<StartupThemeResolution> _resolveStartupTheme() async {
   final settings = await SettingsService.getInstance();
   await TvDetectionService.getInstance(forceTv: settings.read(SettingsService.forceTvMode));
+  await cgflixFixThemePref(settings); // CGFLIX: tema único
   final mode = settings.read(SettingsService.themeMode);
   return (themeMode: ThemeProvider.materialThemeModeFor(mode), darkTheme: ThemeProvider.darkThemeFor(mode));
 }
@@ -1854,9 +1857,9 @@ class _AppShell extends StatelessWidget {
                   child: MaterialApp(
                     title: t.app.title,
                     debugShowCheckedModeBanner: false,
-                    theme: themeProvider.lightTheme,
-                    darkTheme: themeProvider.darkTheme,
-                    themeMode: themeProvider.materialThemeMode,
+                    theme: cgflixAppTheme(), // CGFLIX: tema único (OLED), ignora o modo claro
+                    darkTheme: cgflixAppTheme(), // CGFLIX
+                    themeMode: cgflixMaterialThemeMode, // CGFLIX
                     navigatorKey: rootNavigatorKey,
                     navigatorObservers: [BackKeySuppressorObserver()],
                     home: SetupScreen(databaseRecoveryOutcome: databaseRecoveryOutcome),
@@ -2253,6 +2256,8 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
     await downloadProvider.refreshMetadataFromCache();
     if (!mounted) return;
 
+    await CgflixIntro.finished(); // CGFLIX: não corta a abertura no meio
+    if (!mounted) return;
     AndroidExitDiagnostics.markStartupPhase(AndroidStartupPhase.mainScreen);
     unawaited(Navigator.pushReplacement(context, fadeRoute(ProfileSessionScreen(initialPromptHandled: shouldPrompt))));
   }
@@ -2352,7 +2357,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    const coralColor = Color(0xFFE5A00D);
+    const coralColor = CgflixColors.accent; // CGFLIX: roxo em vez do laranja do Plex
     final height = MediaQuery.sizeOf(context).height;
     // The stacked layout below hangs its two rows off fixed ±170/180 offsets from the middle, which
     // needs roughly 700 logical pixels of height. A car at a large interface scale — and a phone in
@@ -2367,7 +2372,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SvgPicture.asset('assets/plezy_adaptive_foreground.svg', width: 160, height: 160),
+                  const CgflixIntroEmblem(size: 160), // CGFLIX: abertura animada
                   _buildStatusText(context),
                   const SizedBox(height: 16),
                   Center(
@@ -2390,7 +2395,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Stack(
         children: [
-          Center(child: SvgPicture.asset('assets/plezy_adaptive_foreground.svg', width: 288, height: 288)),
+          Center(child: const CgflixIntroEmblem(size: 288)), // CGFLIX: abertura animada
           Positioned(left: 0, right: 0, bottom: height * 0.5 - 170, child: _buildStatusText(context)),
           Positioned(
             left: 0,

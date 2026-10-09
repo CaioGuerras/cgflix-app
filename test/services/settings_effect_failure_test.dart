@@ -38,6 +38,8 @@ void main() {
     final settings = await SettingsService.getInstance();
     // The disable path: the effect asks the host to stop, and it doesn't.
     await settings.write(SettingsService.enableCompanionRemoteServer, false);
+    // CGFLIX: o padrão do app é português; fixa o inglês para não carregar outro idioma no teste.
+    await settings.write(SettingsService.appLocale, AppLocale.en);
     companion = _DecliningCompanionRemoteProvider();
   });
 

@@ -245,7 +245,7 @@ android {
   }
 
   defaultConfig {
-    applicationId = "com.edde746.plezy"
+    applicationId = "br.com.docaio.cgflix" // CGFLIX (o namespace continua o do upstream)
     minSdk = 25 // Fire OS 6.x (API 25); :libmpv shares the same floor
     targetSdk = flutter.targetSdkVersion
     versionCode = flutter.versionCode
@@ -300,6 +300,9 @@ android {
         signingConfig = signingConfigs.getByName("release")
       }
       // If key.properties doesn't exist, it will use debug signing for CI builds
+      else {
+        signingConfig = signingConfigs.getByName("debug") // CGFLIX: APK instalável sem keystore
+      }
       ndk {
         debugSymbolLevel = "FULL"
       }

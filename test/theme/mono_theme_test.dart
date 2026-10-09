@@ -27,7 +27,8 @@ void main() {
     expect(light.brightness, Brightness.light);
     expect(dark.brightness, Brightness.dark);
     // OLED is the pure-black variant, which is the whole reason it exists.
-    expect(oled.scaffoldBackgroundColor, const Color(0xFF000000));
+    // CGFLIX: o OLED usa o preto do site (#07060a).
+    expect(oled.scaffoldBackgroundColor, const Color(0xFF07060A));
     expect(dark.scaffoldBackgroundColor, isNot(const Color(0xFF000000)));
   });
 

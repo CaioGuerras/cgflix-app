@@ -1413,7 +1413,7 @@ mixin _JellyfinBrowseMethods on _JellyfinClientInternals {
               'Limit': limit.toString(),
               'IncludeItemTypes': _searchItemTypes,
               'ParentId': library.id,
-              'Fields': _browseFields,
+              'Fields': '$_browseFields,ProviderIds', // CGFLIX: IDs externos para unificar a busca
               'EnableTotalRecordCount': 'false',
               ...jellyfinImageQueryParameters,
             }, abort: abort),

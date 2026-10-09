@@ -15,6 +15,7 @@ mixin _JellyfinImageDownloadMethods on _JellyfinClientInternals {
     if (height != null && !params.containsKey('maxHeight') && !params.containsKey('MaxHeight')) {
       params['maxHeight'] = '$height';
     }
+    if (width != null || height != null) params.putIfAbsent('quality', () => '80'); // CGFLIX: imagens mais leves
     params.putIfAbsent('api_key', () => connection.accessToken);
     return uri.replace(queryParameters: params).toString();
   }

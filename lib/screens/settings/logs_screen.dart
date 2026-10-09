@@ -9,6 +9,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../../cgflix/cgflix_defaults.dart';
 import '../../focus/focusable_action_bar.dart';
 import '../../widgets/dialog_action_button.dart';
 import '../../widgets/app_icon.dart';
@@ -478,11 +479,13 @@ class _LogsScreenState extends State<LogsScreen> with MountedSetStateMixin {
                               tooltip: t.common.refresh,
                               onPressed: _loadLogs,
                             ),
-                            FocusableAction(
-                              icon: Symbols.upload_rounded,
-                              tooltip: t.logs.uploadLogs,
-                              onPressed: _hasDiagnostics ? _uploadLogs : null,
-                            ),
+                            // CGFLIX: sem envio de logs ao servidor do Plezy (regra: nada de telemetria)
+                            if (cgflixAllowLogUpload)
+                              FocusableAction(
+                                icon: Symbols.upload_rounded,
+                                tooltip: t.logs.uploadLogs,
+                                onPressed: _hasDiagnostics ? _uploadLogs : null,
+                              ),
                             FocusableAction(
                               icon: Symbols.content_copy_rounded,
                               tooltip: t.logs.copyLogs,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../cgflix/cgflix_navigation.dart';
 import '../../i18n/strings.g.dart';
 import '../../navigation/navigation_tabs.dart';
 import '../../profiles/active_profile_provider.dart';
@@ -29,13 +30,19 @@ class GeneralSettingsScreen extends StatelessWidget {
     final hasMultipleProfiles = context.watch<ActiveProfileProvider>().hasMultipleProfiles;
     return SettingsPage(
       title: Text(t.settings.general),
+      collapsible: true, // CGFLIX
       children: [
-        SettingsGroup(title: t.settings.languageAndRegion, children: [_languageSelector(context)]),
+        SettingsGroup(
+          title: t.settings.languageAndRegion,
+          initiallyExpanded: true,
+          children: [_languageSelector(context)],
+        ),
 
         SettingsGroup(
           title: t.settings.startup,
           children: [
-            _startupSectionSelector(),
+            if (!cgflixHidesUpstreamSettings(context))
+              _startupSectionSelector(), // CGFLIX: no celular abre sempre na Início
             if (hasMultipleProfiles)
               SettingSwitchTile(
                 pref: SettingsService.requireProfileSelectionOnOpen,

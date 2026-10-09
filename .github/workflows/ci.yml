@@ -593,6 +593,8 @@ jobs:
 
   website:
     name: Website checks
+    # CGFLIX: o site do Plezy (plezy.app) não faz parte do fork; só roda no repositório original.
+    if: github.repository == 'edde746/plezy'
     runs-on: ubuntu-latest
     permissions:
       contents: read

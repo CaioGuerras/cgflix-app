@@ -97,6 +97,7 @@ part 'jellyfin_client/parts/live_tv.dart';
 part 'jellyfin_client/parts/live_tv_dvr.dart';
 part 'jellyfin_client/parts/images_downloads.dart';
 part 'jellyfin_client/parts/metadata_edit.dart';
+part '../cgflix/home/cgflix_jellyfin_queries.dart'; // CGFLIX
 
 /// Canonical declarations of the [JellyfinClient] internals that the `part`
 /// mixins call into.

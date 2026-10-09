@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../cgflix/cgflix_theme.dart';
 import 'gapped_track_shape.dart';
 import 'mono_tokens.dart';
 
@@ -11,7 +12,10 @@ ThemeData monoTheme({required bool dark, bool oled = false}) {
   final cached = _monoThemeCache[key];
   if (cached != null) return cached;
 
-  final theme = _buildMonoTheme(dark: key.dark, oled: key.oled, platform: key.platform);
+  final theme = cgflixBrandTheme(
+    _buildMonoTheme(dark: key.dark, oled: key.oled, platform: key.platform),
+    oled: key.oled,
+  ); // CGFLIX
   _monoThemeCache[key] = theme;
   return theme;
 }

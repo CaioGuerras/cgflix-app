@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../../cgflix/cgflix_about.dart';
+import '../../cgflix/cgflix_logo.dart';
+import '../../cgflix/cgflix_version.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
 import '../../widgets/focusable_list_tile.dart';
 import '../../widgets/settings_section.dart';
@@ -33,20 +36,25 @@ class AboutScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const SizedBox(height: 24),
-                        Image.asset('assets/plezy.png', width: 80, height: 80),
+                        const CgflixEmblem(size: 80),
                         const SizedBox(height: 16),
                         Text(appName, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold)),
                         const SizedBox(height: 8),
                         Text(
-                          t.about.versionLabel(version: appVersion),
+                          cgflixVersionLabel(appVersion), // CGFLIX
+                          semanticsLabel: t.about.versionLabel(version: appVersion),
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: tokens(context).textMuted),
                         ),
+                        const SizedBox(height: 16),
+                        const CgflixDedication(), // CGFLIX
                         const SizedBox(height: 24),
                         Text(
                           t.about.appDescription,
                           style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.center,
                         ),
+                        const SizedBox(height: 12),
+                        const CgflixCredits(), // CGFLIX
                       ],
                     ),
                   ),
