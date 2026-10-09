@@ -5,6 +5,9 @@ Instala o APK de debug do app de teste (test/cgflix/emulador/app_navegacao.dart)
 Início → Filmes → Séries → Animes → Busca (com "Disponível para pedir") → Pedir → título → Voltar →
 menu do usuário → Meus pedidos → Baixados, gira para paisagem e volta em cada tela e guarda as
 capturas (retrato e paisagem). Etapa 1E: a barra não tem mais o ícone "Pedir" (o roteiro confere).
+Tema 1.4.0: o roteiro roda com o aparelho no modo escuro (Isis), passa por Configurações e pela
+tela de entrada, troca o aparelho para o modo claro e captura Início, título, Configurações e
+entrada de novo no tema Heitor (capturas "heitor-*").
 Falha se aparecer tela preta, "RenderFlex overflowed" ou exceção no logcat.
 
 Só usa a biblioteca padrão do Python e o adb do Android SDK.
@@ -173,6 +176,11 @@ class Device:
         self.adb("shell", "input", "tap", str(x), str(y))
         time.sleep(1.5)
 
+    def night(self, dark: bool) -> None:
+        """Modo escuro/claro do aparelho (o app de teste segue: escuro = Isis, claro = Heitor)."""
+        self.adb("shell", "cmd", "uimode", "night", "yes" if dark else "no")
+        time.sleep(2.5)
+
     def back(self) -> None:
         self.adb("shell", "input", "keyevent", "4")
         time.sleep(1.5)
@@ -198,6 +206,7 @@ def run(apk: Path, out_dir: Path) -> int:
     dev.adb("install", "-r", "-t", str(apk))
     dev.adb("logcat", "-c")
     dev.rotate(False)
+    dev.night(True)
     dev.adb("shell", "monkey", "-p", APP_ID, "-c", "android.intent.category.LAUNCHER", "1")
 
     def sem_pedir_na_barra() -> None:
@@ -229,6 +238,24 @@ def run(apk: Path, out_dir: Path) -> int:
         ("10-meus-pedidos", lambda: (dev.tap(r"^Meus pedidos$"), dev.find(r"Aguardando aprovação"))),
         ("11-baixados", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Baixados$"))),
         ("12-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
+        ("13-configuracoes", lambda: (dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Isis"))),
+        ("14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Conectar ao Jellyfin"))),
+    ]
+
+    def para_o_heitor() -> None:
+        dev.back()
+        dev.back()
+        dev.night(False)
+        dev.find(r"^Menu do CGFLIX")
+
+    steps += [
+        ("heitor-01-inicio", para_o_heitor),
+        (
+            "heitor-07-titulo",
+            lambda: (dev.tap(r"^Buscar$"), dev.find(r"Disponível para pedir"), dev.tap(r"^Duna\nFilme")),
+        ),
+        ("heitor-13-configuracoes", lambda: (dev.back(), dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Heitor"))),
+        ("heitor-14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Conectar ao Jellyfin"))),
     ]
     for name, action in steps:
         print(f"• {name}")
