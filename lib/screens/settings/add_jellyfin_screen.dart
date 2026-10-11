@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../cgflix/cgflix_login_checks.dart';
 import '../../connection/connection.dart';
 import '../../connection/connection_registry.dart';
 import '../../exceptions/media_server_exceptions.dart';
@@ -226,6 +227,10 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
   }
 
   Future<void> _probe() async {
+    if (cgflixServerAddressProblem(_enteredUrls()) case final problem?) {
+      setErrorText(problem); // CGFLIX: endereço vazio ou torto, em português claro
+      return;
+    }
     final input = JellyfinEndpointDiscovery.buildUserInputCandidates(_enteredUrls(), dialect: widget.dialect);
     if (input.probeBaseUrls.isEmpty) {
       setErrorText(t.addServer.enterMediaBrowserUrlError(product: widget.dialect.productName));
@@ -269,6 +274,11 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
   }
 
   Future<void> _signIn() async {
+    // CGFLIX: campo vazio = mensagem clara em português, sem ir ao servidor.
+    if (cgflixLoginMissing(_usernameController.text, _passwordController.text) case final missing?) {
+      setErrorText(missing);
+      return;
+    }
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final info = _serverInfo;
     final endpoint = _serverEndpoint;
