@@ -9,6 +9,7 @@ Tema 1.4.0: o roteiro roda com o aparelho no modo escuro (Isis), passa por Confi
 tela de entrada, troca o aparelho para o modo claro e captura Início, título, Configurações e
 entrada de novo no tema Heitor (capturas "heitor-*").
 Refino 2: "Ao assistir" (tela real), a dica de Pular abertura, Dicas do CGFLIX e a dica dos gestos.
+Refino 2b: Configurações em lista M3 (peças reais), Estilo das legendas e o Avançado como subtela.
 1.5.0: menu do usuário novo, Minha conta, Favoritos, Apoie o CGFLIX e o slogan na entrada, nos
 dois temas.
 Falha se aparecer tela preta, "RenderFlex overflowed" ou exceção no logcat.
@@ -322,9 +323,16 @@ def run(apk: Path, out_dir: Path) -> int:
         ("19-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
         ("13-configuracoes", lambda: (dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Isis"))),
         # Refino 2: "Ao assistir" real (Pular abertura em cima, com o "?"), Dicas e a dica dos gestos
-        ("20-ao-assistir", lambda: (dev.tap(r"^Ao assistir$"), dev.find(r"Pular abertura e próximo episódio"))),
+        # Refino 2b: o item da lista M3 lê "título\nresumo" (por isso o "\n" no padrão).
+        ("20-ao-assistir", lambda: (dev.tap(r"^Ao assistir\n"), dev.find(r"Pular abertura e próximo episódio"))),
         ("21-dica-pular-abertura", lambda: (dev.tap(r"^Saiba mais: Pular abertura"), dev.find(r"^Entendi$"))),
-        ("22-dicas", lambda: (dev.back(), dev.back(), dev.tap(r"^Dicas do CGFLIX$"), dev.find(r"Gestos na tela do vídeo"))),
+        # Refino 2b: Estilo das legendas (prévia ao vivo) e Avançado como subtela (fechado no fim)
+        (
+            "24-estilo-legendas",
+            lambda: (dev.back(), dev.back(), dev.tap(r"^Estilo das legendas"), dev.find(r"Prévia da legenda")),
+        ),
+        ("25-avancado", lambda: (dev.back(), dev.tap(r"^Avançado"), dev.find(r"Recursos extras"))),
+        ("22-dicas", lambda: (dev.back(), dev.tap(r"^Dicas do CGFLIX"), dev.find(r"Gestos na tela do vídeo"))),
         ("23-dica-gestos", lambda: (dev.back(), dev.tap(r"^Ver a tela de vídeo$", wait=0.5), dev.find(r"Toque duas vezes nos lados"))),
         ("14-entrada", lambda: (dev.back(), dev.tap(r"^Ver a tela de entrada"), dev.find(r"Aperte o play"))),
     ]
@@ -341,9 +349,11 @@ def run(apk: Path, out_dir: Path) -> int:
             "heitor-07-titulo",
             lambda: (dev.tap(r"^Buscar$"), dev.find(r"Disponível para pedir"), dev.tap(r"^Duna\nFilme")),
         ),
-        ("heitor-13-configuracoes", lambda: (dev.back(), dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Heitor"))),
-        ("heitor-20-ao-assistir", lambda: (dev.tap(r"^Ao assistir$"), dev.find(r"Pular abertura e próximo episódio"))),
-        ("heitor-22-dicas", lambda: (dev.back(), dev.tap(r"^Dicas do CGFLIX$"), dev.find(r"Gestos na tela do vídeo"))),
+        ("heitor-13-configuracoes", lambda: (dev.back(), dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"^Tema"))),
+        ("heitor-20-ao-assistir", lambda: (dev.tap(r"^Ao assistir\n"), dev.find(r"Pular abertura e próximo episódio"))),
+        ("heitor-24-estilo-legendas", lambda: (dev.back(), dev.tap(r"^Estilo das legendas"), dev.find(r"Prévia da legenda"))),
+        ("heitor-25-avancado", lambda: (dev.back(), dev.tap(r"^Avançado"), dev.find(r"Recursos extras"))),
+        ("heitor-22-dicas", lambda: (dev.back(), dev.tap(r"^Dicas do CGFLIX"), dev.find(r"Gestos na tela do vídeo"))),
         ("heitor-14-entrada", lambda: (dev.back(), dev.tap(r"^Ver a tela de entrada"), dev.find(r"Aperte o play"))),
         (
             "heitor-15-menu",

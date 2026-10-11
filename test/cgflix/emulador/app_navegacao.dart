@@ -11,7 +11,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import 'package:plezy/cgflix/apoio/cgflix_apoio_screen.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:plezy/cgflix/cgflix_advanced.dart';
+import 'package:plezy/cgflix/cgflix_config_itens.dart';
 import 'package:plezy/cgflix/cgflix_dicas.dart';
+import 'package:plezy/cgflix/cgflix_theme_picker.dart';
+import 'package:plezy/widgets/setting_tile.dart';
+import 'package:plezy/widgets/settings_page.dart';
+import 'package:plezy/widgets/settings_section.dart';
 import 'package:plezy/cgflix/cgflix_layout.dart';
 import 'package:plezy/cgflix/cgflix_navigation.dart';
 import 'package:plezy/cgflix/cgflix_logo.dart';
@@ -24,7 +31,6 @@ import 'package:plezy/cgflix/requests/cgflix_requests_ui.dart';
 import 'package:plezy/cgflix/requests/cgflix_seerr.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/providers/theme_provider.dart';
-import 'package:plezy/screens/settings/playback_settings_screen.dart';
 import 'package:plezy/services/settings_service.dart' show SettingsService;
 import 'package:provider/provider.dart';
 
@@ -108,7 +114,7 @@ class _ContaFalsa implements CgflixConta {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Refino 2: telas reais das Configurações (Ao assistir) e das Dicas precisam das preferências e do português.
+  // Refino 2/2b: telas reais das Configurações e das Dicas precisam das preferências e do português.
   await SettingsService.getInstance();
   await LocaleSettings.setLocale(AppLocale.pt);
   cgflixDicaPlayerDebugVista = false; // a dica dos gestos aparece na tela de vídeo falsa
@@ -377,45 +383,54 @@ class _PaginaSimples extends StatelessWidget {
   }
 }
 
-/// Configurações (falsas) com a escolha de tema como no app e o caminho para a tela de entrada.
+/// Configurações com as peças reais do refino 2b (lista plana M3, cabeçalhos, tema, idioma, Ao
+/// assistir, Estilo das legendas, Avançado como subtela) e atalhos para as telas falsas.
 class _ConfiguracoesFalsas extends StatelessWidget {
   const _ConfiguracoesFalsas();
 
   @override
   Widget build(BuildContext context) {
-    final tema = context.cgflix.isLight ? 'Heitor' : 'Isis';
-    return Scaffold(
-      appBar: AppBar(title: const Text('Configurações')),
-      body: ListView(
-        children: [
-          const ListTile(
-            title: Text('Aparência', style: TextStyle(fontWeight: FontWeight.w700)),
+    return SettingsPage(
+      title: const Text('Configurações'),
+      children: [
+        const SettingsGroup(title: 'Aparência', children: [CgflixThemeSelector(), CgflixAppLanguageTile()]),
+        const SettingsGroup(
+          title: cgflixWatchHeader,
+          children: [CgflixSubtitleStyleTile(), CgflixSkipTile(), CgflixQualityTile(), CgflixCellularQualityTile()],
+        ),
+        SettingsGroup(
+          title: 'Ajuda',
+          children: [
+            SettingNavigationTile(
+              icon: Symbols.lightbulb_rounded,
+              title: 'Dicas do CGFLIX',
+              subtitle: 'Como usar as funções do app, em poucas palavras',
+              destinationBuilder: (_) => const CgflixDicasScreen(),
+            ),
+            SettingNavigationTile(
+              icon: Symbols.play_circle_rounded,
+              title: 'Ver a tela de vídeo',
+              destinationBuilder: (_) => const _VideoFalso(),
+            ),
+            SettingNavigationTile(
+              icon: Symbols.login_rounded,
+              title: 'Ver a tela de entrada',
+              destinationBuilder: (_) => const _EntradaFalsa(),
+            ),
+          ],
+        ),
+        SettingNavigationTile(
+          icon: Symbols.settings_applications_rounded,
+          title: 'Avançado',
+          subtitle: cgflixAdvancedSummary,
+          onTap: () => cgflixOpenSettingsSubpage(
+            context,
+            title: 'Avançado',
+            builder: (_) => const [CgflixAdvancedFeatures(), CgflixAdvancedPlayback(), CgflixAdvancedSubtitles()],
           ),
-          ListTile(leading: const Icon(Icons.palette_rounded), title: const Text('Tema'), subtitle: Text(tema)),
-          const SwitchListTile(value: true, onChanged: null, title: Text('Abertura animada')),
-          const Divider(),
-          // Refino 2: a tela real de "Ao assistir", as Dicas e a dica dos gestos numa tela de vídeo falsa.
-          ListTile(
-            title: const Text('Ao assistir'),
-            onTap: () =>
-                Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PlaybackSettingsScreen())),
-          ),
-          ListTile(
-            title: const Text('Dicas do CGFLIX'),
-            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CgflixDicasScreen())),
-          ),
-          ListTile(
-            title: const Text('Ver a tela de vídeo'),
-            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const _VideoFalso())),
-          ),
-          ListTile(
-            leading: const Icon(Icons.login_rounded),
-            title: const Text('Ver a tela de entrada'),
-            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const _EntradaFalsa())),
-          ),
-          const CgflixApoioSettingsTile(),
-        ],
-      ),
+        ),
+        const CgflixApoioSettingsTile(),
+      ],
     );
   }
 }
