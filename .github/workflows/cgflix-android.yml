@@ -169,6 +169,15 @@ jobs:
       - name: Compilar APK de debug do roteiro
         run: flutter build apk --debug --target-platform android-x64 -t test/cgflix/emulador/app_navegacao.dart
 
+      # Refino 2: o Gradle fica na memória depois do build e, com o emulador de 4 GB, o runner
+      # enchia o swap e matava o emulador no meio do roteiro ("no devices"). Desliga antes.
+      - name: Liberar memória (desliga o Gradle)
+        run: |
+          (cd android && ./gradlew --stop) || true
+          pkill -f GradleDaemon || true
+          pkill -f kotlin-daemon || true
+          free -m
+
       - name: Ligar KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
