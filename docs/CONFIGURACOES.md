@@ -256,3 +256,18 @@ A dedicatória ("Feito com amor, para Isis e Heitor") fica **somente no Sobre**;
 | Aparência (resumo) | mostra só o tema, ex.: "Isis (escuro, roxo)" | — |
 | Sincronia de áudio/legenda | aparece em segundos ("+0,15 s"); continua guardada em milissegundos | 0 s |
 | Música tema / som do trailer | não existe no app (o Plezy não toca nenhum dos dois sozinho) | — |
+
+## Refino 2 (versão 1.6.0)
+
+As tabelas acima seguem valendo para cada opção; mudou a **ordem** e o lugar de algumas (detalhes em
+`docs/cgflix/REFINO_2.md`):
+
+- **Tela principal**: Ao assistir · Áudio, legenda e conta · Aparência · Geral ─ Baixados ─ Contas e servidores
+  (fechado; com Organizar bibliotecas e Serviços) ─ Avançado (agora com a Cópia de segurança) ─ Sobre ─ Apoie.
+- **Ao assistir** (era "Reprodução de vídeo"): Pular abertura e próximo episódio (aberta) · Legendas (aberta) ·
+  Gestos · Avançar e voltar · Comportamento · Reprodutor · Vídeo e tela · Áudio (agora **fechada**) · Qualidade ·
+  Lembrar ajustes.
+- **Avançado** ganha: Sempre detectar abertura pelos capítulos, Nome do capítulo de abertura e de créditos.
+- **Padrão novo**: Baixar só no Wi-Fi = **ligado** (antes desligado).
+- Itens com "?" (dica): Pular abertura, Áudio, legenda e conta, Baixar só no Wi-Fi, Gestos, Abrir a janelinha ao
+  sair, Qualidade padrão. Todas as dicas: Sobre › Dicas do CGFLIX.
