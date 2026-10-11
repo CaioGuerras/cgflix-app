@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/cgflix/cgflix_dicas.dart';
-import 'package:plezy/cgflix/cgflix_palette.dart';
 import 'package:plezy/cgflix/cgflix_theme.dart';
 import 'package:plezy/services/settings_service.dart';
 

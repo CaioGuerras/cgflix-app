@@ -5,7 +5,6 @@
 //   CGFLIX_CAPTURAS=docs/prints/refino2/depois flutter test test/cgflix/capturas/capturas_test.dart
 // O "antes" do menu do título usa a ordem do Plezy (sem `cgflixArrangeTitleMenu`).
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:drift/native.dart';
@@ -17,7 +16,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:plezy/cgflix/cgflix_collapsible.dart';
 import 'package:plezy/cgflix/cgflix_dicas.dart';
 import 'package:plezy/cgflix/cgflix_menus.dart';
-import 'package:plezy/cgflix/cgflix_palette.dart';
 import 'package:plezy/cgflix/cgflix_theme.dart';
 import 'package:plezy/cgflix/cgflix_user_menu.dart';
 import 'package:plezy/database/app_database.dart';
