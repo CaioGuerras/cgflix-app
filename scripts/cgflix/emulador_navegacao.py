@@ -288,6 +288,14 @@ def run(apk: Path, out_dir: Path) -> int:
             dev.find(marca)
         return acao
 
+    def pedido_feito() -> None:
+        deadline = time.time() + 20
+        while time.time() < deadline:
+            if dev.has(r"Pedido feito") or (dev.has(r"(^|\n)Pedido(\n|$)") and not dev.has(r"^Pedir Duna: Parte Três")):
+                return
+            time.sleep(0.5)
+        raise RuntimeError("não achei na tela: Pedido feito (nem o selo Pedido no lugar do botão)")
+
     steps = [
         ("01-inicio", sem_pedir_na_barra),
         ("02-filmes", categoria("Filmes", r"^Bacurau")),
@@ -297,8 +305,9 @@ def run(apk: Path, out_dir: Path) -> int:
             "05-busca-pedidos",
             lambda: (dev.tap(r"^Voltar para Tudo"), dev.tap(r"^Buscar$"), dev.find(r"Disponível para pedir")),
         ),
-        # O aviso "Pedido feito" some em ~4 s: procura logo depois do toque (sem a espera de 1,5 s).
-        ("06-pedido-feito", lambda: (dev.tap(r"^Pedir Duna: Parte Três", wait=0), dev.find(r"Pedido feito"))),
+        # O aviso "Pedido feito" some em ~4 s e a leitura da tela pode passar disso num emulador lento
+        # (refino 2): vale o aviso ou o botão "Pedir" virando o selo "Pedido".
+        ("06-pedido-feito", lambda: (dev.tap(r"^Pedir Duna: Parte Três", wait=0), pedido_feito())),
         ("07-titulo", lambda: dev.tap(r"^Duna\nFilme")),
         ("08-voltar-inicio", lambda: (dev.back(), dev.back(), dev.find(r"^Menu do CGFLIX"))),
         ("09-menu-usuario", lambda: dev.tap(r"^Menu do CGFLIX")),
