@@ -69,7 +69,11 @@ void main() {
     CgflixPages.downloads = (_) => _fakePage('Baixados');
     CgflixPages.settings = () => MaterialPageRoute<void>(builder: (_) => _fakePage('Configurações'));
     CgflixPages.myRequests = (_) => _fakePage('Meus pedidos');
+    CgflixPages.libraries = (_) => _fakePage('Bibliotecas');
+    cgflixUserMenuDebugOnline = true;
   });
+
+  tearDown(() => cgflixUserMenuDebugOnline = null);
 
   group('abas do celular', () {
     test('conectado: só a Início (sem barra inferior)', () {
@@ -185,6 +189,7 @@ void main() {
     });
 
     for (final item in [
+      (CgflixUserMenuItem.libraries, 'Bibliotecas'),
       (CgflixUserMenuItem.myRequests, 'Meus pedidos'),
       (CgflixUserMenuItem.downloads, 'Baixados'),
       (CgflixUserMenuItem.settings, 'Configurações'),
@@ -193,8 +198,9 @@ void main() {
         await _pumpBar(tester, const Size(412, 914));
         await tester.tap(find.byKey(const ValueKey('cgflix-top-menu')));
         await tester.pumpAndSettle();
-        // Menu: perfil, Meus pedidos, Baixados, Configurações, Sobre, Sair.
-        for (final i in CgflixUserMenuItem.values) {
+        // 1.5.0: Bibliotecas · Meus pedidos · Baixados ─ Configurações · Trocar usuário · Sobre · Sair
+        // ─ Apoie o CGFLIX (Favoritos só com Jellyfin conectado; aqui não há servidor).
+        for (final i in cgflixUserMenuItems(online: true, hasFavorites: false)) {
           expect(find.byKey(ValueKey('cgflix-menu-${i.name}')), findsOneWidget, reason: i.name);
         }
         await tester.tap(find.byKey(ValueKey('cgflix-menu-${item.$1.name}')));

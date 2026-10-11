@@ -1,5 +1,5 @@
 // Navegação do CGFLIX no celular (Etapa 1D): UMA barra no topo, sem barra inferior.
-//   - à esquerda, o emblema: abre o menu do usuário (perfil, Baixados, Configurações, Sobre, Sair);
+//   - à esquerda, o emblema: abre o menu do usuário (conta, Favoritos, Bibliotecas, Baixados, Configurações...);
 //   - ao centro: chips Filmes · Séries · Animes e a lupa (Busca).
 // A Início é a raiz; Busca, Baixados, Configurações e Meus pedidos abrem como páginas por cima,
 // com Voltar (botão e gesto). TV e computador continuam com a navegação do upstream.
@@ -15,6 +15,7 @@ import '../i18n/strings.g.dart';
 import '../navigation/navigation_tabs.dart';
 import '../navigation/settings_shortcut.dart';
 import '../screens/downloads/downloads_screen.dart';
+import '../screens/libraries/libraries_screen.dart';
 import '../screens/search_screen.dart';
 import '../services/settings_service.dart';
 import '../utils/platform_detector.dart';
@@ -73,6 +74,9 @@ List<NavigationTab> cgflixMobileTabs(List<NavigationTab> visibleTabs) {
 abstract final class CgflixPages {
   static WidgetBuilder search = (_) => const SearchScreen();
   static WidgetBuilder downloads = (_) => const DownloadsScreen();
+
+  /// Bibliotecas do upstream (1.5.0: no menu do usuário).
+  static WidgetBuilder libraries = (_) => const LibrariesScreen();
   static Route<void> Function() settings = buildSettingsRoute;
 
   /// "Meus pedidos" (Seerr), em tela nativa.

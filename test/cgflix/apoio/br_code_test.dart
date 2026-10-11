@@ -43,10 +43,7 @@ void main() {
       () => BrCode.estatico(chave: ApoioPix.chave, nome: ApoioPix.nome, cidade: 'SAO JOAO DA BARRA DO NORTE'),
       throwsArgumentError,
     );
-    expect(
-      () => BrCode.estatico(chave: ApoioPix.chave, nome: 'N' * 26, cidade: ApoioPix.cidade),
-      throwsArgumentError,
-    );
+    expect(() => BrCode.estatico(chave: ApoioPix.chave, nome: 'N' * 26, cidade: ApoioPix.cidade), throwsArgumentError);
   });
 
   test('campo com acento é recusado (o BR Code é só ASCII)', () {

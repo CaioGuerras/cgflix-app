@@ -81,4 +81,72 @@ extension CgflixJellyfinQueries on JellyfinClient {
     if (data is String) return data.trim().isEmpty ? null : jsonDecode(data);
     return data;
   }
+
+  // -------------------------------------------------------------------------
+  // Minha conta (1.5.0): a própria pessoa troca foto e senha, sem admin. Primeiro a rota nova
+  // (`/UserImage`, `/Users/Password`, testadas pelo CGFLIX Lite no 10.11.11); se o servidor não
+  // conhecer (404/405, Jellyfin antigo), a rota clássica `/Users/{id}/...`.
+
+  /// Nome e etiqueta da foto (`PrimaryImageTag`) da pessoa logada, direto do servidor.
+  Future<({String name, String? imageTag})> cgflixFetchMe() async {
+    final response = await _http.get(paths.currentUser, timeout: const Duration(seconds: 10));
+    throwIfHttpError(response);
+    final data = response.data;
+    if (data is! Map<String, dynamic>) return (name: connection.userName, imageTag: null);
+    return (
+      name: (data['Name'] as String?) ?? connection.userName,
+      imageTag: JellyfinConnection.readPrimaryImageTag(data),
+    );
+  }
+
+  /// Foto nova (JPEG já recortado), enviada em base64 como o Jellyfin espera.
+  Future<void> cgflixUploadUserImage(List<int> jpeg) async {
+    final body = base64Encode(jpeg);
+    const headers = {'content-type': 'image/jpeg'};
+    const timeout = Duration(seconds: 30);
+    final uid = connection.userId;
+    var response = await _http.post(
+      '/UserImage',
+      queryParameters: {'userId': uid},
+      headers: headers,
+      body: body,
+      timeout: timeout,
+    );
+    if (_cgflixRouteMissing(response.statusCode)) {
+      response = await _http.post(
+        '/Users/${Uri.encodeComponent(uid)}/Images/Primary',
+        headers: headers,
+        body: body,
+        timeout: timeout,
+      );
+    }
+    throwIfHttpError(response);
+    await checkHealth(); // atualiza a etiqueta da foto: o avatar do menu troca na hora
+  }
+
+  Future<void> cgflixDeleteUserImage() async {
+    final uid = connection.userId;
+    const timeout = Duration(seconds: 15);
+    var response = await _http.delete('/UserImage', queryParameters: {'userId': uid}, timeout: timeout);
+    if (_cgflixRouteMissing(response.statusCode)) {
+      response = await _http.delete('/Users/${Uri.encodeComponent(uid)}/Images/Primary', timeout: timeout);
+    }
+    throwIfHttpError(response);
+    await checkHealth();
+  }
+
+  /// Troca de senha. Devolve o código HTTP (204 = trocou; 401/403 = senha atual errada).
+  /// O servidor derruba as OUTRAS sessões da pessoa; a deste aparelho continua valendo.
+  Future<int> cgflixChangePassword({required String current, required String newPassword}) async {
+    final uid = connection.userId;
+    final body = {'CurrentPw': current, 'NewPw': newPassword, 'ResetPassword': false};
+    const timeout = Duration(seconds: 15);
+    var response = await _http.post('/Users/Password', queryParameters: {'userId': uid}, body: body, timeout: timeout);
+    if (_cgflixRouteMissing(response.statusCode)) {
+      response = await _http.post('/Users/${Uri.encodeComponent(uid)}/Password', body: body, timeout: timeout);
+    }
+    return response.statusCode;
+  }
+
+  static bool _cgflixRouteMissing(int status) => status == 404 || status == 405;
 }
