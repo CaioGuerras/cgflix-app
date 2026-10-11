@@ -6,7 +6,7 @@
 2. Title Case do inglês removido (só a primeira letra maiúscula, salvo nomes próprios) e "Insira/Pressione/Selecionar/Pesquisar/Dispositivo" → "Digite/Toque/Escolher/Buscar/Aparelho".
 3. Jargão trocado: URL → endereço ("Endereços do servidor"), Buffer → "Carregamento antecipado"/"Memória de reprodução", Hub → seção, Log(s) → "registros (logs)", Depuração → diagnóstico, Cache → "Memória de imagens"/"memória temporária", Scrobble → "Marcar como assistido", Downmix/passthrough → "Juntar canais em estéreo"/"Enviar áudio direto ao receptor", Shader → "Filtro de imagem", Mecanismo de reprodução → "Reprodutor de vídeo", offline → "sem internet".
 4. Termos fixos unificados: Baixados/baixar, Avançar e voltar ("Avançar X s"/"Voltar X s"), Pular abertura/Pular créditos, Assistir juntos, Continuar assistindo, Ligado/Desligado, Séries (sem "de TV"), lista para assistir (antes misturava "lista de interesses").
-5. Nas 5 mensagens de login/conexão (`addServer.couldNotReachServer`, `signInFailed`, `probeFailed`, `quickConnectFailed`, `failedToRegisterAccount`) o `${error}` saiu do texto, conforme combinado; chaves, ordem, plurais e demais `${param}` estão iguais. Nenhum texto menciona "Plezy" nem milissegundos.
+5. Nas mensagens de login/conexão e de falha do vídeo, o `${error}` ficou (o slang exige o mesmo parâmetro do inglês), mas quem chama passa um motivo já em português, nunca a exceção crua; chaves, ordem, plurais e demais `${param}` estão iguais. Nenhum texto menciona "Plezy" nem milissegundos.
 
 Total de chaves alteradas: **998**.
 
@@ -62,7 +62,7 @@ Total de chaves alteradas: **998**.
 | `settings.episodePosterMode` | Estilo do pôster do episódio | Imagem dos episódios |
 | `settings.showHeroSectionDescription` | Exibir carrossel de conteúdo em destaque na tela inicial | Mostrar um carrossel de destaques na tela inicial |
 | `settings.minutesShort` | m | min |
-| `settings.durationHint` | Insira a duração (${min}-${max}) | Digite a duração (${min}-${max}) |
+| `settings.durationHint` | Insira a duração (${min}-${max}) | Digite um valor de ${min} a ${max} |
 | `settings.libraryDensity` | Densidade da Biblioteca | Tamanho dos itens na biblioteca |
 | `settings.displayScale` | Escala de exibição | Tamanho da interface |
 | `settings.tvCornerSpotlightBackdropDescription` | Mostrar a imagem de destaque no canto superior direito em vez de preencher a tela | Mostrar a imagem de destaque no canto superior direito em vez de ocupar a tela toda |
@@ -417,7 +417,7 @@ Total de chaves alteradas: **998**.
 | `messages.playbackDataInvalid` | O servidor retornou informações de reprodução inválidas. | O servidor mandou informações erradas para tocar este vídeo. Tente de novo. |
 | `messages.playbackCancelled` | A reprodução foi cancelada. | O vídeo foi cancelado. |
 | `messages.playbackFailed` | Não foi possível iniciar a reprodução. | Não deu para começar o vídeo. Confira a internet e tente de novo. |
-| `messages.playbackFailedDetail` | Não foi possível iniciar a reprodução: ${error} | Não deu para começar o vídeo: ${error} |
+| `messages.playbackFailedDetail` | Não foi possível iniciar a reprodução: ${error} | Não deu para começar o vídeo (${error}). Confira a internet e tente de novo. |
 | `messages.audioOutputFailed` | A saída de áudio parou de responder. Verifique a conexão de áudio da TV ou do receptor; se outros aplicativos também estiverem sem som, reinicie o dispositivo. | O som parou de responder. Confira a conexão de áudio da TV ou do receptor; se outros apps também estiverem sem som, reinicie o aparelho. |
 | `messages.errorLoadingFileInfo` | Erro ao carregar as informações do arquivo: ${error} | Não deu para carregar as informações do arquivo: ${error} |
 | `messages.errorLoadingSeries` | Erro ao carregar série | Não deu para carregar a série. Tente de novo. |
@@ -958,7 +958,7 @@ Total de chaves alteradas: **998**.
 | `downloads.backgroundWarning.stillNotWorkingDescription` | Veja as instruções para seu dispositivo ou, se o problema persistir, envie um log em Configurações › Ver Logs. | Veja as instruções para o seu aparelho ou, se continuar, envie os registros em Configurações › Ver registros (logs). |
 | `downloads.backgroundWarning.dialogTitle` | Os downloads podem não ser concluídos | Os downloads podem não terminar |
 | `downloads.backgroundWarning.dialogFixFirst` | Corrigir primeiro | Resolver antes |
-| `downloads.backgroundWarning.statusTile` | Downloads em segundo plano | Downloads com o app fechado |
+| `downloads.backgroundWarning.statusTile` | Downloads em segundo plano | Baixar com o app fechado |
 | `downloads.backgroundWarning.statusOk` | Execução em segundo plano permitida | Permitido baixar com o app fechado |
 | `downloads.backgroundWarning.statusBlocked` | Bloqueado pelas configurações do sistema | Bloqueado pelas configurações do aparelho |
 | `downloads.backgroundWarning.statusDegraded` | Limitado pelas configurações do sistema | Limitado pelas configurações do aparelho |
@@ -1215,11 +1215,11 @@ Total de chaves alteradas: **998**.
 | `addServer.searchingLocalMediaBrowserServers` | Procurando servidores ${product} locais... | Procurando servidores ${product} na sua rede... |
 | `addServer.localMediaBrowserServers` | Servidores ${product} locais | Servidores ${product} na sua rede |
 | `addServer.change` | Alterar | Trocar |
-| `addServer.couldNotReachServer` | Não foi possível conectar ao servidor: ${error} | Não deu para falar com o servidor. Confira o endereço e a internet. |
-| `addServer.signInFailed` | Falha ao entrar: ${error} | Não deu para entrar. Confira a internet e tente de novo. |
-| `addServer.quickConnectFailed` | Quick Connect falhou: ${error} | Não deu para entrar com o Quick Connect. Tente de novo. |
+| `addServer.couldNotReachServer` | Não foi possível conectar ao servidor: ${error} | Não deu para falar com o servidor (${error}). Confira o endereço e a internet. |
+| `addServer.signInFailed` | Falha ao entrar: ${error} | Não deu para entrar (${error}). Confira a internet e tente de novo. |
+| `addServer.quickConnectFailed` | Quick Connect falhou: ${error} | Não deu para entrar com o Quick Connect (${error}). Tente de novo. |
 | `addServer.pinExpired` | O PIN expirou antes de entrar. Tente novamente. | O código expirou antes de você entrar. Tente de novo. |
-| `addServer.failedToRegisterAccount` | Falha ao registrar a conta: ${error} | Não deu para salvar a conta neste aparelho. Tente de novo. |
+| `addServer.failedToRegisterAccount` | Falha ao registrar a conta: ${error} | Não deu para salvar a conta neste aparelho (${error}). Tente de novo. |
 | `addServer.enterMediaBrowserUrlError` | Digite a URL do seu servidor ${product} | Digite o endereço do seu servidor ${product} |
 | `addServer.connectToMediaBrowserCard` | Conectar ao ${product} | Entrar no ${product} |
 | `addServer.signInWithPlexCardSubtitle` | Autorize este dispositivo. Servidores compartilhados são adicionados. | Autorize este aparelho. Os servidores compartilhados com você são adicionados. |
@@ -1238,7 +1238,7 @@ Total de chaves alteradas: **998**.
 | `addServer.serverTimedOut` | O servidor não respondeu a tempo | O servidor demorou demais para responder. Tente de novo. |
 | `addServer.responseNotJson` | A resposta do servidor não era um JSON válido | O servidor respondeu algo inesperado. Confira o endereço. |
 | `addServer.responseMissingIdentity` | A resposta não contém um ID ou nome de servidor — este é um servidor ${product}? | A resposta não parece de um servidor ${product}. Confira o endereço. |
-| `addServer.probeFailed` | Não foi possível conectar ao servidor: ${error} | Não deu para falar com o servidor. Confira o endereço e a internet. |
+| `addServer.probeFailed` | Não foi possível conectar ao servidor: ${error} | Não deu para falar com o servidor (${error}). Confira o endereço e a internet. |
 | `addServer.enterAtLeastOneUrl` | Insira pelo menos uma URL de servidor ${product} | Digite pelo menos um endereço de servidor ${product} |
 | `addServer.noReachableServer` | Nenhum servidor ${product} acessível foi encontrado | Não deu para encontrar nenhum servidor ${product}. Confira o endereço e a internet. |
 | `addServer.urlsPointToDifferentServers` | Estas URLs apontam para servidores ${product} diferentes | Esses endereços levam a servidores ${product} diferentes |
