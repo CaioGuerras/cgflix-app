@@ -187,6 +187,28 @@ void main() {
     expect(find.text('Avançado'), findsOneWidget);
   });
 
+  testWidgets('deitado (914 × 412): tela principal e Avançado sem estouro', (tester) async {
+    await montarConfiguracoes(
+      tester,
+      CgflixThemeVariant.heitor,
+      1,
+      const SettingsScreen(),
+      tamanho: const Size(914, 412),
+    );
+    expect(tester.takeException(), isNull);
+    await tester.scrollUntilVisible(find.text('Avançado'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.tap(find.text('Avançado'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text(t.connections.addConnection), findsOneWidget);
+  });
+
+  testWidgets('foco do teclado/controle visível: realce na cor primary', (tester) async {
+    await principal(tester);
+    final tema = Theme.of(tester.element(find.text('Idioma do app')));
+    expect(tema.focusColor, tema.colorScheme.primary.withValues(alpha: 0.16));
+  });
+
   test('nomes de idioma em português, com inicial maiúscula', () {
     expect(LanguageCodes.getLanguageName('por'), 'Português');
     expect(LanguageCodes.getLanguageName('en'), 'Inglês');

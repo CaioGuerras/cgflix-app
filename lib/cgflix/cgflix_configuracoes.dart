@@ -82,6 +82,8 @@ ThemeData cgflixSettingsTheme(ThemeData theme) {
   final text = theme.textTheme;
   return theme.copyWith(
     colorScheme: s,
+    // Foco do teclado/controle bem visível na linha inteira (16% da cor primary).
+    focusColor: s.primary.withValues(alpha: 0.16),
     switchTheme: cgflixSwitchTheme(s),
     radioTheme: cgflixRadioTheme(s),
     checkboxTheme: theme.checkboxTheme.copyWith(
