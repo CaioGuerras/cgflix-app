@@ -244,3 +244,15 @@ valor padrão é o do Plezy (sem alteração do CGFLIX).
 | Seerr (pedidos) | fora dos Serviços: a busca entra sozinha pelo Quick Connect ("Disponível para pedir"); "Meus pedidos" fica no menu do usuário |
 
 A dedicatória ("Feito com amor, para Isis e Heitor") fica **somente no Sobre**; o interruptor "Mostrar dedicatória" saiu.
+
+## Refino 1 (versão 1.5.0)
+
+| Item | Onde | Padrão |
+|---|---|---|
+| Apoie o CGFLIX | último item das Configurações (coração rosa), menu do usuário e uma linha no Sobre | sempre visível no APK; o AAB da Play sai sem (até entrar o Play Billing) |
+| Minha conta (foto e senha) | topo do menu do usuário, só com Jellyfin conectado | — |
+| Ícone do app | segue o Tema: Heitor = verde; Isis e Automático = roxo (troca quando o app sai da tela) | roxo |
+| Relatório de erros | saiu do Avançado (não fazia nada: os builds do CGFLIX não ligam o Sentry) | — |
+| Aparência (resumo) | mostra só o tema, ex.: "Isis (escuro, roxo)" | — |
+| Sincronia de áudio/legenda | aparece em segundos ("+0,15 s"); continua guardada em milissegundos | 0 s |
+| Música tema / som do trailer | não existe no app (o Plezy não toca nenhum dos dois sozinho) | — |
