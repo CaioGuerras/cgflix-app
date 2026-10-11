@@ -105,10 +105,12 @@ jobs:
       - name: Compilar AAB (Play Store)
         # Etapa 1E: Trakt com o app "CGFLIX" do trakt.tv (secrets). Sem os secrets, os valores vão
         # vazios e o Trakt fica escondido no app (nunca usa o client id do Plezy).
+        # 1.5.0: CGFLIX_APOIO=play tira o Pix do pacote da Play (a política da Play proíbe Pix/link
+        # externo para coisa digital); o "Apoie o CGFLIX" some até entrar o Play Billing.
         env:
           TRAKT_CLIENT_ID: ${{ secrets.CGFLIX_TRAKT_CLIENT_ID }}
           TRAKT_CLIENT_SECRET: ${{ secrets.CGFLIX_TRAKT_CLIENT_SECRET }}
-        run: flutter build appbundle --release --dart-define=GIT_COMMIT=${{ github.sha }} --dart-define=TRAKT_CLIENT_ID="$TRAKT_CLIENT_ID" --dart-define=TRAKT_CLIENT_SECRET="$TRAKT_CLIENT_SECRET"
+        run: flutter build appbundle --release --dart-define=CGFLIX_APOIO=play --dart-define=GIT_COMMIT=${{ github.sha }} --dart-define=TRAKT_CLIENT_ID="$TRAKT_CLIENT_ID" --dart-define=TRAKT_CLIENT_SECRET="$TRAKT_CLIENT_SECRET"
 
       - name: Publicar artifact do AAB
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -211,7 +213,7 @@ jobs:
           adb shell wm density
 
       - name: Roteiro de navegação (Início → Filmes/Séries/Animes → Busca com pedidos → título → menu → Meus pedidos → Baixados)
-        run: python3 scripts/cgflix/emulador_navegacao.py --apk build/app/outputs/flutter-apk/app-debug.apk --out build/cgflix-capturas
+        run: python3 -u scripts/cgflix/emulador_navegacao.py --apk build/app/outputs/flutter-apk/app-debug.apk --out build/cgflix-capturas
 
       - name: Publicar capturas (retrato e paisagem) e logcat
         if: always()

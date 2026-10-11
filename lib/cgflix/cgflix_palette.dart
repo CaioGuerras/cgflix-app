@@ -25,8 +25,9 @@ const cgflixIsisScheme = ColorScheme(
   onSecondaryContainer: Color(0xFFEDEDED),
   tertiary: Color(0xFFEDEDED),
   onTertiary: Color(0xFF000000),
-  error: Color(0xFFB00020),
-  onError: Color(0xFFFFFFFF),
+  // 1.5.0: vermelho claro (o mesmo `danger`): o #B00020 dava 2,5:1 sobre o preto.
+  error: Color(0xFFF87171),
+  onError: Color(0xFF000000),
   surface: Color(0xFF120E1A),
   onSurface: Color(0xFFEDEDED),
   onSurfaceVariant: Color(0xB3FFFFFF),
@@ -37,7 +38,8 @@ const cgflixIsisScheme = ColorScheme(
   surfaceContainer: Color(0xFF120E1A),
   surfaceContainerHigh: Color(0xFF1C1626),
   surfaceContainerHighest: Color(0xFF1C1626),
-  outline: Color(0x1FFFFFFF),
+  // 1.5.0: borda dos botões com contorno e dos campos visível no preto (3:1); divisores seguem suaves.
+  outline: Color(0x61FFFFFF),
   outlineVariant: Color(0x1FFFFFFF),
   shadow: Color(0x00000000),
   scrim: Color(0xFF000000),

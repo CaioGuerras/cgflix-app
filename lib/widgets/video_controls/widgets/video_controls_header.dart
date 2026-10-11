@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:plezy/utils/formatters.dart';
 
+import '../../../cgflix/cgflix_units.dart';
 import '../../../media/media_item.dart';
 import '../../../i18n/strings.g.dart';
 import '../../../watch_together/widgets/watch_together_overlay.dart';
@@ -94,7 +95,7 @@ class VideoControlsHeader extends StatelessWidget {
     final List<String> parts = [seriesName];
 
     if (hasEpisodeInfo) {
-      parts.add('S${metadata.parentIndex}E${metadata.index}');
+      parts.add('$cgflixSeasonLetter${metadata.parentIndex}E${metadata.index}'); // CGFLIX: T em português
       parts.add(itemTitle);
     }
 
@@ -110,7 +111,7 @@ class VideoControlsHeader extends StatelessWidget {
     final List<String> secondLineParts = [];
 
     if (metadata.parentIndex != null && metadata.index != null) {
-      secondLineParts.add('S${metadata.parentIndex}');
+      secondLineParts.add('$cgflixSeasonLetter${metadata.parentIndex}'); // CGFLIX: T em português
       secondLineParts.add('E${metadata.index}');
       secondLineParts.add(itemTitle);
     }

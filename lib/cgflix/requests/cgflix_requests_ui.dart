@@ -424,10 +424,13 @@ class _CgflixSeasonPickerSheetState extends State<CgflixSeasonPickerSheet> {
               CheckboxListTile(
                 value: season.lockedLabel != null || _picked.contains(season.number),
                 title: Text(season.name),
-                subtitle: Text(
-                  season.lockedLabel ?? (season.episodes == null ? '' : '${season.episodes} episódios'),
-                  style: TextStyle(color: context.cgflix.textMuted),
-                ),
+                // Sem contagem de episódios: sem a linha vazia embaixo do nome.
+                subtitle: season.lockedLabel == null && season.episodes == null
+                    ? null
+                    : Text(
+                        season.lockedLabel ?? '${season.episodes} episódios',
+                        style: TextStyle(color: context.cgflix.textMuted),
+                      ),
                 onChanged: season.lockedLabel != null
                     ? null
                     : (v) => setState(() => v == true ? _picked.add(season.number) : _picked.remove(season.number)),
@@ -523,14 +526,16 @@ class _CgflixMyRequestsScreenState extends State<CgflixMyRequestsScreen> {
       body: FutureBuilder<List<CgflixMyRequest>>(
         future: _future,
         builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
+          // Puxar para atualizar mantém a lista na tela (sem piscar nem dois indicadores).
+          if (snapshot.connectionState != ConnectionState.done && !snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
           final Widget content;
           if (snapshot.hasError) {
-            content = const _CenteredMessage(
+            content = _CenteredMessage(
               icon: Symbols.cloud_off_rounded,
-              text: '$cgflixRequestsUnavailableMessage. Puxe para tentar de novo.',
+              text: '$cgflixRequestsUnavailableMessage. Confira a internet e tente de novo.',
+              action: ('Tentar de novo', _refresh),
             );
           } else if (snapshot.data!.isEmpty) {
             content = const _CenteredMessage(
@@ -565,9 +570,12 @@ class _CgflixMyRequestsScreenState extends State<CgflixMyRequestsScreen> {
 }
 
 class _CenteredMessage extends StatelessWidget {
-  const _CenteredMessage({required this.icon, required this.text});
+  const _CenteredMessage({required this.icon, required this.text, this.action});
   final IconData icon;
   final String text;
+
+  /// Botão opcional (rótulo, ação), ex.: "Tentar de novo".
+  final (String, Future<void> Function())? action;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -583,6 +591,14 @@ class _CenteredMessage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(color: context.cgflix.textMuted),
           ),
+          if (action case (final label, final onPressed)) ...[
+            const SizedBox(height: 16),
+            FilledButton(
+              style: FilledButton.styleFrom(minimumSize: const Size(120, 48)),
+              onPressed: onPressed,
+              child: Text(label),
+            ),
+          ],
         ],
       ),
     ),

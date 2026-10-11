@@ -3,6 +3,7 @@ import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/error_message_utils.dart';
 import '../../connection/connection.dart';
 import '../../connection/connection_registry.dart';
 import '../../connection/plex_account_setup.dart';
@@ -106,7 +107,7 @@ class _AddPlexAccountScreenState extends State<AddPlexAccountScreen> with AsyncF
       },
       errorMapper: (e) {
         appLogger.e('Failed to register Plex account', error: e);
-        return t.addServer.failedToRegisterAccount(error: e.toString());
+        return t.addServer.failedToRegisterAccount(error: localizedErrorReason(e));
       },
     );
   }

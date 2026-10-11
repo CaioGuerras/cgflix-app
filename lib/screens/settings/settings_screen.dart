@@ -24,6 +24,7 @@ import '../../providers/account_preferences_controller.dart';
 import '../../providers/hidden_libraries_provider.dart';
 import '../../providers/download_provider.dart';
 import '../../providers/libraries_provider.dart';
+import '../../cgflix/apoio/cgflix_apoio_screen.dart';
 import '../../services/donation_service.dart';
 import '../../services/download_storage_service.dart';
 import '../../services/file_picker_service.dart';
@@ -230,6 +231,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const CgflixAdvancedFeatures(),
+                          const SizedBox(height: 8), // CGFLIX: respiro entre os dois grupos
                           if (_keyboardShortcutsSupported || PlatformDetector.shouldActAsRemoteHost(sheetContext))
                             _buildControlsSection(sheetContext),
                           _buildAdvancedSection(),
@@ -250,6 +252,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                       ),
                     ],
                   ),
+                  const CgflixApoioSettingsTile(), // CGFLIX: "Apoie o CGFLIX", sempre o último item
                   const SizedBox(height: 24),
                 ]),
               ),
@@ -291,9 +294,8 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) => SettingValueBuilder<int>(
         pref: settings.SettingsService.libraryDensity,
-        builder: (context, libraryDensity, _) {
-          final summary =
-              '${cgflixThemeName(themeProvider.themeMode)} · ${t.settings.libraryDensity} $libraryDensity'; // CGFLIX: nome do tema
+        builder: (context, _, _) {
+          final summary = cgflixThemeLabel(themeProvider.themeMode); // CGFLIX: só o tema, em palavras simples
           return SettingNavigationTile(
             focusNode: _focusTracker.get(_kAppearance),
             icon: Symbols.palette_rounded,
@@ -548,6 +550,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
 
   Widget _buildAdvancedSection() {
     return SettingsGroup(
+      margin: cgflixInsideCardMargin, // CGFLIX: mesmo recuo dos outros cartões
       children: [
         // CGFLIX: sem título (já está dentro do cartão Avançado)
         SettingNavigationTile(
@@ -557,13 +560,15 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           subtitle: t.settings.watchTogetherRelayDescription,
           onTap: () => _showRelayUrlDialog(),
         ),
-        SettingSwitchTile(
-          focusNode: _focusTracker.get(_kCrashReporting),
-          pref: settings.SettingsService.crashReporting,
-          icon: Symbols.monitoring_rounded,
-          title: t.settings.crashReporting,
-          subtitle: t.settings.crashReportingDescription,
-        ),
+        // CGFLIX: sem ENABLE_SENTRY (nossos builds) a chave não fazia nada; fica escondida.
+        if (const bool.fromEnvironment('ENABLE_SENTRY'))
+          SettingSwitchTile(
+            focusNode: _focusTracker.get(_kCrashReporting),
+            pref: settings.SettingsService.crashReporting,
+            icon: Symbols.monitoring_rounded,
+            title: t.settings.crashReporting,
+            subtitle: t.settings.crashReportingDescription,
+          ),
         SettingSwitchTile(
           focusNode: _focusTracker.get(_kDebugLogging),
           pref: settings.SettingsService.enableDebugLogging,

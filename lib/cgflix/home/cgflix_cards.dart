@@ -53,7 +53,10 @@ class _CgflixShimmerState extends State<CgflixShimmer> with SingleTickerProvider
           shaderCallback: (bounds) => LinearGradient(
             begin: Alignment(-1.0 + 3 * t - 1, 0),
             end: Alignment(-1.0 + 3 * t, 0),
-            colors: [context.cgflix.surface, context.cgflix.surfaceHigh, context.cgflix.surface],
+            // Heitor: o cartão branco some no fundo claro; o esqueleto usa o tom mais escuro.
+            colors: context.cgflix.isLight
+                ? [context.cgflix.surfaceHigh, context.cgflix.surface, context.cgflix.surfaceHigh]
+                : [context.cgflix.surface, context.cgflix.surfaceHigh, context.cgflix.surface],
           ).createShader(bounds),
           child: child,
         );
@@ -72,7 +75,10 @@ class CgflixSkeletonBox extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     width: width,
     height: height,
-    decoration: BoxDecoration(color: context.cgflix.surface, borderRadius: BorderRadius.circular(radius)),
+    decoration: BoxDecoration(
+      color: context.cgflix.isLight ? context.cgflix.surfaceHigh : context.cgflix.surface,
+      borderRadius: BorderRadius.circular(radius),
+    ),
   );
 }
 
@@ -196,6 +202,8 @@ class _CgflixPressableState extends State<CgflixPressable> {
     return Semantics(
       button: true,
       label: widget.semanticLabel,
+      // Leitor de tela: avisa que tocar e segurar abre mais opções.
+      onLongPressHint: widget.onLongPress == null ? null : 'mais opções',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: (_) => _set(true),
@@ -418,38 +426,42 @@ class CgflixTop10Card extends StatelessWidget {
         ..strokeWidth = 3
         ..color = context.cgflix.rankStroke,
     );
-    return SizedBox(
-      width: widthFor(rank),
-      height: cgflixPosterHeight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            left: 0,
-            bottom: -10,
-            child: ExcludeSemantics(
-              child: Stack(
-                children: [
-                  // Preenchimento da cor do fundo por baixo do contorno: o número "vaza" o fundo.
-                  Text(number, style: baseStyle.copyWith(color: context.cgflix.background)),
-                  Text(number, style: strokeStyle),
-                ],
+    return Semantics(
+      // O número grande não é lido; a posição vai junto do nome do título.
+      label: 'Em alta, posição $rank',
+      child: SizedBox(
+        width: widthFor(rank),
+        height: cgflixPosterHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: 0,
+              bottom: -10,
+              child: ExcludeSemantics(
+                child: Stack(
+                  children: [
+                    // Preenchimento da cor do fundo por baixo do contorno: o número "vaza" o fundo.
+                    Text(number, style: baseStyle.copyWith(color: context.cgflix.background)),
+                    Text(number, style: strokeStyle),
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            child: CgflixPosterCard(
-              item: item,
-              client: client,
-              heroTag: heroTag,
-              onTap: onTap,
-              onLongPress: onLongPress,
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: CgflixPosterCard(
+                item: item,
+                client: client,
+                heroTag: heroTag,
+                onTap: onTap,
+                onLongPress: onLongPress,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

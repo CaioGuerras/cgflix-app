@@ -6,12 +6,19 @@
 // login nem servidor. O roteiro em scripts/cgflix/emulador_navegacao.py toca nos itens pelo nome
 // (TalkBack/uiautomator), gira a tela e tira as capturas; troca o modo do aparelho
 // (`cmd uimode night`) para capturar as mesmas telas nos dois temas.
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
+import 'package:plezy/cgflix/apoio/cgflix_apoio_screen.dart';
 import 'package:plezy/cgflix/cgflix_layout.dart';
 import 'package:plezy/cgflix/cgflix_navigation.dart';
 import 'package:plezy/cgflix/cgflix_logo.dart';
+import 'package:plezy/cgflix/cgflix_slogan.dart';
 import 'package:plezy/cgflix/cgflix_theme.dart';
+import 'package:plezy/cgflix/cgflix_user_menu.dart';
+import 'package:plezy/cgflix/conta/cgflix_conta.dart';
+import 'package:plezy/cgflix/you/cgflix_favorites_screen.dart';
 import 'package:plezy/cgflix/requests/cgflix_requests_ui.dart';
 import 'package:plezy/cgflix/requests/cgflix_seerr.dart';
 
@@ -77,8 +84,29 @@ class _PedidosFalsos implements CgflixRequestsBackend {
       (title: 'Título $tmdbId', year: null, posterUrl: null);
 }
 
+/// Conta falsa (1.5.0): "Minha conta" sem servidor.
+class _ContaFalsa implements CgflixConta {
+  @override
+  Future<CgflixPerfil> perfil() async => const CgflixPerfil(nome: 'Maria');
+
+  @override
+  Future<void> trocarFoto(Uint8List jpeg) async {}
+
+  @override
+  Future<void> removerFoto() async {}
+
+  @override
+  Future<CgflixSenhaResultado> trocarSenha({required String atual, required String nova}) async =>
+      CgflixSenhaResultado.ok;
+}
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // 1.5.0: menu completo (conectado ao Jellyfin), Minha conta e Favoritos falsos.
+  cgflixUserMenuDebugOnline = true;
+  CgflixConta.debugOverride = _ContaFalsa();
+  CgflixFavoritesSource.debugOverride = CgflixFavoritesSource(load: () async => const []);
+  CgflixPages.libraries = (_) => const _PaginaSimples(titulo: 'Bibliotecas', texto: 'Filmes · Séries · Animes');
   cgflixEnableEdgeToEdge();
   CgflixPages.search = (_) => const _BuscaFalsa();
   CgflixPages.downloads = (_) => const _PaginaSimples(titulo: 'Baixados', texto: 'Nenhum título baixado ainda');
@@ -356,13 +384,14 @@ class _ConfiguracoesFalsas extends StatelessWidget {
             title: const Text('Ver a tela de entrada'),
             onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const _EntradaFalsa())),
           ),
+          const CgflixApoioSettingsTile(),
         ],
       ),
     );
   }
 }
 
-/// Tela de entrada (falsa) com a marca do tema e o campo do servidor vazio.
+/// Tela de entrada (falsa) com a marca do tema, o slogan e o campo do servidor vazio.
 class _EntradaFalsa extends StatelessWidget {
   const _EntradaFalsa();
 
@@ -380,7 +409,14 @@ class _EntradaFalsa extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Center(child: CgflixEmblem(size: 120)),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  Text(
+                    'CGFLIX',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const CgflixSlogan(),
+                  const SizedBox(height: 32),
                   const TextField(
                     decoration: InputDecoration(labelText: 'Servidor Jellyfin', hintText: 'https://seu.servidor.com'),
                   ),

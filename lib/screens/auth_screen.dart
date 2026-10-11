@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../utils/error_message_utils.dart';
 import '../connection/connection.dart';
 import '../connection/connection_registry.dart';
 import '../connection/plex_account_setup.dart';
@@ -18,6 +19,7 @@ import '../services/settings_service.dart';
 import '../services/storage_service.dart';
 import '../providers/account_preferences_controller.dart';
 import '../cgflix/cgflix_logo.dart';
+import '../cgflix/cgflix_slogan.dart';
 import '../i18n/strings.g.dart';
 import '../utils/app_logger.dart';
 import '../utils/dialogs.dart';
@@ -226,7 +228,7 @@ class _AuthScreenState extends State<AuthScreen> {
       if (!mounted) return;
       setState(() {
         _isAuthenticating = false;
-        _errorMessage = t.serverSelection.failedToLoadServers(error: e);
+        _errorMessage = t.serverSelection.failedToLoadServers(error: localizedErrorReason(e)); // CGFLIX
       });
     }
   }
@@ -290,6 +292,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold),
                               textAlign: TextAlign.center,
                             ),
+                            const CgflixSlogan(), // CGFLIX
                           ],
                         ),
                       ),
@@ -319,6 +322,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold),
                           textAlign: TextAlign.center,
                         ),
+                        const CgflixSlogan(), // CGFLIX
                         const SizedBox(height: 48),
                         _buildAuthBody(),
                       ],
@@ -390,7 +394,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Text(
                   t.auth.or,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant, // CGFLIX: contraste no Heitor
                   ),
                 ),
               ),

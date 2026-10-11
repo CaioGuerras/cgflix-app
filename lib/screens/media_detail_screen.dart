@@ -1,3 +1,5 @@
+import '../cgflix/cgflix_feedback.dart';
+import '../cgflix/cgflix_palette.dart';
 import '../cgflix/cgflix_detail.dart';
 import '../cgflix/cgflix_trakt.dart';
 import '../cgflix/search/cgflix_sources.dart';
@@ -1335,6 +1337,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   String _userRatingChipLabel(MediaItem metadata) {
     final isNumeric = _getMediaClientForMetadata(context)?.capabilities.numericUserRating ?? true;
     final hasRating = metadata.userRating != null && metadata.userRating! > 0;
+    // CGFLIX: no Jellyfin o coração é a Minha lista (como na prévia)
+    if (!isNumeric && LocaleSettings.currentLocale == AppLocale.pt) return 'Minha lista';
     return isNumeric && hasRating ? formatRating(metadata.userRating! / 2.0) : t.mediaMenu.rate;
   }
 
@@ -1345,7 +1349,7 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
     final active = isNumeric ? hasRating : metadata.isFavorite == true;
 
     final iconData = isNumeric ? Symbols.star_rounded : Symbols.favorite_rounded;
-    final activeIconColor = isNumeric ? Colors.amber : Colors.redAccent;
+    final activeIconColor = isNumeric ? context.cgflix.accent : context.cgflix.danger; // CGFLIX: contraste no Heitor
     final label = _userRatingChipLabel(metadata);
 
     return ListenableBuilder(

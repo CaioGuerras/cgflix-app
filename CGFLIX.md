@@ -219,6 +219,65 @@ ativa, foco), primaryContainer `#34c759`, secondaryContainer `#b0efb0`, outline 
 | `test/cgflix/cgflix_contraste_test.dart`, `cgflix_temas_telas_test.dart` (novos), `cgflix_theme_test.dart` | contraste (texto ≥ 4,5:1, bordas/ícones ≥ 3:1); Início, Detalhes, Configurações e Login nos dois temas; troca na hora |
 | `test/cgflix/emulador/app_navegacao.dart`, `scripts/cgflix/emulador_navegacao.py` | app de teste segue o modo do aparelho; roteiro captura Início, título, Configurações e Entrada nos dois temas (`heitor-*`) |
 
+## Refino 1: paridade com o CGFLIX Lite (versão 1.5.0, versionCode 700)
+
+O que o irmão leve (`cgflix-lite`, 1.4.0–1.4.2) ganhou e fazia falta aqui, no jeito Flutter (sem copiar Kotlin
+e **sem o Modo Maryanne**), mais uma passada de acabamento no app inteiro. Ordem de serviço: "refino 1".
+
+| Item | Mudança | Arquivos |
+|---|---|---|
+| Versão | `1.5.0+700` | `pubspec.yaml`, `lib/cgflix/cgflix_version.dart`, `test/cgflix/cgflix_version_test.dart` |
+| A. Apoie o CGFLIX | Tela própria com Pix: BR Code **estático** do Banco Central (EMV 00/26/52/53/58/59/60/62/63, CRC16-CCITT `0xFFFF`), sem valor, QR desenhado no app (`qr_flutter`, já era dependência), "Copiar Pix copia e cola" e "Copiar chave". Gorjeta opcional: sem pop-up, sem lembrete, não destrava nada. Entradas: último item das Configurações, último item do menu do usuário (coração rosa `#ec4899` nos dois temas) e uma linha discreta no Sobre. **Para trocar a chave: só `apoio_pix.dart`** (mesma chave, nome e cidade do Lite). O Liberapay do autor do Plezy nunca aparece (`cgflixHidesUpstreamDonation`), com ou sem `ENABLE_DONATIONS` | `lib/cgflix/apoio/` (`apoio.dart` = interface `Apoio`, `apoio_pix.dart`, `br_code.dart`, `apoio_pix_view.dart`, `cgflix_apoio_screen.dart`), `lib/cgflix/cgflix_defaults.dart`, `lib/services/donation_service.dart` (1 linha), `settings/settings_screen.dart` (1 linha), `settings/about_screen.dart` (1 linha) |
+| A. Play | A tela fala com a interface `Apoio` (`disponivel`, `conteudo`). `--dart-define=CGFLIX_APOIO=play` troca o Pix por "sem apoio" e o compilador tira o Pix do pacote. O **AAB da Play já sai assim** (a política da Play proíbe Pix/link externo para coisa digital); o APK do GitHub/servidor tem Pix. **Play Billing não foi feito**: quando for, é uma classe nova que implementa `Apoio` para o sabor `play` (produtos como no Lite: `gorjeta_pequena`, `gorjeta_media`, `gorjeta_grande`) | `.github/workflows/cgflix-android.yml` |
+| B. Minha conta | Só com Jellyfin conectado (no Plex e sem conexão o topo do menu não abre nada). Foto: seletor do sistema (`file_picker`, sem permissão de armazenamento), quadrado central de 512 px em JPEG com a rotação do EXIF (canal nativo), enviado em base64; "Remover foto". Senha: atual + nova + confirmar; 401/403 = "Senha atual errada… a conta é bloqueada depois de várias tentativas". A sessão deste aparelho continua (o servidor derruba as outras). "A senha vale para o app, o site e a TV." Rotas: primeiro as novas (`POST/DELETE /UserImage?userId=`, `POST /Users/Password?userId=`, testadas pelo Lite no 10.11.11); se o servidor responder 404/405, as clássicas `/Users/{id}/Images/Primary` e `/Users/{id}/Password`. Depois da foto, o app relê o usuário e o avatar do menu troca na hora | `lib/cgflix/conta/` (`cgflix_conta.dart`, `cgflix_minha_conta_screen.dart`), `lib/cgflix/home/cgflix_jellyfin_queries.dart` (`cgflixFetchMe`, `cgflixUploadUserImage`, `cgflixDeleteUserImage`, `cgflixChangePassword`), `android/.../CgflixPhotoChannel.kt` (novo), `MainActivity.kt` (1 linha) |
+| C. Menu do usuário | Topo: foto, nome e "Minha conta: foto e senha". Ordem: Favoritos · Bibliotecas · Meus pedidos · Baixados ─ Configurações · Trocar usuário · Sobre · Sair ─ Apoie o CGFLIX. Sem conexão somem Favoritos, Bibliotecas e Meus pedidos. **Baixados e Sair ficaram** (no app completo não há outro caminho para eles). Favoritos = tela nova (grade com a "Minha lista" do Jellyfin, vazio com orientação, recarrega sem piscar ao voltar do título). Bibliotecas = a tela do upstream aberta por cima. As Bibliotecas do Plezy não tinham atalho de Favoritos: nada a tirar | `lib/cgflix/cgflix_user_menu.dart`, `lib/cgflix/you/cgflix_favorites_screen.dart` (novo), `lib/cgflix/cgflix_navigation.dart` (`CgflixPages.libraries`) |
+| D. "Aperte o play" | Slogan discreto (texto suave do tema) no login e na abertura; na abertura entra depois do play do emblema; com "remover animações" aparece parado | `lib/cgflix/cgflix_slogan.dart` (novo), `lib/main.dart` (2 ganchos), `lib/screens/auth_screen.dart` (2 ganchos) |
+| E. Ícone do tema | Dois `activity-alias` (`.IconeIsis`, ligado por padrão e com a entrada da TV; `.IconeHeitor`). Heitor liga o verde; Isis e Automático ficam com o roxo. A troca acontece só quando o app sai da tela (alguns aparelhos fecham o app na troca). A `MainActivity` continua exportada para o `am start -n` do CI. **Substitui a regra "ícone único"** do tema Heitor. Ícone verde gerado pelo mesmo script e enquadramento do roxo (adaptativo + monocromático + mipmaps) | `AndroidManifest.xml`, `android/.../CgflixAppIconChannel.kt` (novo), `MainActivity.kt` (1 linha), `lib/cgflix/cgflix_app_icon.dart` (novo), `lib/cgflix/cgflix_theme.dart` (1 linha), `cgflix-brand/gerar_icone_android.py`, `res/drawable/ic_launcher_foreground_heitor.xml`, `res/mipmap-anydpi-v26/ic_launcher_heitor.xml`, `res/mipmap-*/ic_launcher_heitor.png`, `res/values/colors.xml` |
+| F. Textos naturais | `pt.i18n.json` revisado inteiro (998 textos; inglês intocado): "Não deu para…" + o que fazer, "Tentar de novo", "Reprodutor de vídeo", "Carregamento antecipado", "Endereços do servidor", "Avançar e voltar", sem Title Case, sem jargão. Erros de login/conexão sem a exceção crua. Ajuste de sincronia de áudio/legenda em **segundos** ("+0,15 s"; o valor guardado continua em ms). Lista completa antes → depois em `docs/cgflix/REVISAO_PT_1.5.md` | `lib/i18n/pt.i18n.json`, `strings_pt.g.dart` (`dart run slang`), `lib/cgflix/cgflix_units.dart` (novo), `lib/utils/formatters.dart` (1 linha), `docs/cgflix/REVISAO_PT_1.5.md` |
+| G. Música tema / som do trailer | **Pulado**: o Plezy não toca música tema nem trailer sozinho na página do título (o trailer só toca quando a pessoa aperta o botão). Não há o que desligar | — |
+| H. Login | Usuário ou senha vazios: "Preencha o usuário e a senha." sem ir ao servidor. Endereço vazio ou torto (espaço, sem nome, outro protocolo): aviso claro com o exemplo `https://seu.servidor.com` | `lib/cgflix/cgflix_login_checks.dart` (novo), `settings/add_jellyfin_screen.dart` (2 ganchos) |
+| I. Testes | BR Code (CRC `1D3D` do manual do BC, payload campo a campo, limites); telas Apoie, Minha conta (conta falsa: foto, senha, 403, sem servidor), menu (ordem, sem conexão, coração rosa, deitado), Favoritos, slogan, nos dois temas; checagens do login; segundos da sincronia. Emulador: menu, Minha conta, Favoritos, Apoie e entrada com slogan, Isis e Heitor | `test/cgflix/apoio/br_code_test.dart`, `test/cgflix/cgflix_refino1_telas_test.dart`, `test/cgflix/cgflix_login_checks_test.dart`, `test/cgflix/cgflix_navigation_test.dart`, `test/cgflix/emulador/app_navegacao.dart`, `scripts/cgflix/emulador_navegacao.py` |
+| J. Acabamento | Ver a tabela "Passada de acabamento" abaixo | — |
+
+### Passada de acabamento (item J)
+
+Auditoria tela a tela no celular, nos dois temas, olhando texto, cor, contraste, toque, leitor de tela, erro e
+recarga. É acabamento: navegação e fluxos aprovados (1B–1E) não mudaram.
+
+| Tela | O que foi corrigido | Arquivos |
+|---|---|---|
+| App inteiro | Textos do próprio Material em português (dica "Voltar" da seta, menu Copiar/Colar dos campos, "Fechar" do leitor de tela) — o upstream não carregava `flutter_localizations` | `lib/cgflix/cgflix_locale.dart` (novo), `lib/main.dart` (3 linhas em cada `MaterialApp`), `pubspec.yaml` |
+| App inteiro | Avisos (snackbars) nas cores do tema: erro = `error`/`onError`; sucesso = aviso normal (era verde/vermelho fixos, com texto quase branco sobre verde no Heitor) | `lib/cgflix/cgflix_feedback.dart` (novo), `lib/utils/snackbar_helper.dart` (2 linhas) |
+| App inteiro (Isis) | Vermelho de erro `#B00020` (2,5:1 no preto) → `#f87171`; borda dos botões com contorno e dos campos de 12% → 38% de branco (visível, 3:1) | `lib/cgflix/cgflix_palette.dart`, `test/cgflix/cgflix_contraste_test.dart` |
+| Login / servidor | Olho para mostrar a senha; erro de servidores sem exceção crua; "ou" com contraste no Heitor; mensagens de campo vazio (item H) | `settings/add_jellyfin_screen.dart`, `auth_screen.dart`, `lib/cgflix/cgflix_login_checks.dart` |
+| Início | Não pisca mais quando a rede responde depois do cache (o destaque não volta ao 1º título); aviso "Não deu para carregar a Início" quando o servidor está fora (antes: tela vazia); "Detalhes" com 48 dp como o "Assistir"; esqueleto visível no Heitor; aviso se "Tirar de Continuar assistindo" falhar | `lib/cgflix/home/cgflix_home_screen.dart`, `cgflix_hero.dart`, `cgflix_cards.dart` |
+| Início (leitor de tela) | Posição no Top 10 ("Em alta, posição 1"); "tocar e segurar: mais opções" nos cartões | `lib/cgflix/home/cgflix_cards.dart` |
+| Busca | Erro sem a exceção crua (às vezes em inglês) | `lib/screens/search_screen.dart` (1 linha) |
+| Detalhes do título | Botão de download e coração/estrela com cores legíveis no Heitor (âmbar/laranja davam ~1,7:1); no Jellyfin o coração diz "Minha lista"; dica "Opções" no ⋮; "Na Minha lista" para o leitor de tela na prévia | `lib/screens/media_detail_screen.dart`, `media_detail/action_buttons.dart`, `lib/cgflix/home/cgflix_preview_sheet.dart` |
+| Player | Falha com motivo curto em português ("arquivo não encontrado no servidor", "formato de vídeo que este aparelho não abre"…) no lugar da linha crua do mpv/ffmpeg (inteira só no log); destaque lilás no lugar do âmbar (folha de ajustes, timer, botão ativo); o leitor de tela diz "Assistir o próximo, 5" na contagem; "T1 E3" em português | `video_player/parts/errors.dart`, `pt.i18n.json`, `widgets/video_controls/**` (4 arquivos), `player_prompt_overlays.dart`, `video_controls_header.dart` |
+| Baixados | Botões de cada linha com 48 dp (eram 36); erro e estados com as cores da paleta (azul/laranja/âmbar soltos); Retomar/Tentar de novo com servidor fora agora avisam; regra automática na cor do tema | `widgets/download_tree_view.dart`, `download_status_icon.dart`, `screens/downloads/downloads_screen.dart`, `sync_rules_screen.dart` |
+| Bibliotecas / cartões | "T1 E3" (temporada) no lugar de "S1 E3" em português; mensagem dos estados vazio/erro com contraste ≥ 4,5:1 | `widgets/media_card.dart`, `libraries/folder_tree_item.dart`, `libraries/state_messages.dart` |
+| Meus pedidos | Puxar para atualizar não troca a lista por um círculo (piscava); erro com botão "Tentar de novo" (antes só "puxe"); temporada sem contagem sem linha vazia | `lib/cgflix/requests/cgflix_requests_ui.dart` |
+| Favoritos | Puxar para atualizar também quando está vazio | `lib/cgflix/you/cgflix_favorites_screen.dart` |
+| Configurações | Linhas de um texto só com 48 dp (eram 36: cabeçalhos dos cartões, idiomas, opções); leitor de tela diz se o cartão está aberto; Avançado com o mesmo recuo dos outros cartões e respiro entre os grupos; some a chave "Relatório de erros" (não fazia nada sem `ENABLE_SENTRY`); resumo da Aparência só com o tema; abas do seletor de cor em português; diálogos numéricos sem "duração" para tamanho/opacidade; dica no apagar player externo | `widgets/focusable_list_tile.dart`, `lib/cgflix/cgflix_collapsible.dart`, `cgflix_advanced.dart`, `settings/settings_screen.dart`, `settings_utils.dart`, `external_player_screen.dart`, `pt.i18n.json` |
+| Sobre | "Versão 1.5.0" (não repete "CGFLIX" logo abaixo do nome); "Gostou? Apoie o CGFLIX" com cor de botão | `lib/cgflix/cgflix_version.dart`, `lib/cgflix/apoio/cgflix_apoio_screen.dart` |
+| Voltar das telas | A margem do botão também recebe o toque | `widgets/app_bar_back_button.dart` |
+
+**Vi e decidi não mudar** (e por quê):
+- Botões do topo do player: ficam com 40 dp (o 48 mudou o foco do controle remoto da TV nos testes do upstream).
+- Opções do mpv: botão de remover linha com 36 dp é de propósito (cabe dentro do campo); tela técnica, só no Avançado.
+- Pastas das Bibliotecas: botões Tocar/Aleatório de 36 dp ficam (mudar aumenta a altura de toda linha da árvore; visão pouco usada no celular).
+- Tela de registros (logs): cinzas e laranja soltos ficam (tela de diagnóstico, no Avançado; mudar mexe em muitas linhas do upstream).
+- Estilo de legenda: continua sem cartões recolhíveis (já é uma subtela curta; mudar a estrutura é redesenho).
+- "AO VIVO" vermelho: só existe na TV ao vivo, que o CGFLIX não usa no celular.
+- Botão Cancelar do timer de desligar em vermelho: é ação destrutiva no player (sempre escuro), contraste ok.
+- Gêneros vêm do servidor: se o Jellyfin estiver com metadados em inglês, aparecem em inglês — o certo é deixar o idioma de metadados do servidor em português (sem tradução no app).
+- Aba "Música" em Baixados: precisa de lógica nova (saber se há música baixada); fica para depois.
+- "Download" como substantivo ("Download cancelado", "Downloads automáticos") ficou; o verbo virou "baixar" e a lista é "Baixados".
+
+**Capturas**: o job "Emulador" do workflow guarda as telas no artifact `cgflix-capturas` (Isis e `heitor-*`,
+retrato e paisagem). "Antes" = artifact da última execução no `main`; "depois" = artifact deste PR.
+
 ## Como gerar o APK
 
 - **No GitHub**: aba *Actions* → "CGFLIX Android" → artifact `cgflix-apk` (`cgflix-arm64-v8a.apk` serve para quase todos os celulares e TV box atuais; `armeabi-v7a` para aparelhos antigos de 32 bits).
@@ -248,3 +307,6 @@ Ao resolver, conferir `grep -rn "CGFLIX" lib android .github`.
 4b. Selo "Novo episódio" nas capas de "Novidades em séries e animes" (a 1E só tirou a linha de episódios soltos).
 5. **Atualização do app pelo nosso servidor** (o verificador de atualização do upstream fica desligado: não definimos `ENABLE_UPDATE_CHECK`).
 6. Keystore próprio nos secrets; build do Windows a partir do mesmo código; iPhone depois.
+7. **Play Billing** para o "Apoie o CGFLIX" no AAB da Play: uma classe nova que implementa `Apoio`
+   (`lib/cgflix/apoio/apoio.dart`) escolhida com `CGFLIX_APOIO=play`; produtos como no Lite (`gorjeta_pequena`,
+   `gorjeta_media`, `gorjeta_grande`), consumíveis, sem servidor de verificação. Hoje o AAB sai sem apoio.

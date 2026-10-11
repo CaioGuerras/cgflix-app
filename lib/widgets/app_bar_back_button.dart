@@ -112,6 +112,7 @@ class _AppBarBackButtonState extends State<AppBarBackButton> {
           onEnter: (_) => setState(() => _hovered = true),
           onExit: (_) => setState(() => _hovered = false),
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque, // CGFLIX: a margem também recebe o toque (48 dp+)
             excludeFromSemantics: true,
             onTap: _handlePressed,
             child: AnimatedContainer(

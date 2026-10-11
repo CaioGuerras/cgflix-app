@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../../cgflix/cgflix_units.dart';
 import '../../../focus/focusable_button.dart';
 import '../../../i18n/strings.g.dart';
 import '../../../media/ids.dart';
@@ -250,7 +251,8 @@ class VideoPlayerPlayNextOverlay extends StatelessWidget {
                 return Row(
                   mainAxisSize: .min,
                   children: [
-                    Text('$countdown'),
+                    // CGFLIX: o leitor de tela diz "Assistir o próximo, 5" (o número sozinho não dizia nada)
+                    Text('$countdown', semanticsLabel: '${t.videoControls.playNext}, $countdown'),
                     const SizedBox(width: 4),
                     const AppIcon(Symbols.play_arrow_rounded, fill: 1, size: 18),
                   ],
@@ -334,7 +336,7 @@ class _PlayNextEpisodeHeader extends StatelessWidget {
               const SizedBox(height: 4),
               if (episode.parentIndex != null && episode.index != null)
                 Text(
-                  'S${episode.parentIndex} E${episode.index} · ${episode.title}',
+                  '$cgflixSeasonLetter${episode.parentIndex} E${episode.index} · ${episode.title}', // CGFLIX: T em português
                   style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: .w600),
                   maxLines: 2,
                   overflow: .ellipsis,

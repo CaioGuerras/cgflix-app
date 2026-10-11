@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plezy/widgets/app_icon.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import '../../../cgflix/cgflix_feedback.dart'; // CGFLIX: destaque lilás no player
 import '../../../focus/focusable_button.dart';
 import '../../../services/sleep_timer_service.dart';
 import '../../../i18n/strings.g.dart';
@@ -35,13 +36,13 @@ class SleepTimerActiveStatus extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.amber.withValues(alpha: 0.1),
+      color: cgflixPlayerAccent.withValues(alpha: 0.1),
       child: Column(
         mainAxisSize: .min,
         children: [
           Text(
             t.videoControls.timerActive,
-            style: const TextStyle(color: Colors.amber, fontSize: 16, fontWeight: .bold),
+            style: const TextStyle(color: cgflixPlayerAccent, fontSize: 16, fontWeight: .bold),
           ),
           const SizedBox(height: 8),
           Text(

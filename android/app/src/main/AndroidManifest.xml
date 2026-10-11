@@ -61,11 +61,8 @@
             <meta-data
                 android:name="flutter_deeplinking_enabled"
                 android:value="false" />
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
-            </intent-filter>
+            <!-- CGFLIX (1.5.0): a entrada do launcher fica nos activity-alias abaixo (ícone do tema).
+                 A MainActivity continua exportada para o `am start -n` do CI. -->
             <!-- Deep link handler for Watch Next items -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -81,6 +78,32 @@
                 <data android:scheme="plezy" android:host="live"/>
             </intent-filter>
         </activity>
+        <!-- CGFLIX (1.5.0): o ícone acompanha o tema, como no Telegram. Fica ligado só um alias:
+             IconeIsis (roxo, padrão; também o da TV) ou IconeHeitor (verde). A troca é feita pelo
+             CgflixAppIconChannel quando o app sai da tela. -->
+        <activity-alias
+            android:name=".IconeIsis"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_launcher"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconeHeitor"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_launcher_heitor"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="br.com.docaio.cgflix.fileprovider"

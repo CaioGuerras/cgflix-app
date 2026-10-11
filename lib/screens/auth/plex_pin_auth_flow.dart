@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../utils/error_message_utils.dart';
 import '../../exceptions/media_server_exceptions.dart';
 import '../../i18n/strings.g.dart';
 import '../../services/plex_auth_service.dart';
@@ -191,7 +192,9 @@ class _PlexPinAuthFlowState extends State<PlexPinAuthFlow> {
     if (error is MediaServerAuthException) return error.display ?? error.message;
     if (error is MediaServerHttpException) {
       return error.display ??
-          t.addServer.couldNotReachServer(error: error.message.isEmpty ? error.toString() : error.message);
+          t.addServer.couldNotReachServer(
+            error: localizedErrorReason(error),
+          ); // CGFLIX: motivo em português, sem exceção crua
     }
     return error.toString();
   }

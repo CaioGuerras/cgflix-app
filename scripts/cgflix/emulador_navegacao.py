@@ -8,6 +8,8 @@ capturas (retrato e paisagem). Etapa 1E: a barra não tem mais o ícone "Pedir" 
 Tema 1.4.0: o roteiro roda com o aparelho no modo escuro (Isis), passa por Configurações e pela
 tela de entrada, troca o aparelho para o modo claro e captura Início, título, Configurações e
 entrada de novo no tema Heitor (capturas "heitor-*").
+1.5.0: menu do usuário novo, Minha conta, Favoritos, Apoie o CGFLIX e o slogan na entrada, nos
+dois temas.
 Falha se aparecer tela preta, "RenderFlex overflowed" ou exceção no logcat.
 
 Só usa a biblioteca padrão do Python e o adb do Android SDK.
@@ -124,6 +126,10 @@ def logcat_failures(text: str) -> list[str]:
     return [line for line in text.splitlines() if any(p.search(line) for p in LOGCAT_FALHAS)]
 
 
+# Tempo-limite de cada chamada ao adb (s). install demora mais.
+ADB_TIMEOUT = 60
+ADB_TIMEOUT_INSTALL = 300
+
 # ---------------------------------------------------------------------------
 # adb
 
@@ -137,33 +143,55 @@ class Device:
         """O emulador do CI às vezes some do adb no meio do roteiro ("device offline"/"no devices",
         screencap com 255). Reconecta, espera o aparelho voltar e terminar de ligar."""
         print("  (adb perdeu o emulador; reconectando)")
-        subprocess.run(["adb", "reconnect", "offline"], capture_output=True, check=False)
+        try:
+            subprocess.run(["adb", "reconnect", "offline"], capture_output=True, check=False, timeout=30)
+        except subprocess.TimeoutExpired:
+            pass
         try:
             subprocess.run(["adb", "wait-for-device"], capture_output=True, check=False, timeout=120)
         except subprocess.TimeoutExpired:
             return
         deadline = time.time() + 120
         while time.time() < deadline:
-            boot = subprocess.run(
-                ["adb", "shell", "getprop", "sys.boot_completed"], capture_output=True, text=True, check=False
-            )
+            try:
+                boot = subprocess.run(
+                    ["adb", "shell", "getprop", "sys.boot_completed"],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=30,
+                )
+            except subprocess.TimeoutExpired:
+                continue
             if boot.stdout.strip() == "1":
                 time.sleep(2)
                 return
             time.sleep(3)
 
+    def _adb_run(self, args: tuple[str, ...], **kwargs) -> subprocess.CompletedProcess:
+        """adb com tempo-limite: um adb pendurado travava o roteiro até o job estourar (1.5.0)."""
+        timeout = ADB_TIMEOUT_INSTALL if args[:1] == ("install",) else ADB_TIMEOUT
+        for tentativa in range(2):
+            try:
+                return subprocess.run(["adb", *args], capture_output=True, check=False, timeout=timeout, **kwargs)
+            except subprocess.TimeoutExpired:
+                print(f"  (adb {' '.join(args[:3])} passou de {timeout} s)")
+                if tentativa == 0:
+                    self.reconnect()
+        raise RuntimeError(f"adb {' '.join(args)} não respondeu em {timeout} s")
+
     def adb(self, *args: str, check: bool = True) -> str:
-        result = subprocess.run(["adb", *args], capture_output=True, text=True, check=False)
+        result = self._adb_run(args, text=True)
         if result.returncode != 0 and device_lost(result.stderr):
             self.reconnect()
-            result = subprocess.run(["adb", *args], capture_output=True, text=True, check=False)
+            result = self._adb_run(args, text=True)
         if check and result.returncode != 0:
             raise RuntimeError(f"adb {' '.join(args)} falhou: {result.stderr.strip()}")
         return result.stdout
 
     def screencap(self) -> bytes:
         for tentativa in range(2):
-            result = subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True, check=False)
+            result = self._adb_run(("exec-out", "screencap", "-p"))
             if result.returncode == 0 and result.stdout.startswith(b"\x89PNG"):
                 return result.stdout
             if tentativa == 0:
@@ -208,10 +236,10 @@ class Device:
             regex.search(f"{node.get('content-desc', '')}\n{node.get('text', '')}") for node in self.nodes()
         )
 
-    def tap(self, pattern: str) -> None:
+    def tap(self, pattern: str, wait: float = 1.5) -> None:
         x, y = self.find(pattern)
         self.adb("shell", "input", "tap", str(x), str(y))
-        time.sleep(1.5)
+        time.sleep(wait)
 
     def night(self, dark: bool) -> None:
         """Modo escuro/claro do aparelho (o app de teste segue: escuro = Isis, claro = Heitor)."""
@@ -268,15 +296,22 @@ def run(apk: Path, out_dir: Path) -> int:
             "05-busca-pedidos",
             lambda: (dev.tap(r"^Voltar para Tudo"), dev.tap(r"^Buscar$"), dev.find(r"Disponível para pedir")),
         ),
-        ("06-pedido-feito", lambda: (dev.tap(r"^Pedir Duna: Parte Três"), dev.find(r"Pedido feito"))),
+        # O aviso "Pedido feito" some em ~4 s: procura logo depois do toque (sem a espera de 1,5 s).
+        ("06-pedido-feito", lambda: (dev.tap(r"^Pedir Duna: Parte Três", wait=0), dev.find(r"Pedido feito"))),
         ("07-titulo", lambda: dev.tap(r"^Duna\nFilme")),
         ("08-voltar-inicio", lambda: (dev.back(), dev.back(), dev.find(r"^Menu do CGFLIX"))),
         ("09-menu-usuario", lambda: dev.tap(r"^Menu do CGFLIX")),
         ("10-meus-pedidos", lambda: (dev.tap(r"^Meus pedidos$"), dev.find(r"Aguardando aprovação"))),
         ("11-baixados", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Baixados$"))),
         ("12-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
+        # 1.5.0: menu novo, Minha conta, Favoritos e Apoie o CGFLIX
+        ("15-menu", lambda: (dev.tap(r"^Menu do CGFLIX"), dev.find(r"Minha conta: foto e senha"), dev.find(r"^Apoie o CGFLIX$"))),
+        ("16-minha-conta", lambda: (dev.tap(r"Minha conta: foto e senha"), dev.find(r"^Trocar senha$"))),
+        ("17-favoritos", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Favoritos$"), dev.find(r"Nenhum favorito ainda"))),
+        ("18-apoie", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Apoie o CGFLIX$"), dev.find(r"^Copiar chave$"))),
+        ("19-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
         ("13-configuracoes", lambda: (dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Isis"))),
-        ("14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Conectar ao Jellyfin"))),
+        ("14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Aperte o play"))),
     ]
 
     def para_o_heitor() -> None:
@@ -292,7 +327,13 @@ def run(apk: Path, out_dir: Path) -> int:
             lambda: (dev.tap(r"^Buscar$"), dev.find(r"Disponível para pedir"), dev.tap(r"^Duna\nFilme")),
         ),
         ("heitor-13-configuracoes", lambda: (dev.back(), dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Heitor"))),
-        ("heitor-14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Conectar ao Jellyfin"))),
+        ("heitor-14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Aperte o play"))),
+        (
+            "heitor-15-menu",
+            lambda: (dev.back(), dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.find(r"^Apoie o CGFLIX$")),
+        ),
+        ("heitor-16-minha-conta", lambda: (dev.tap(r"Minha conta: foto e senha"), dev.find(r"^Trocar senha$"))),
+        ("heitor-18-apoie", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Apoie o CGFLIX$"), dev.find(r"^Copiar chave$"))),
     ]
     for name, action in steps:
         print(f"• {name}")

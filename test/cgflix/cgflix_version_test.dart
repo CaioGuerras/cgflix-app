@@ -4,16 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/cgflix/cgflix_version.dart';
 
 void main() {
-  test('Sobre mostra "CGFLIX 1.0.0"', () {
-    expect(cgflixVersionLabel('1.0.0'), 'CGFLIX 1.0.0');
-    expect(cgflixVersionLabel(''), 'CGFLIX');
+  test('Sobre mostra "Versão 1.5.0" abaixo do nome', () {
+    expect(cgflixVersionLabel('1.5.0'), 'Versão 1.5.0');
+    expect(cgflixVersionLabel(''), '');
   });
 
-  test('pubspec: versão 1.4.0 (tema Heitor) com versionCode 600 (a 1E usou o 500)', () {
+  test('pubspec: versão 1.5.0 (refino 1) com versionCode 700 (o tema Heitor usou o 600)', () {
     final pubspec = File('pubspec.yaml').readAsStringSync();
     final match = RegExp(r'^version:\s*([0-9.]+)\+(\d+)\s*$', multiLine: true).firstMatch(pubspec);
     expect(match, isNotNull);
-    expect(match!.group(1), '1.4.0');
-    expect(int.parse(match.group(2)!), 600); // a Play já tem o 500 da Etapa 1E
+    expect(match!.group(1), '1.5.0');
+    expect(int.parse(match.group(2)!), 700); // a Play já tem o 600 do tema Heitor
   });
 }

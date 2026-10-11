@@ -7,6 +7,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../utils/error_message_utils.dart';
+import '../../cgflix/cgflix_login_checks.dart';
 import '../../connection/connection.dart';
 import '../../connection/connection_registry.dart';
 import '../../exceptions/media_server_exceptions.dart';
@@ -108,6 +110,7 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
     with AsyncFormStateMixin, QuickConnectFlowMixin, ControllerDisposerMixin {
   late final _urlController = createTextEditingController();
   late final _usernameController = createTextEditingController();
+  bool _cgflixShowPassword = false; // CGFLIX: mostrar a senha (olho no campo)
   late final _passwordController = createTextEditingController();
   final _urlFocus = FocusNode(debugLabel: 'AddJellyfin:Url');
   final _findServerFocus = FocusNode(debugLabel: 'AddJellyfin:FindServer');
@@ -226,6 +229,10 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
   }
 
   Future<void> _probe() async {
+    if (cgflixServerAddressProblem(_enteredUrls()) case final problem?) {
+      setErrorText(problem); // CGFLIX: endereço vazio ou torto, em português claro
+      return;
+    }
     final input = JellyfinEndpointDiscovery.buildUserInputCandidates(_enteredUrls(), dialect: widget.dialect);
     if (input.probeBaseUrls.isEmpty) {
       setErrorText(t.addServer.enterMediaBrowserUrlError(product: widget.dialect.productName));
@@ -257,8 +264,9 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
         if (!autoStart) requestFocusAfterFrame(_usernameFocus);
         return autoStart;
       },
-      errorMapper: (e) =>
-          e is MediaServerUrlException ? e.display ?? e.message : t.addServer.couldNotReachServer(error: e.toString()),
+      errorMapper: (e) => e is MediaServerUrlException
+          ? e.display ?? e.message
+          : t.addServer.couldNotReachServer(error: localizedErrorReason(e)),
     );
     // Sequenced after the probe's runAsync so busy stays set straight through
     // /QuickConnect/Initiate. Started from inside the probe body, the probe's
@@ -269,6 +277,11 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
   }
 
   Future<void> _signIn() async {
+    // CGFLIX: campo vazio = mensagem clara em português, sem ir ao servidor.
+    if (cgflixLoginMissing(_usernameController.text, _passwordController.text) case final missing?) {
+      setErrorText(missing);
+      return;
+    }
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final info = _serverInfo;
     final endpoint = _serverEndpoint;
@@ -297,7 +310,7 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
       errorMapper: (e) {
         if (e is MediaServerAuthException) return e.display ?? e.message;
         appLogger.e('Add ${widget.dialect.productName} failed', error: e);
-        return t.addServer.signInFailed(error: e.toString());
+        return t.addServer.signInFailed(error: localizedErrorReason(e));
       },
     );
   }
@@ -344,7 +357,7 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
       errorMapper: (e) {
         if (e is MediaServerAuthException) return e.display ?? e.message;
         appLogger.e('Jellyfin Quick Connect failed', error: e);
-        return t.addServer.quickConnectFailed(error: e.toString());
+        return t.addServer.quickConnectFailed(error: localizedErrorReason(e));
       },
       shouldApplyState: () => isCurrentQuickConnectAttempt(attemptId),
     );
@@ -566,13 +579,14 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
         FocusableTextFormField(
           controller: _passwordController,
           focusNode: _passwordFocus,
-          obscureText: true,
+          obscureText: !_cgflixShowPassword, // CGFLIX: olho para conferir a senha
           enabled: !busy,
           textInputAction: TextInputAction.done,
           onFieldSubmitted: busy ? null : (_) => _signIn(),
           decoration: InputDecoration(
             labelText: t.addServer.password,
             prefixIcon: const AppIcon(Symbols.lock_rounded, fill: 1),
+            suffixIcon: cgflixPasswordToggle(_cgflixShowPassword, () => setState(() => _cgflixShowPassword ^= true)),
           ),
           // Empty passwords are valid on some MediaBrowser servers, so don't
           // require a value.

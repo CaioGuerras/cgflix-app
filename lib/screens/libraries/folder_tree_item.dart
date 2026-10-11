@@ -1,4 +1,5 @@
 import 'dart:ui';
+import '../../cgflix/cgflix_units.dart';
 import '../../media/ids.dart';
 
 import 'package:flutter/material.dart';
@@ -181,7 +182,7 @@ class _FolderTreeItemState extends State<FolderTreeItem> with ContextMenuTapMixi
     if (item.isEpisode) {
       final parts = <String>[];
       if (item.parentIndex != null && item.index != null) {
-        parts.add('S${item.parentIndex} E${item.index}');
+        parts.add('$cgflixSeasonLetter${item.parentIndex} E${item.index}'); // CGFLIX: T em português
       }
       return parts.isNotEmpty ? parts.join(' · ') : _dedupeSubtitle(item.displaySubtitle);
     }

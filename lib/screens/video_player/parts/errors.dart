@@ -12,7 +12,8 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
     if (raw.contains('No client registered')) {
       return t.messages.errorLoading(error: t.messages.serverUnavailableForProfile);
     }
-    return t.messages.errorLoading(error: redacted);
+    appLogger.w('Player: falha ao carregar ($redacted)'); // CGFLIX: detalhe só no log
+    return t.messages.errorLoading(error: localizedErrorReason(error)); // CGFLIX: sem exceção crua na tela
   }
 
   void _onPlayerError(PlayerError err) {
@@ -71,9 +72,14 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
         final message = switch (err.cause) {
           PlayerError.playerInitFailed => t.messages.playbackFailed,
           PlayerError.openTimedOut =>
-            lastLogError == null ? t.messages.playbackFailed : t.messages.playbackFailedDetail(error: lastLogError),
+            lastLogError == null
+                ? t.messages.playbackFailed
+                : t.messages.playbackFailedDetail(error: cgflixPlayerFailureReason(lastLogError)), // CGFLIX: PT
           PlayerError.audioOutputFailed => t.messages.audioOutputFailed,
-          _ => t.messages.playbackFailedDetail(error: _redactPlayerError(lastLogError ?? err.message)),
+          // CGFLIX: motivo curto em português; a linha do mpv vai só para o log
+          _ => t.messages.playbackFailedDetail(
+            error: cgflixPlayerFailureReason(_redactPlayerError(lastLogError ?? err.message)),
+          ),
         };
         // Live TV has no in-place reload to retry through: its own start
         // flow leaves the route on failure, so a dead live session does too.

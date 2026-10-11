@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../cgflix/cgflix_feedback.dart';
 import '../navigation/profile_navigation_scope.dart';
 import 'layout_constants.dart';
 import 'platform_detector.dart';
@@ -24,6 +25,13 @@ SnackBar _buildSnackBar(
   required Duration duration,
   bool? dismissible,
 }) {
+  final (cgflixBackground, cgflixText) = cgflixSnackBarColors(context, backgroundColor); // CGFLIX: cores do tema
+  final themed = cgflixText == null
+      ? content
+      : DefaultTextStyle.merge(
+          style: TextStyle(color: cgflixText),
+          child: content,
+        );
   final isDesktop = PlatformDetector.isDesktopOS();
   final tapToDismiss = dismissible ?? isDesktop;
   final body = tapToDismiss
@@ -32,14 +40,14 @@ SnackBar _buildSnackBar(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () => messenger.hideCurrentSnackBar(reason: SnackBarClosedReason.dismiss),
-            child: Padding(padding: _kDismissibleSnackBarPadding, child: content),
+            child: Padding(padding: _kDismissibleSnackBarPadding, child: themed),
           ),
         )
-      : content;
+      : themed;
 
   return SnackBar(
     content: body,
-    backgroundColor: backgroundColor,
+    backgroundColor: cgflixBackground,
     duration: duration,
     behavior: isDesktop ? SnackBarBehavior.floating : null,
     width: isDesktop ? _desktopSnackBarWidth(context) : null,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/error_message_utils.dart';
 import '../../focus/focusable_button.dart';
 import '../../focus/focusable_text_field.dart';
 import '../../i18n/strings.g.dart';
@@ -215,7 +216,7 @@ class _SeerrConnectScreenState extends State<SeerrConnectScreen>
     SeerrUrlException(:final message, :final display) => display ?? message,
     SeerrAuthException(:final message, :final display) => display ?? message,
     SeerrProxyException(:final display) => display,
-    _ => t.addServer.couldNotReachServer(error: e.toString()),
+    _ => t.addServer.couldNotReachServer(error: localizedErrorReason(e)),
   };
 
   @override
