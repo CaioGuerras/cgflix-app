@@ -193,6 +193,10 @@ class CgflixPressable extends StatefulWidget {
 class _CgflixPressableState extends State<CgflixPressable> {
   bool _pressed = false;
 
+  /// Refino 2b: teclado, mouse e controle (Chromebook, TV box que não se diz TV) também abrem o
+  /// cartão; o foco aparece como um contorno de 3 dp na cor do anel de foco do tema.
+  bool _focused = false;
+
   void _set(bool value) {
     if (_pressed != value) setState(() => _pressed = value);
   }
@@ -217,11 +221,23 @@ class _CgflixPressableState extends State<CgflixPressable> {
                 Feedback.forLongPress(context);
                 widget.onLongPress!();
               },
-        child: AnimatedScale(
-          scale: _pressed ? 0.95 : 1,
-          duration: CgflixMotion.fast,
-          curve: CgflixMotion.curve,
-          child: widget.child,
+        child: FocusableActionDetector(
+          enabled: widget.onTap != null,
+          onShowFocusHighlight: (v) => setState(() => _focused = v),
+          actions: {ActivateIntent: CallbackAction<ActivateIntent>(onInvoke: (_) => widget.onTap?.call())},
+          child: AnimatedScale(
+            scale: _pressed ? 0.95 : 1,
+            duration: CgflixMotion.fast,
+            curve: CgflixMotion.curve,
+            child: DecoratedBox(
+              position: DecorationPosition.foreground,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: _focused ? Border.all(color: context.cgflix.focusRing, width: 3) : null,
+              ),
+              child: widget.child,
+            ),
+          ),
         ),
       ),
     );

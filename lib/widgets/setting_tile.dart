@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../cgflix/cgflix_configuracoes.dart';
+import '../cgflix/cgflix_controles.dart';
 import '../screens/settings/settings_utils.dart';
 import '../services/settings_service.dart';
 import '../services/settings_mutation_service.dart';
@@ -91,7 +93,7 @@ class SettingSwitchTile extends StatelessWidget {
       valueListenable: SettingsService.instance.listenable(pref),
       builder: (_, value, _) => FocusableSwitchListTile(
         focusNode: focusNode,
-        secondary: AppIcon(icon, fill: 1),
+        secondary: AppIcon(icon, fill: value ? 1 : 0), // CGFLIX: preenchido ligado, contorno desligado
         title: Text(title),
         subtitle: subtitle != null ? Text(subtitle!) : null,
         value: value,
@@ -160,6 +162,18 @@ class SettingNumberTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final bounds = SettingsService.numericBounds(pref);
     if (bounds == null) throw StateError('A numeric setting must declare its bounds');
+    // CGFLIX (refino 2b): nas Configurações, número = controle deslizante do M3.
+    if (CgflixSettingsLook.of(context)) {
+      return CgflixSliderSetting(
+        pref: pref,
+        icon: icon,
+        title: title,
+        subtitleBuilder: subtitleBuilder,
+        min: bounds.$1.toInt(),
+        max: bounds.$2.toInt(),
+        onAfterWrite: onAfterWrite,
+      );
+    }
     return ValueListenableBuilder<int>(
       valueListenable: SettingsService.instance.listenable(pref),
       builder: (_, value, _) => _SettingRow(
@@ -369,6 +383,10 @@ class SettingColorTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // CGFLIX (refino 2b): nas Configurações, cor = círculos com check (escolha do M3).
+    if (CgflixSettingsLook.of(context)) {
+      return CgflixColorChoice(pref: pref, icon: icon, title: title, onAfterWrite: onAfterWrite);
+    }
     return ValueListenableBuilder<String>(
       valueListenable: SettingsService.instance.listenable(pref),
       builder: (_, hex, _) => _SettingRow(

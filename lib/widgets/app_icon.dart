@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../cgflix/cgflix_configuracoes.dart';
+
 /// Wrapper around [Icon] that centralizes our Material Symbols defaults.
 /// Defaults: fill=1 (filled) and weight=700 (bold). Update [AppIconDefaults]
 /// to tweak app-wide icon appearance from one place.
@@ -32,11 +34,14 @@ class AppIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (icon == null) return const SizedBox.shrink();
+    // CGFLIX (refino 2b): nas Configurações, item que abre subtela não leva chevron (padrão Android).
+    final settingsLook = CgflixSettingsLook.of(context);
+    if (settingsLook && icon == cgflixChevron) return const SizedBox.shrink();
     return Icon(
       icon,
       size: size,
       color: color,
-      fill: fill ?? AppIconDefaults.fill,
+      fill: settingsLook ? 0 : (fill ?? AppIconDefaults.fill), // CGFLIX: contorno nas Configurações
       weight: weight ?? AppIconDefaults.weight,
       grade: grade ?? AppIconDefaults.grade,
       opticalSize: opticalSize ?? AppIconDefaults.opticalSize,

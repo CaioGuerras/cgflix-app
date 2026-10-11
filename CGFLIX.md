@@ -99,7 +99,7 @@ mais polido e integrado ao Android. Ordem de serviço em `docs/ORDEM_1C.md`.
 | `lib/cgflix/home/cgflix_actions.dart` | háptico leve ao tocar "Assistir" |
 | `test/cgflix/*`, `test/providers/theme_provider_test.dart` | testes do agrupamento, do filtro, da barra e do histórico; fundo OLED = `#07060a` |
 
-**Voltar preditivo**: o `android:enableOnBackInvokedCallback` continua sem declarar: com ele, o Android deixa de entregar a tecla VOLTAR do controle remoto como tecla, e a navegação da TV
+**Voltar preditivo** (situação até a 1.6.0; ligado na 1.6.1, ver o refino 2b abaixo): o `android:enableOnBackInvokedCallback` continuava sem declarar: com ele, o Android deixa de entregar a tecla VOLTAR do controle remoto como tecla, e a navegação da TV
 do upstream depende disso. Continua pendente na 1D (precisa de teste numa TV box; ver `docs/cgflix/AUDITORIA_GOOGLE_1D.md`).
 
 ## Etapa 1D — barra única no topo, paisagem, tema único e auditorias (versão 1.2.0, versionCode 400)
@@ -277,6 +277,51 @@ recarga. É acabamento: navegação e fluxos aprovados (1B–1E) não mudaram.
 
 **Capturas**: o job "Emulador" do workflow guarda as telas no artifact `cgflix-capturas` (Isis e `heitor-*`,
 retrato e paisagem). "Antes" = artifact da última execução no `main`; "depois" = artifact deste PR.
+
+## Refino 2: menus, ícones, textos e dicas (versão 1.6.0, versionCode 800)
+
+Pedido do dono (11/10): reorganizar os menus pela frequência de uso, trocar os ícones (também no player), melhorar
+os textos, tirar "escuro, roxo"/"claro, verde" do lado do nome do tema e dar dicas para as funções complicadas.
+Filosofia omakase: nada foi removido; o técnico só saiu da frente (Configurações › Avançado). Detalhes, tabelas e
+listas completas em `docs/cgflix/REFINO_2.md`; capturas em `docs/prints/refino2/` (antes × depois, Isis × Heitor).
+
+| Item | Mudança | Arquivos |
+|---|---|---|
+| Versão | `1.6.0+800` | `pubspec.yaml`, `lib/cgflix/cgflix_version.dart`, `test/cgflix/cgflix_version_test.dart` |
+| A. Menu do usuário | Favoritos · Baixados · Meus pedidos · Bibliotecas ─ **Ajustes e ajuda**: Configurações · Sobre e dicas ─ **Conta**: Trocar usuário · Sair ─ Apoie o CGFLIX (último) | `lib/cgflix/cgflix_user_menu.dart` |
+| A. Configurações | Topo: Ao assistir · Áudio, legenda e conta (idiomas) · Aparência · Geral; depois Baixados; Contas e servidores (fechado, com Bibliotecas e Serviços); Avançado ganha a Cópia de segurança | `settings/settings_screen.dart` (ganchos `CGFLIX`) |
+| A. Ao assistir (Reprodução) | Pular abertura e próximo episódio (aberto) · Legendas (aberto) · Gestos · Avançar e voltar · Comportamento · Reprodutor · Vídeo e tela · Áudio (agora fechado) · Qualidade · Lembrar ajustes. A parte técnica de Pular abertura (capítulos, expressões regulares) foi para o Avançado | `settings/playback_settings_screen.dart`, `lib/cgflix/cgflix_advanced.dart`, `lib/cgflix/cgflix_defaults.dart` (`cgflixSkipTechInAdvanced`) |
+| A. Menu do título (cartão e ⋮) | Assistir · Guardar · Marcar · Técnico · Administração · Apagar (sempre o último), com traço entre os grupos; "Detalhes técnicos do arquivo" com ícone próprio (não repete o "i" do Ver detalhes) | `lib/cgflix/cgflix_menus.dart` (novo), `lib/widgets/media_context_menu.dart` (1 gancho + 1 ícone) |
+| A. Ajustes do vídeo (player) | Qualidade · Velocidade · Próximo episódio sozinho · Zoom · Desligar automaticamente ─ **Som e legenda** ─ **Imagem e técnico** | `widgets/video_controls/sheets/video_settings_sheet.dart` |
+| B. Ícones | Material Symbols Rounded em todo o app (já era); chaves preenchidas quando ligadas e em contorno desligadas; player no celular com 28 dp e 48 dp de toque; engrenagem nos ajustes, `voice_selection` no áudio, `toc` nos capítulos, `playlist_play` na lista, `high_quality` na qualidade, `av_timer` no atraso do áudio, `equalizer` no nivelar volume, `description` nos detalhes do arquivo; Geral = `language`, idiomas = `voice_selection` | `lib/cgflix/cgflix_icones.dart` (novo), `widgets/video_controls/video_control_button.dart` (1 gancho), `widgets/setting_tile.dart` (1 linha) |
+| C. Textos | 36 textos do `pt.i18n.json` (lista antes → depois em `docs/cgflix/REFINO_2.md`); temas só com o nome (Isis / Heitor / Automático), a descrição fica só para o leitor de tela | `lib/i18n/pt.i18n.json`, `strings_pt.g.dart`, `lib/cgflix/cgflix_theme_picker.dart`, `settings/settings_utils.dart` (`DialogOption.semanticsHint`), `lib/cgflix/cgflix_locale.dart` |
+| D. Dicas | 11 dicas num arquivo só (resumo de 1 linha + 2 a 4 frases); "?" (`help`, 48 dp) que abre uma folha em Pular abertura, idiomas, Baixar só no Wi-Fi, gestos, janelinha e qualidade; dica única dos gestos no player (some sozinha em 8 s ou com um toque, não volta; guardada no aparelho); **Sobre › Dicas do CGFLIX** reúne todas e permite rever a dos gestos; respeita "remover animações" | `lib/cgflix/cgflix_dicas.dart` (novo), `settings/about_screen.dart` (1 linha), `widgets/video_controls/video_controls.dart` (1 gancho) |
+| E. Padrões | **Baixar só no Wi-Fi: desligado → ligado** (protege o plano de dados). Os outros padrões ficaram (ver `docs/cgflix/REFINO_2.md`) | `lib/cgflix/cgflix_defaults.dart`, `lib/services/settings_service.dart` (1 linha) |
+| F. Testes e capturas | Ordem dos menus, folha das dicas, dica do player (aparece uma vez, some, reabre pelo Sobre, sem animação), ordem de Ao assistir e do Avançado; capturas reais (fontes Inter e Symbols) com `CGFLIX_CAPTURAS=<pasta> flutter test test/cgflix/capturas/capturas_test.dart`; emulador ganha Ao assistir (tela real), dica de Pular abertura, Dicas e a dica dos gestos | `test/cgflix/cgflix_dicas_test.dart`, `cgflix_menus_test.dart`, `capturas/capturas_test.dart` (novos), testes ajustados, `test/cgflix/emulador/app_navegacao.dart`, `scripts/cgflix/emulador_navegacao.py`, `docs/prints/refino2/` |
+| G. Passada final | Lista do que foi visto e ficou como está em `docs/cgflix/REFINO_2.md` | — |
+
+**Transmitir para a TV**: o Plezy não tem Chromecast/transmissão; não há botão para trocar. A dica "Ver na TV" explica
+o caminho que existe (CGFLIX na TV box com Quick Connect, ou espelhar a tela do Android).
+
+## Refino 2b: Configurações no padrão Material 3 / Android (versão 1.6.1, versionCode 810)
+
+Pedido do dono (11/10, depois de testar a 1.6.0): Configurações bagunçadas, técnico na frente, tema "fora" e sem cara
+de Material 3. Detalhes completos (tabela item → antes → depois → por quê, checklist do sistema, o que não mudou) em
+`docs/cgflix/REFINO_2B.md`; capturas antes × depois em `docs/prints/refino2b/`.
+
+| Item | Mudança | Arquivos |
+|---|---|---|
+| Versão | `1.6.1+810` (instala por cima da 1.6.0, mesma chave) | `pubspec.yaml`, `lib/cgflix/cgflix_version.dart`, teste |
+| Visual M3 | lista plana, cabeçalhos na cor `primary`, linhas de 56/72 dp, sem chevron, ícones de contorno, switch M3 com check (Isis lilás, Heitor verde, também fora das Configurações), números em `Slider`, cores em círculos, barra de título grande que recolhe | `lib/cgflix/cgflix_configuracoes.dart`, `cgflix_controles.dart` (novos); ganchos de 1–3 linhas em `widgets/settings_section.dart`, `settings_page.dart`, `setting_tile.dart`, `focusable_list_tile.dart`, `app_icon.dart`, `desktop_app_bar.dart`, `cgflix_theme.dart`; `cgflix_collapsible.dart` **removido** |
+| Tela principal | Conta · Aparência (Tema, Idioma do app, Mais opções) · Assistir (Áudio e legenda, Estilo das legendas, Ao assistir, Qualidade, Dados móveis) · Baixados · Ajuda (Dicas, Sobre) · Avançado (subtela, fechado) · Apoie o CGFLIX | `settings/settings_screen.dart`, `lib/cgflix/cgflix_config_itens.dart` (novo) |
+| Avançado | subtela por assunto: Contas e servidores, Recursos extras, Ao assistir (técnico, com a **Reprodução avançada**), Legendas (técnico), Este aparelho (Geral), Diagnóstico, Cópia de segurança | `lib/cgflix/cgflix_advanced.dart`, `settings/playback_settings_screen.dart` (`cgflixTechnical`), `general_settings_screen.dart` |
+| Textos | idiomas em português ("Português", "Inglês", "Japonês"), "Original do título", "Áudio e legenda", estilo das legendas em palavras leigas, sem "salvo em CGFLIX" e sem "Adicionar a <perfil>" | `lib/cgflix/cgflix_idiomas.dart` (novo), `utils/language_codes.dart` (gancho), `account_preferences_detail_screen.dart`, `subtitle_styling_screen.dart`, `pt.i18n.json` |
+| Sistema | **voltar preditivo ligado** (a página segue o dedo); cartões da Início com foco de teclado/controle; foco visível nas Configurações; opções de diálogo com semântica de botão de opção | `AndroidManifest.xml`, `cgflix_theme.dart`, `home/cgflix_cards.dart`, `settings/settings_utils.dart` |
+| Testes e capturas | `cgflix_configuracoes_test.dart`, `cgflix_voltar_preditivo_test.dart`, `cgflix_cartao_foco_test.dart` (novos), testes do upstream ajustados, `capturas/configuracoes_capturas_test.dart` + `test_helpers/cgflix_config_harness.dart`; emulador com Estilo das legendas e Avançado | `test/`, `scripts/cgflix/emulador_navegacao.py`, `docs/prints/refino2b/` |
+| Docs | auditoria Google reaberta item a item ("Refino 2b (1.6.1)"), `docs/CONFIGURACOES.md` com a estrutura nova | `docs/cgflix/AUDITORIA_GOOGLE_1D.md`, `docs/CONFIGURACOES.md`, `docs/cgflix/REFINO_2B.md` |
+
+Ao sincronizar com o upstream, os ganchos novos estão nos widgets compartilhados das Configurações (lista acima); o
+resto é arquivo próprio em `lib/cgflix/`.
 
 ## Como gerar o APK
 

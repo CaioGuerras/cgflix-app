@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../cgflix/cgflix_collapsible.dart';
+import '../cgflix/cgflix_configuracoes.dart';
 import '../theme/mono_tokens.dart';
 import '../utils/platform_detector.dart';
 import 'app_icon.dart';
@@ -23,6 +23,7 @@ class SettingsSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (CgflixSettingsLook.of(context)) return CgflixSettingsHeader(title); // CGFLIX: cabeçalho M3
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
       child: Text(
@@ -55,38 +56,24 @@ class SettingsGroup extends StatelessWidget {
   final List<Widget> children;
   final EdgeInsetsGeometry margin;
 
-  /// CGFLIX: só vale dentro de um [CgflixCollapsibleScope]; a seção começa fechada
-  /// a menos que isto seja `true`.
-  final bool initiallyExpanded;
-
   const SettingsGroup({
     super.key,
     this.title,
     required this.children,
     this.margin = const EdgeInsets.symmetric(horizontal: 16),
-    this.initiallyExpanded = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (title != null && CgflixCollapsibleScope.isEnabled(context)) {
-      return CgflixCollapsibleCard(
-        title: title!,
-        initiallyExpanded: initiallyExpanded,
-        child: CgflixCollapsibleScope(enabled: false, child: _buildGroup(context, showTitle: false, inCard: true)),
-      );
-    }
-    return _buildGroup(context);
-  }
-
-  Widget _buildGroup(BuildContext context, {bool showTitle = true, bool inCard = false}) {
+    // CGFLIX (refino 2b): nas Configurações, lista plana do M3 (sem cartões).
+    if (CgflixSettingsLook.of(context)) return CgflixFlatGroup(title: title, children: children);
     final t = tokens(context);
     return Column(
       crossAxisAlignment: .start,
       children: [
-        if (title != null && showTitle) SettingsSectionHeader(title!),
+        if (title != null) SettingsSectionHeader(title!),
         Padding(
-          padding: inCard ? const EdgeInsets.symmetric(horizontal: 8) : margin,
+          padding: margin,
           child: ListTileTheme.merge(
             visualDensity: PlatformDetector.isAutomotive() ? VisualDensity.standard : const VisualDensity(vertical: -3),
             child: Column(

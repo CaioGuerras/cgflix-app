@@ -1,3 +1,4 @@
+import '../cgflix/cgflix_idiomas.dart';
 import '../data/iso_639_data.dart';
 
 /// Helper class for converting between ISO 639-1 (2-letter) and ISO 639-2 (3-letter) language codes
@@ -43,7 +44,10 @@ class LanguageCodes {
 
     final parts = code.split('-');
     final langName = getLanguageName(parts.first) ?? parts.first;
-    final region = parts.length > 1 ? _regionNames[parts[1]] : null;
+    final region = parts.length > 1
+        ? (cgflixPortugueseNames ? cgflixRegionNamesPt[parts[1]] : null) ??
+              _regionNames[parts[1]] // CGFLIX
+        : null;
     return region != null ? '$langName ($region)' : langName;
   }
 
@@ -62,13 +66,15 @@ class LanguageCodes {
   static List<({String code, String name})> getAllLanguages() {
     final languages = <({String code, String name})>[];
     for (final entry in languageEntries.values) {
-      languages.add((code: entry.code1, name: entry.name));
+      languages.add((code: entry.code1, name: getLanguageName(entry.code1) ?? entry.name)); // CGFLIX: em português
     }
-    languages.sort((a, b) => a.name.compareTo(b.name));
+    languages.sort((a, b) => cgflixSortKey(a.name).compareTo(cgflixSortKey(b.name))); // CGFLIX: ignora acentos
     return languages;
   }
 
   static String? getLanguageName(String languageCode) {
-    return _resolve(languageCode)?.name;
+    final entry = _resolve(languageCode);
+    if (entry != null && cgflixPortugueseNames) return cgflixLanguageNamePt(entry.code1) ?? entry.name; // CGFLIX
+    return entry?.name;
   }
 }

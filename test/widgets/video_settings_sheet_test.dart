@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:plezy/cgflix/cgflix_config_itens.dart';
 import 'package:plezy/i18n/strings.g.dart';
 import 'package:plezy/media/ids.dart';
 import 'package:plezy/media/media_backend.dart';
@@ -141,6 +142,8 @@ void main() {
   });
 
   testWidgets('localizes every ASS subtitle override enum label', (tester) async {
+    cgflixSettingsDebugInline = true; // CGFLIX: o estilo ASS fica em Configurações › Avançado
+    addTearDown(() => cgflixSettingsDebugInline = false);
     LocaleSettings.setLocaleSync(AppLocale.ru);
     await tester.pumpWidget(
       MaterialApp(

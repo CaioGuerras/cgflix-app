@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../focus/focusable_tile_mixin.dart';
+import '../cgflix/cgflix_configuracoes.dart';
 import '../utils/platform_detector.dart';
 import 'clickable_cursor.dart';
 
@@ -68,7 +69,7 @@ class _FocusableListTileState extends State<FocusableListTile> with FocusableTil
 
   @override
   Widget build(BuildContext context) {
-    final automotive = PlatformDetector.isAutomotive();
+    final automotive = PlatformDetector.isAutomotive() || CgflixSettingsLook.of(context); // CGFLIX: altura M3
 
     return MouseRegion(
       cursor: widget.enabled && (widget.onTap != null || widget.onLongPress != null)
@@ -86,7 +87,9 @@ class _FocusableListTileState extends State<FocusableListTile> with FocusableTil
         selected: widget.selected,
         contentPadding: widget.contentPadding,
         visualDensity: automotive ? VisualDensity.standard : widget.visualDensity,
-        minTileHeight: automotive ? null : 48, // CGFLIX: linha de um texto só também com 48 dp de toque
+        minTileHeight: CgflixSettingsLook.of(context)
+            ? 56
+            : (automotive ? null : 48), // CGFLIX: 48 dp de toque; 56 no M3
         focusNode: effectiveFocusNode,
         autofocus: widget.autofocus,
         horizontalTitleGap: widget.horizontalTitleGap,
@@ -164,7 +167,7 @@ class _FocusableSwitchListTileState extends State<FocusableSwitchListTile>
 
   @override
   Widget build(BuildContext context) {
-    final automotive = PlatformDetector.isAutomotive();
+    final automotive = PlatformDetector.isAutomotive() || CgflixSettingsLook.of(context); // CGFLIX: altura M3
     return ClickableCursor(
       enabled: widget.onChanged != null,
       child: SwitchListTile(
@@ -229,7 +232,7 @@ class _FocusableCheckboxListTileState extends State<FocusableCheckboxListTile>
 
   @override
   Widget build(BuildContext context) {
-    final automotive = PlatformDetector.isAutomotive();
+    final automotive = PlatformDetector.isAutomotive() || CgflixSettingsLook.of(context); // CGFLIX: altura M3
     return ClickableCursor(
       enabled: widget.onChanged != null,
       child: CheckboxListTile(

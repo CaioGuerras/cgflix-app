@@ -11,6 +11,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import 'package:plezy/cgflix/apoio/cgflix_apoio_screen.dart';
+import 'package:material_symbols_icons/symbols.dart';
+import 'package:plezy/cgflix/cgflix_advanced.dart';
+import 'package:plezy/cgflix/cgflix_config_itens.dart';
+import 'package:plezy/cgflix/cgflix_dicas.dart';
+import 'package:plezy/cgflix/cgflix_theme_picker.dart';
+import 'package:plezy/widgets/setting_tile.dart';
+import 'package:plezy/widgets/settings_page.dart';
+import 'package:plezy/widgets/settings_section.dart';
 import 'package:plezy/cgflix/cgflix_layout.dart';
 import 'package:plezy/cgflix/cgflix_navigation.dart';
 import 'package:plezy/cgflix/cgflix_logo.dart';
@@ -21,6 +29,10 @@ import 'package:plezy/cgflix/conta/cgflix_conta.dart';
 import 'package:plezy/cgflix/you/cgflix_favorites_screen.dart';
 import 'package:plezy/cgflix/requests/cgflix_requests_ui.dart';
 import 'package:plezy/cgflix/requests/cgflix_seerr.dart';
+import 'package:plezy/i18n/strings.g.dart';
+import 'package:plezy/providers/theme_provider.dart';
+import 'package:plezy/services/settings_service.dart' show SettingsService;
+import 'package:provider/provider.dart';
 
 /// Títulos falsos de cada categoria (Etapa 1E: cada chip só mostra os seus).
 const _porCategoria = {
@@ -100,8 +112,12 @@ class _ContaFalsa implements CgflixConta {
       CgflixSenhaResultado.ok;
 }
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Refino 2/2b: telas reais das Configurações e das Dicas precisam das preferências e do português.
+  await SettingsService.getInstance();
+  await LocaleSettings.setLocale(AppLocale.pt);
+  cgflixDicaPlayerDebugVista = false; // a dica dos gestos aparece na tela de vídeo falsa
   // 1.5.0: menu completo (conectado ao Jellyfin), Minha conta e Favoritos falsos.
   cgflixUserMenuDebugOnline = true;
   CgflixConta.debugOverride = _ContaFalsa();
@@ -114,13 +130,18 @@ void main() {
   CgflixRequests.debugOverride = _PedidosFalsos();
   // Tema 1.4.0: aparelho escuro = Isis, claro = Heitor (como o "Automático" do app).
   runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: cgflixAppTheme(CgflixThemeVariant.heitor),
-      darkTheme: cgflixAppTheme(),
-      themeMode: ThemeMode.system,
-      builder: (context, child) => cgflixSystemBars(context, child!),
-      home: const _InicioFalsa(),
+    TranslationProvider(
+      child: ChangeNotifierProvider<ThemeProvider>(
+        create: (_) => ThemeProvider(),
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: cgflixAppTheme(CgflixThemeVariant.heitor),
+          darkTheme: cgflixAppTheme(),
+          themeMode: ThemeMode.system,
+          builder: (context, child) => cgflixSystemBars(context, child!),
+          home: const _InicioFalsa(),
+        ),
+      ),
     ),
   );
 }
@@ -362,30 +383,78 @@ class _PaginaSimples extends StatelessWidget {
   }
 }
 
-/// Configurações (falsas) com a escolha de tema como no app e o caminho para a tela de entrada.
+/// Configurações com as peças reais do refino 2b (lista plana M3, cabeçalhos, tema, idioma, Ao
+/// assistir, Estilo das legendas, Avançado como subtela) e atalhos para as telas falsas.
 class _ConfiguracoesFalsas extends StatelessWidget {
   const _ConfiguracoesFalsas();
 
   @override
   Widget build(BuildContext context) {
-    final tema = context.cgflix.isLight ? 'Heitor (claro, verde)' : 'Isis (escuro, roxo)';
-    return Scaffold(
-      appBar: AppBar(title: const Text('Configurações')),
-      body: ListView(
-        children: [
-          const ListTile(
-            title: Text('Aparência', style: TextStyle(fontWeight: FontWeight.w700)),
+    return SettingsPage(
+      title: const Text('Configurações'),
+      children: [
+        const SettingsGroup(title: 'Aparência', children: [CgflixThemeSelector(), CgflixAppLanguageTile()]),
+        const SettingsGroup(
+          title: cgflixWatchHeader,
+          children: [CgflixSubtitleStyleTile(), CgflixSkipTile(), CgflixQualityTile(), CgflixCellularQualityTile()],
+        ),
+        SettingsGroup(
+          title: 'Ajuda',
+          children: [
+            SettingNavigationTile(
+              icon: Symbols.lightbulb_rounded,
+              title: 'Dicas do CGFLIX',
+              subtitle: 'Como usar as funções do app, em poucas palavras',
+              destinationBuilder: (_) => const CgflixDicasScreen(),
+            ),
+            SettingNavigationTile(
+              icon: Symbols.play_circle_rounded,
+              title: 'Ver a tela de vídeo',
+              destinationBuilder: (_) => const _VideoFalso(),
+            ),
+            SettingNavigationTile(
+              icon: Symbols.login_rounded,
+              title: 'Ver a tela de entrada',
+              destinationBuilder: (_) => const _EntradaFalsa(),
+            ),
+          ],
+        ),
+        SettingNavigationTile(
+          icon: Symbols.settings_applications_rounded,
+          title: 'Avançado',
+          subtitle: cgflixAdvancedSummary,
+          onTap: () => cgflixOpenSettingsSubpage(
+            context,
+            title: 'Avançado',
+            builder: (_) => const [CgflixAdvancedFeatures(), CgflixAdvancedPlayback(), CgflixAdvancedSubtitles()],
           ),
-          ListTile(leading: const Icon(Icons.palette_rounded), title: const Text('Tema'), subtitle: Text(tema)),
-          const SwitchListTile(value: true, onChanged: null, title: Text('Abertura animada')),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.login_rounded),
-            title: const Text('Ver a tela de entrada'),
-            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const _EntradaFalsa())),
-          ),
-          const CgflixApoioSettingsTile(),
-        ],
+        ),
+        const CgflixApoioSettingsTile(),
+      ],
+    );
+  }
+}
+
+/// Tela de vídeo (falsa, sempre escura) com a dica única dos gestos por cima.
+class _VideoFalso extends StatelessWidget {
+  const _VideoFalso();
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: cgflixAppTheme(),
+      // Refino 2b: "cena" azulada (a mesma da prévia da legenda), clara o bastante para o detector de
+      // tela preta: a dica some sozinha em 8 s e a captura deitada pegava só o fundo quase preto.
+      child: const Scaffold(
+        backgroundColor: Color(0xFF3A5068),
+        body: Stack(
+          children: [
+            Center(
+              child: Text('Cidade Invisível', style: TextStyle(color: Colors.white70, fontSize: 18)),
+            ),
+            Positioned.fill(child: CgflixDicaPlayer()),
+          ],
+        ),
       ),
     );
   }

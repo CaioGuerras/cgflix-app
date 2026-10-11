@@ -1,3 +1,4 @@
+import '../cgflix/cgflix_menus.dart'; // CGFLIX
 import 'dart:async';
 import '../media/ids.dart';
 import 'package:flutter/material.dart';
@@ -695,7 +696,11 @@ class MediaContextMenuState extends State<MediaContextMenu> {
       // "not available" snackbar. Hidden when the item has no backend marker
       // so we don't fan out to an arbitrary client.
       if (menu.itemBackend != null && mediaKind.hasFileInfo)
-        _MenuAction(value: 'fileinfo', icon: Symbols.info_rounded, label: t.mediaMenu.fileInfo),
+        _MenuAction(
+          value: 'fileinfo',
+          icon: Symbols.description_rounded, // CGFLIX: "info" já é o Ver detalhes
+          label: t.mediaMenu.fileInfo,
+        ),
       if (PlatformDetector.supportsExternalPlayers() && isMovieOrEpisode)
         _MenuAction(
           value: 'play_external',
@@ -1010,7 +1015,8 @@ class MediaContextMenuState extends State<MediaContextMenu> {
   );
 
   List<AppMenuEntry<String>> _menuEntries(List<_MenuAction> actions) {
-    return [
+    return cgflixArrangeTitleMenu([
+      // CGFLIX: ordem por frequência de uso, com traço entre os assuntos (refino 2)
       for (final action in actions)
         AppMenuItem<String>(
           value: action.value,
@@ -1018,7 +1024,7 @@ class MediaContextMenuState extends State<MediaContextMenu> {
           label: action.label,
           destructive: action.destructive,
         ),
-    ];
+    ]);
   }
 
   /// Resolve-then-mutate for the watchlist entry. [removeOffered] pins the

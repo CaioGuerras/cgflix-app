@@ -19,3 +19,7 @@ const cgflixColorPickerLabels = <ColorPickerType, String>{
   ColorPickerType.primary: 'Cores',
   ColorPickerType.wheel: 'Personalizada',
 };
+
+/// Refino 2: o que o leitor de tela diz numa opção de lista com texto extra ("Isis, escuro, roxo").
+/// Sem extra, `null` (o próprio texto).
+String? cgflixOptionSemantics(String title, String? hint) => hint == null ? null : '$title, $hint';

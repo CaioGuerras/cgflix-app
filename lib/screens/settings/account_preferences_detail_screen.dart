@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../cgflix/cgflix_idiomas.dart';
 import '../../i18n/strings.g.dart';
 import '../../media/account_preferences.dart';
 import '../../media/account_preferences_target.dart';
@@ -28,14 +29,11 @@ import 'settings_utils.dart';
 /// that is what the transports read as "clear this".
 const _noLanguage = '';
 
-/// Every ISO 639-1 language as a picker option, built once: both language rows
-/// share the list, [LanguageCodes.getAllLanguages] allocates and sorts a fresh
-/// copy per call, and the body rebuilds after every write. The names come from
-/// the generated ISO table rather than translations, so caching is safe across
-/// a locale change.
-final _languageOptions = <DialogOption<String>>[
+/// Every ISO 639-1 language as a picker option. CGFLIX: os nomes saem em português quando o app
+/// está em português, então a lista é refeita a cada montagem (e os idiomas comuns vêm primeiro).
+List<DialogOption<String>> get _languageOptions => cgflixCommonLanguagesFirst([
   for (final language in LanguageCodes.getAllLanguages()) DialogOption(value: language.code, title: language.name),
-];
+], (o) => o.value);
 
 /// One account's server-stored preferences.
 ///
@@ -226,6 +224,10 @@ class _AccountPreferencesBodyState extends State<AccountPreferencesBody> {
       DialogOption(value: _noLanguage, title: t.accountPreferences.noPreference),
       ..._languageOptions,
     ];
+    // CGFLIX: no áudio, "sem preferência" toca a faixa original do título; dito assim.
+    final audioOptions = cgflixPortugueseNames
+        ? [DialogOption(value: _noLanguage, title: cgflixOriginalAudioLabel), ...languageOptions.skip(1)]
+        : languageOptions;
 
     return [
       if (capabilities.supports(AccountPreferenceKey.preferredAudioLanguage))
@@ -234,7 +236,8 @@ class _AccountPreferencesBodyState extends State<AccountPreferencesBody> {
           icon: Symbols.audiotrack_rounded,
           title: t.accountPreferences.preferredAudioLanguage,
           code1: preferences.preferredAudioLanguageCode1,
-          options: languageOptions,
+          options: audioOptions,
+          noneLabel: cgflixPortugueseNames ? cgflixOriginalAudioLabel : null, // CGFLIX
         ),
       if (capabilities.supports(AccountPreferenceKey.autoSelectAudio))
         AccountSettingSwitchTile(
@@ -359,13 +362,14 @@ class _AccountPreferencesBodyState extends State<AccountPreferencesBody> {
     required String title,
     required String? code1,
     required List<DialogOption<String>> options,
+    String? noneLabel,
   }) {
     return AccountSettingSelectionTile<String>(
       value: code1 ?? _noLanguage,
       icon: icon,
       title: title,
       subtitleBuilder: (code) => code == null || code == _noLanguage
-          ? t.accountPreferences.noPreference
+          ? noneLabel ?? t.accountPreferences.noPreference
           : LanguageCodes.getLanguageName(code) ?? code,
       options: options,
       onChanged: (code) => _write(preferenceKey, code == _noLanguage ? null : code),

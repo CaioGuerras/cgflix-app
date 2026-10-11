@@ -4,6 +4,8 @@
 // Configurações · Trocar usuário · Sobre · Sair ─ Apoie o CGFLIX. Sem conexão, somem os que
 // dependem do servidor (Favoritos, Bibliotecas, Meus pedidos) e o topo não abre nada.
 // Folha inferior com rolagem: cabe também com o celular deitado.
+// Refino 2: pela frequência de uso. Favoritos · Baixados · Meus pedidos · Bibliotecas ─ "Ajustes e
+// ajuda": Configurações · Sobre e dicas ─ "Conta": Trocar usuário · Sair ─ Apoie o CGFLIX (sempre o último).
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +28,7 @@ import 'conta/cgflix_minha_conta_screen.dart';
 import 'you/cgflix_favorites_screen.dart';
 
 /// Itens do menu, na ordem em que aparecem (os testes conferem esta lista).
-enum CgflixUserMenuItem { favorites, libraries, myRequests, downloads, settings, switchUser, about, signOut, support }
+enum CgflixUserMenuItem { favorites, downloads, myRequests, libraries, settings, about, switchUser, signOut, support }
 
 /// Itens que dependem do servidor (somem sem conexão).
 const _onlineOnly = {CgflixUserMenuItem.favorites, CgflixUserMenuItem.libraries, CgflixUserMenuItem.myRequests};
@@ -124,7 +126,16 @@ Future<void> showCgflixUserMenu(BuildContext context) async {
 class CgflixUserMenuSheet extends StatelessWidget {
   const CgflixUserMenuSheet({super.key});
 
-  static const _groupEnds = {CgflixUserMenuItem.downloads, CgflixUserMenuItem.signOut};
+  /// Último item de cada grupo → cabeçalho do grupo seguinte (null = só o traço).
+  static const _groupEnds = {
+    CgflixUserMenuItem.libraries: 'Ajustes e ajuda',
+    CgflixUserMenuItem.about: 'Conta',
+    CgflixUserMenuItem.signOut: null,
+  };
+
+  /// Sem conexão, o grupo de cima perde Bibliotecas: o traço vem depois de Baixados.
+  static CgflixUserMenuItem? _endOfFirstGroup(List<CgflixUserMenuItem> items) =>
+      items.lastWhere((i) => i.index <= CgflixUserMenuItem.libraries.index, orElse: () => CgflixUserMenuItem.libraries);
 
   @override
   Widget build(BuildContext context) {
@@ -182,10 +193,14 @@ class CgflixUserMenuSheet extends StatelessWidget {
               ),
       ),
     ];
+    final firstEnd = _endOfFirstGroup(items);
     for (final (i, item) in items.indexed) {
       children.add(_tileFor(context, item));
-      if (_groupEnds.contains(item) && i < items.length - 1) {
+      final isEnd = item == firstEnd || (item != CgflixUserMenuItem.libraries && _groupEnds.containsKey(item));
+      if (isEnd && i < items.length - 1) {
         children.add(Divider(height: 16, color: context.cgflix.divider));
+        final header = _groupEnds[item == firstEnd ? CgflixUserMenuItem.libraries : item];
+        if (header != null) children.add(_MenuHeader(header));
       }
     }
 
@@ -211,7 +226,7 @@ class CgflixUserMenuSheet extends StatelessWidget {
       CgflixUserMenuItem.downloads => (Symbols.download_rounded, 'Baixados'),
       CgflixUserMenuItem.settings => (Symbols.settings_rounded, 'Configurações'),
       CgflixUserMenuItem.switchUser => (Symbols.switch_account_rounded, 'Trocar usuário'),
-      CgflixUserMenuItem.about => (Symbols.info_rounded, 'Sobre o CGFLIX'),
+      CgflixUserMenuItem.about => (Symbols.info_rounded, 'Sobre e dicas'),
       CgflixUserMenuItem.signOut => (Symbols.logout_rounded, 'Sair'),
       CgflixUserMenuItem.support => (Symbols.favorite_rounded, cgflixApoioTitulo),
     };
@@ -224,6 +239,26 @@ class CgflixUserMenuSheet extends StatelessWidget {
       onTap: pick,
     );
   }
+}
+
+/// Cabeçalho curto de um grupo do menu.
+class _MenuHeader extends StatelessWidget {
+  const _MenuHeader(this.label);
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    header: true,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: Text(
+        label,
+        style: Theme.of(
+          context,
+        ).textTheme.labelLarge?.copyWith(color: context.cgflix.textMuted, fontWeight: FontWeight.w700),
+      ),
+    ),
+  );
 }
 
 class _MenuTile extends StatelessWidget {

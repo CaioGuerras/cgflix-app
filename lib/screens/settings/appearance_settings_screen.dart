@@ -5,7 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
 import '../../cgflix/cgflix_navigation.dart';
-import '../../cgflix/cgflix_theme_picker.dart';
+import '../../cgflix/cgflix_config_itens.dart';
 import '../../i18n/strings.g.dart';
 import '../../providers/catalog_sources_provider.dart';
 import '../../providers/theme_provider.dart';
@@ -30,14 +30,11 @@ class AppearanceSettingsScreen extends StatelessWidget {
     // never show the Explore toggle, mirroring the tab's own visibility.
     final hasExplore = context.watch<CatalogSourcesProvider?>()?.hasAnySource ?? false;
     return SettingsPage(
-      title: Text(t.settings.appearance),
-      collapsible: true, // CGFLIX
+      title: const Text(cgflixAppearanceMoreTitle), // CGFLIX (refino 2b): o tema foi para a tela principal
       children: cgflixAppearanceGroups(context, [
         SettingsGroup(
-          initiallyExpanded: true,
           title: t.settings.display,
           children: [
-            if (!PlatformDetector.isTV()) const CgflixThemeSelector(), // CGFLIX: Isis / Heitor / Automático
             if (PlatformDetector.isAutomotive()) _displayScaleSelector(),
             if (Platform.isAndroid) _visualEffectsSelector(context),
           ],

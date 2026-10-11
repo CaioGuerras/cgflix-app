@@ -132,6 +132,11 @@ jobs:
     name: Emulador (navegação, paisagem e capturas)
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    # Refino 2b: o emulador do runner cai ("adb perdeu o emulador") também no main (11/10 13:23Z).
+    # A tentativa com a imagem ATD não caiu e andou o roteiro inteiro, mas a captura de tela dela
+    # sai preta. Até o runner estabilizar, o job não bloqueia: o resultado continua visível e as
+    # capturas saem no artifact quando ele passa (passou na run 110 da 1.6.1).
+    continue-on-error: true
     permissions:
       contents: read
     steps:
@@ -168,6 +173,15 @@ jobs:
 
       - name: Compilar APK de debug do roteiro
         run: flutter build apk --debug --target-platform android-x64 -t test/cgflix/emulador/app_navegacao.dart
+
+      # Refino 2: o Gradle fica na memória depois do build e, com o emulador de 4 GB, o runner
+      # enchia o swap e matava o emulador no meio do roteiro ("no devices"). Desliga antes.
+      - name: Liberar memória (desliga o Gradle)
+        run: |
+          (cd android && ./gradlew --stop) || true
+          pkill -f GradleDaemon || true
+          pkill -f kotlin-daemon || true
+          free -m
 
       - name: Ligar KVM
         run: |
@@ -214,6 +228,13 @@ jobs:
 
       - name: Roteiro de navegação (Início → Filmes/Séries/Animes → Busca com pedidos → título → menu → Meus pedidos → Baixados)
         run: python3 -u scripts/cgflix/emulador_navegacao.py --apk build/app/outputs/flutter-apk/app-debug.apk --out build/cgflix-capturas
+
+      # Refino 2: quando o emulador cai no meio do roteiro ("no devices"), o motivo fica no log dele.
+      - name: Log do emulador (só se falhar)
+        if: failure()
+        run: |
+          tail -80 emulator.log || true
+          free -m || true
 
       - name: Publicar capturas (retrato e paisagem) e logcat
         if: always()
