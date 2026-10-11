@@ -34,8 +34,8 @@ Future<void> _montar(WidgetTester tester, CgflixThemeVariant variante, Widget ho
 
 /// Conta falsa no lugar do Jellyfin.
 class _ContaFalsa implements CgflixConta {
-  _ContaFalsa({this.senha = CgflixSenhaResultado.ok, this.falhaPerfil = false});
-  CgflixSenhaResultado senha;
+  _ContaFalsa({this.falhaPerfil = false});
+  CgflixSenhaResultado senha = CgflixSenhaResultado.ok;
   bool falhaPerfil;
   String? foto;
   int fotosEnviadas = 0;

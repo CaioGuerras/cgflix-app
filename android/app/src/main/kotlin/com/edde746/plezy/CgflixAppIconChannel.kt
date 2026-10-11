@@ -60,12 +60,11 @@ internal object CgflixAppIconChannel {
     }
   }
 
-  private fun isEnabled(pm: PackageManager, component: ComponentName, default: Boolean) =
-    when (pm.getComponentEnabledSetting(component)) {
-      PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
-      PackageManager.COMPONENT_ENABLED_STATE_DEFAULT -> default
-      else -> false
-    }
+  private fun isEnabled(pm: PackageManager, component: ComponentName, default: Boolean) = when (pm.getComponentEnabledSetting(component)) {
+    PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
+    PackageManager.COMPONENT_ENABLED_STATE_DEFAULT -> default
+    else -> false
+  }
 
   /** Aplica o ícone quando a última tela visível do app sai da tela. */
   private class BackgroundWatcher(private val app: Application) : Application.ActivityLifecycleCallbacks {

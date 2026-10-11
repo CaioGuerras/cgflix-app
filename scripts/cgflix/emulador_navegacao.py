@@ -8,6 +8,8 @@ capturas (retrato e paisagem). Etapa 1E: a barra não tem mais o ícone "Pedir" 
 Tema 1.4.0: o roteiro roda com o aparelho no modo escuro (Isis), passa por Configurações e pela
 tela de entrada, troca o aparelho para o modo claro e captura Início, título, Configurações e
 entrada de novo no tema Heitor (capturas "heitor-*").
+1.5.0: menu do usuário novo, Minha conta, Favoritos, Apoie o CGFLIX e o slogan na entrada, nos
+dois temas.
 Falha se aparecer tela preta, "RenderFlex overflowed" ou exceção no logcat.
 
 Só usa a biblioteca padrão do Python e o adb do Android SDK.
@@ -275,8 +277,14 @@ def run(apk: Path, out_dir: Path) -> int:
         ("10-meus-pedidos", lambda: (dev.tap(r"^Meus pedidos$"), dev.find(r"Aguardando aprovação"))),
         ("11-baixados", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Baixados$"))),
         ("12-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
+        # 1.5.0: menu novo, Minha conta, Favoritos e Apoie o CGFLIX
+        ("15-menu", lambda: (dev.tap(r"^Menu do CGFLIX"), dev.find(r"Minha conta: foto e senha"), dev.find(r"^Apoie o CGFLIX$"))),
+        ("16-minha-conta", lambda: (dev.tap(r"Minha conta: foto e senha"), dev.find(r"^Trocar senha$"))),
+        ("17-favoritos", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Favoritos$"), dev.find(r"Nenhum favorito ainda"))),
+        ("18-apoie", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Apoie o CGFLIX$"), dev.find(r"^Copiar chave$"))),
+        ("19-voltar", lambda: (dev.back(), dev.find(r"^Menu do CGFLIX"))),
         ("13-configuracoes", lambda: (dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Isis"))),
-        ("14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Conectar ao Jellyfin"))),
+        ("14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Aperte o play"))),
     ]
 
     def para_o_heitor() -> None:
@@ -292,7 +300,13 @@ def run(apk: Path, out_dir: Path) -> int:
             lambda: (dev.tap(r"^Buscar$"), dev.find(r"Disponível para pedir"), dev.tap(r"^Duna\nFilme")),
         ),
         ("heitor-13-configuracoes", lambda: (dev.back(), dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Configurações$"), dev.find(r"Heitor"))),
-        ("heitor-14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Conectar ao Jellyfin"))),
+        ("heitor-14-entrada", lambda: (dev.tap(r"^Ver a tela de entrada"), dev.find(r"Aperte o play"))),
+        (
+            "heitor-15-menu",
+            lambda: (dev.back(), dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.find(r"^Apoie o CGFLIX$")),
+        ),
+        ("heitor-16-minha-conta", lambda: (dev.tap(r"Minha conta: foto e senha"), dev.find(r"^Trocar senha$"))),
+        ("heitor-18-apoie", lambda: (dev.back(), dev.tap(r"^Menu do CGFLIX"), dev.tap(r"^Apoie o CGFLIX$"), dev.find(r"^Copiar chave$"))),
     ]
     for name, action in steps:
         print(f"• {name}")
