@@ -8,6 +8,7 @@ import '../services/settings_service.dart' as settings;
 import '../theme/mono_theme.dart';
 import '../theme/mono_tokens.dart';
 import '../utils/platform_detector.dart';
+import 'cgflix_app_icon.dart';
 import 'cgflix_palette.dart';
 import 'cgflix_style.dart';
 
@@ -39,6 +40,7 @@ ThemeData cgflixDarkTheme() => cgflixAppTheme(CgflixThemeVariant.isis);
 /// e vale como Isis.
 ThemeMode cgflixMaterialThemeMode(settings.ThemeMode mode) {
   if (_forceIsis) return ThemeMode.dark;
+  cgflixSyncAppIcon(mode); // 1.5.0: ícone do launcher acompanha o tema (só manda quando muda)
   return switch (mode) {
     settings.ThemeMode.light => ThemeMode.light,
     settings.ThemeMode.system => ThemeMode.system,
