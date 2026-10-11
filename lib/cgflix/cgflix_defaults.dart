@@ -42,3 +42,10 @@ bool cgflixAllowLogUpload = false;
 /// Doação: o Liberapay do autor do Plezy nunca aparece (nem com ENABLE_DONATIONS). O apoio do
 /// CGFLIX é a tela "Apoie o CGFLIX" (lib/cgflix/apoio/).
 const bool cgflixHidesUpstreamDonation = true;
+
+/// Refino 2 (padrão omakase): "Baixar só no Wi-Fi" vem LIGADO, para um download não comer o plano
+/// de dados de quem não sabe que um filme passa de 2 GB. Quem quiser desliga em Configurações › Baixados.
+/// Variável (não const) só para os testes do upstream, que esperam o padrão antigo (desligado).
+bool cgflixDownloadOnWifiOnlyDefault = true;
+
+bool cgflixDownloadOnWifiOnlyDefaultValue() => cgflixDownloadOnWifiOnlyDefault;

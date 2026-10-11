@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:plezy/cgflix/cgflix_defaults.dart';
 import 'package:plezy/cgflix/cgflix_trakt.dart';
 import 'package:plezy/connection/connection_registry.dart';
 import 'package:plezy/database/app_database.dart';
@@ -52,6 +53,9 @@ import '../../test_helpers/prefs.dart';
 void main() {
   setUpAll(() => cgflixDebugShowAllServices = true); // CGFLIX: todos os serviços, como no Plezy
   tearDownAll(() => cgflixDebugShowAllServices = false);
+  // CGFLIX: estes testes partem do padrão do Plezy ("Baixar só no Wi-Fi" desligado).
+  setUpAll(() => cgflixDownloadOnWifiOnlyDefault = false);
+  tearDownAll(() => cgflixDownloadOnWifiOnlyDefault = true);
   // CGFLIX: as seções das Configurações começam fechadas; estes testes olham as opções por dentro.
   setUpAll(() => CgflixCollapsibleCard.debugExpandAll = true);
   tearDownAll(() => CgflixCollapsibleCard.debugExpandAll = false);

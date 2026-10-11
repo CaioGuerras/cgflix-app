@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../cgflix/cgflix_advanced.dart';
 import '../../cgflix/cgflix_collapsible.dart';
+import '../../cgflix/cgflix_dicas.dart';
 import '../../cgflix/cgflix_theme_picker.dart';
 import '../../cgflix/cgflix_trakt.dart';
 import '../../focus/focus_memory_tracker.dart';
@@ -190,6 +191,9 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   }
 
   Widget _buildContent(BuildContext sheetContext, {required bool hasLibraries}) {
+    final hasAccountPreferences = sheetContext.select<AccountPreferencesController, bool>(
+      (c) => c.accounts.isNotEmpty,
+    ); // CGFLIX
     return Scaffold(
       body: Focus(
         onKeyEvent: _handleKeyEvent,
@@ -201,26 +205,24 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
               SliverList(
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 8),
+                  // CGFLIX (refino 2): o que se usa toda semana em cima (assistir, idioma, aparência),
+                  // depois Baixados e Contas; o técnico (cópia de segurança incluída) no Avançado.
                   SettingsGroup(
                     children: [
                       if (DonationService.isEnabled) _buildDonateTile(),
-                      _buildGeneralTile(),
-                      _buildAppearanceTile(),
                       _buildPlaybackTile(),
-                      if (hasLibraries) _buildManageLibrariesTile(sheetContext),
-                      if (cgflixShowsServicesTile) _buildServicesTile(), // CGFLIX: só com o Trakt do CGFLIX
+                      if (hasAccountPreferences)
+                        CgflixComDica(dica: CgflixDica.idiomas, child: _buildAccountPreferencesTile(sheetContext)),
+                      _buildAppearanceTile(),
+                      _buildGeneralTile(),
                     ],
                   ),
 
-                  _buildConnectionsSection(sheetContext),
-
                   if (!PlatformDetector.isAppleTV()) _buildDownloadsSection(),
 
-                  if (UpdateService.isUpdateCheckAvailable) ...[_buildUpdateSection()],
+                  _buildConnectionsSection(sheetContext, hasLibraries: hasLibraries),
 
-                  // Hidden on Android TV / tvOS (no document picker); desktop in
-                  // force-TV mode keeps it — FilePickerService works there.
-                  if (!PlatformDetector.isTV() || PlatformDetector.isDesktopOS()) _buildBackupSection(),
+                  if (UpdateService.isUpdateCheckAvailable) ...[_buildUpdateSection()],
 
                   // CGFLIX: tudo que o usuário comum não precisa fica aqui dentro, fechado.
                   CgflixCollapsibleCard(
@@ -235,6 +237,10 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                           if (_keyboardShortcutsSupported || PlatformDetector.shouldActAsRemoteHost(sheetContext))
                             _buildControlsSection(sheetContext),
                           _buildAdvancedSection(),
+                          // CGFLIX: a cópia das configurações (arquivo) é técnica; veio para cá.
+                          // Hidden on Android TV / tvOS (no document picker); desktop in
+                          // force-TV mode keeps it — FilePickerService works there.
+                          if (!PlatformDetector.isTV() || PlatformDetector.isDesktopOS()) _buildBackupSection(),
                         ],
                       ),
                     ),
@@ -349,15 +355,14 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
     );
   }
 
-  Widget _buildConnectionsSection(BuildContext context) {
+  Widget _buildConnectionsSection(BuildContext context, {required bool hasLibraries}) {
     final active = context.select<ActiveProfileProvider, Profile?>((p) => p.active);
     final subtitle = active == null
         ? t.connections.addConnectionSubtitleNoProfile
         : t.connections.addConnectionSubtitleScoped(displayName: active.displayName);
 
     return SettingsGroup(
-      initiallyExpanded: true, // CGFLIX
-      title: t.connections.sectionTitle,
+      title: t.connections.sectionTitle, // CGFLIX: fechado (refino 2): quase ninguém mexe toda semana
       children: [
         // Connections are managed per-profile (via the Profiles section
         // and each profile's detail screen). The shortcut here just opens
@@ -373,8 +378,9 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           },
         ),
         _buildProfilesTile(context),
-        if (context.select<AccountPreferencesController, bool>((c) => c.accounts.isNotEmpty))
-          _buildAccountPreferencesTile(context),
+        // CGFLIX: "Preferências da conta" (idiomas) subiu para o topo; bibliotecas e serviços vêm para cá.
+        if (hasLibraries) _buildManageLibrariesTile(context),
+        if (cgflixShowsServicesTile) _buildServicesTile(), // CGFLIX: só com o Trakt do CGFLIX
       ],
     );
   }
@@ -442,12 +448,15 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
               );
             },
           ),
-        SettingSwitchTile(
-          focusNode: _focusTracker.get(_kDownloadOnWifiOnly),
-          pref: settings.SettingsService.downloadOnWifiOnly,
-          icon: Symbols.wifi_rounded,
-          title: t.settings.downloadOnWifiOnly,
-          subtitle: t.settings.downloadOnWifiOnlyDescription,
+        CgflixComDica(
+          dica: CgflixDica.downloads, // CGFLIX
+          child: SettingSwitchTile(
+            focusNode: _focusTracker.get(_kDownloadOnWifiOnly),
+            pref: settings.SettingsService.downloadOnWifiOnly,
+            icon: Symbols.wifi_rounded,
+            title: t.settings.downloadOnWifiOnly,
+            subtitle: t.settings.downloadOnWifiOnlyDescription,
+          ),
         ),
         SettingSwitchTile(
           focusNode: _focusTracker.get(_kAutoRemoveWatchedDownloads),
@@ -630,6 +639,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
 
   Widget _buildBackupSection() {
     return SettingsGroup(
+      margin: cgflixInsideCardMargin, // CGFLIX: dentro do cartão Avançado
       title: t.settings.backup,
       children: [
         SettingNavigationTile(
