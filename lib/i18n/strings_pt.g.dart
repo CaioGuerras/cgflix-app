@@ -243,7 +243,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get minutesLabel => 'Minutos';
 	@override String get secondsShort => 's';
 	@override String get minutesShort => 'min';
-	@override String durationHint({required Object min, required Object max}) => 'Digite a duração (${min}-${max})';
+	@override String durationHint({required Object min, required Object max}) => 'Digite um valor de ${min} a ${max}';
 	@override String get systemTheme => 'Sistema';
 	@override String get lightTheme => 'Claro';
 	@override String get darkTheme => 'Escuro';
@@ -380,7 +380,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get autoCheckUpdatesOnStartup => 'Procurar atualizações ao abrir o app';
 	@override String get autoCheckUpdatesOnStartupDescription => 'Avisar ao abrir o app quando houver uma atualização';
 	@override String get validationErrorEnterNumber => 'Digite um número válido';
-	@override String validationErrorDuration({required Object min, required Object max, required Object unit}) => 'A duração deve estar entre ${min} e ${max} ${unit}';
+	@override String validationErrorDuration({required Object min, required Object max, required Object unit}) => 'Use um valor de ${min} a ${max} (${unit})';
 	@override String shortcutAlreadyAssigned({required Object action}) => 'Este atalho já é usado em ${action}';
 	@override String shortcutUpdated({required Object action}) => 'Atalho atualizado para ${action}';
 	@override String get saveFailed => 'Não deu para salvar as alterações. Tente de novo.';
@@ -2898,7 +2898,7 @@ class _Translations$downloads$backgroundWarning$pt extends Translations$download
 	@override String get dialogTitle => 'Os downloads podem não terminar';
 	@override String get dialogDownloadAnyway => 'Baixar mesmo assim';
 	@override String get dialogFixFirst => 'Resolver antes';
-	@override String get statusTile => 'Downloads com o app fechado';
+	@override String get statusTile => 'Baixar com o app fechado';
 	@override String get statusOk => 'Permitido baixar com o app fechado';
 	@override String get statusBlocked => 'Bloqueado pelas configurações do aparelho';
 	@override String get statusDegraded => 'Limitado pelas configurações do aparelho';
@@ -3227,7 +3227,7 @@ extension on TranslationsPt {
 			'settings.minutesLabel' => 'Minutos',
 			'settings.secondsShort' => 's',
 			'settings.minutesShort' => 'min',
-			'settings.durationHint' => ({required Object min, required Object max}) => 'Digite a duração (${min}-${max})',
+			'settings.durationHint' => ({required Object min, required Object max}) => 'Digite um valor de ${min} a ${max}',
 			'settings.systemTheme' => 'Sistema',
 			'settings.lightTheme' => 'Claro',
 			'settings.darkTheme' => 'Escuro',
@@ -3364,7 +3364,7 @@ extension on TranslationsPt {
 			'settings.autoCheckUpdatesOnStartup' => 'Procurar atualizações ao abrir o app',
 			'settings.autoCheckUpdatesOnStartupDescription' => 'Avisar ao abrir o app quando houver uma atualização',
 			'settings.validationErrorEnterNumber' => 'Digite um número válido',
-			'settings.validationErrorDuration' => ({required Object min, required Object max, required Object unit}) => 'A duração deve estar entre ${min} e ${max} ${unit}',
+			'settings.validationErrorDuration' => ({required Object min, required Object max, required Object unit}) => 'Use um valor de ${min} a ${max} (${unit})',
 			'settings.shortcutAlreadyAssigned' => ({required Object action}) => 'Este atalho já é usado em ${action}',
 			'settings.shortcutUpdated' => ({required Object action}) => 'Atalho atualizado para ${action}',
 			'settings.saveFailed' => 'Não deu para salvar as alterações. Tente de novo.',
@@ -4791,7 +4791,7 @@ extension on TranslationsPt {
 			'downloads.backgroundWarning.dialogTitle' => 'Os downloads podem não terminar',
 			'downloads.backgroundWarning.dialogDownloadAnyway' => 'Baixar mesmo assim',
 			'downloads.backgroundWarning.dialogFixFirst' => 'Resolver antes',
-			'downloads.backgroundWarning.statusTile' => 'Downloads com o app fechado',
+			'downloads.backgroundWarning.statusTile' => 'Baixar com o app fechado',
 			'downloads.backgroundWarning.statusOk' => 'Permitido baixar com o app fechado',
 			'downloads.backgroundWarning.statusBlocked' => 'Bloqueado pelas configurações do aparelho',
 			'downloads.backgroundWarning.statusDegraded' => 'Limitado pelas configurações do aparelho',

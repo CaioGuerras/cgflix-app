@@ -151,7 +151,11 @@ class _CgflixTraktCommentsState extends State<CgflixTraktComments> {
                       if (comment.likes > 0) ...[
                         AppIcon(Symbols.favorite_rounded, size: 14, fill: 1, color: context.cgflix.accentSoft),
                         const SizedBox(width: 4),
-                        Text('${comment.likes}', style: TextStyle(color: context.cgflix.textMuted, fontSize: 12)),
+                        Text(
+                          '${comment.likes}',
+                          semanticsLabel: '${comment.likes} curtidas',
+                          style: TextStyle(color: context.cgflix.textMuted, fontSize: 12),
+                        ),
                       ],
                     ],
                   ),

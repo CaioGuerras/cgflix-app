@@ -86,4 +86,19 @@ void main() {
     expect(CgflixPalette.isis.background, const Color(0xFF000000));
     expect(contrast(CgflixPalette.isis.onAction, CgflixPalette.isis.action), greaterThanOrEqualTo(4.5));
   });
+
+  test('Isis (1.5.0): erro legível no preto e borda dos botões visível', () {
+    const i = cgflixIsisScheme;
+    for (final bg in [i.surface, i.surfaceContainerLowest]) {
+      expect(contrast(i.error, bg), greaterThanOrEqualTo(4.5));
+      expect(contrast(Color.alphaBlend(i.outline, bg), bg), greaterThanOrEqualTo(3.0));
+    }
+    expect(contrast(i.onError, i.error), greaterThanOrEqualTo(4.5));
+  });
+
+  test('rosa do Apoie (#ec4899) como ícone ≥ 3:1 nos dois temas', () {
+    const rosa = Color(0xFFEC4899);
+    expect(contrast(rosa, cgflixIsisScheme.surface), greaterThanOrEqualTo(3.0));
+    expect(contrast(rosa, cgflixHeitorScheme.surface), greaterThanOrEqualTo(3.0));
+  });
 }

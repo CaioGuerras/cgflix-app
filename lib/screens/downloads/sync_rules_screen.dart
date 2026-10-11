@@ -251,7 +251,11 @@ class _SyncRuleTileState extends State<_SyncRuleTile> {
               dense: true,
               visualDensity: const VisualDensity(vertical: -3),
               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-              leading: AppIcon(_leadingIcon(), color: rule.enabled ? Colors.teal : null, size: 20),
+              leading: AppIcon(
+                _leadingIcon(),
+                color: rule.enabled ? Theme.of(context).colorScheme.primary : null,
+                size: 20,
+              ), // CGFLIX: cor do tema
               title: Text(title, maxLines: 1, overflow: .ellipsis),
               subtitle: Column(
                 crossAxisAlignment: .start,

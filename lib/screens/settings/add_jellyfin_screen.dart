@@ -109,6 +109,7 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
     with AsyncFormStateMixin, QuickConnectFlowMixin, ControllerDisposerMixin {
   late final _urlController = createTextEditingController();
   late final _usernameController = createTextEditingController();
+  bool _cgflixShowPassword = false; // CGFLIX: mostrar a senha (olho no campo)
   late final _passwordController = createTextEditingController();
   final _urlFocus = FocusNode(debugLabel: 'AddJellyfin:Url');
   final _findServerFocus = FocusNode(debugLabel: 'AddJellyfin:FindServer');
@@ -576,13 +577,14 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
         FocusableTextFormField(
           controller: _passwordController,
           focusNode: _passwordFocus,
-          obscureText: true,
+          obscureText: !_cgflixShowPassword, // CGFLIX: olho para conferir a senha
           enabled: !busy,
           textInputAction: TextInputAction.done,
           onFieldSubmitted: busy ? null : (_) => _signIn(),
           decoration: InputDecoration(
             labelText: t.addServer.password,
             prefixIcon: const AppIcon(Symbols.lock_rounded, fill: 1),
+            suffixIcon: cgflixPasswordToggle(_cgflixShowPassword, () => setState(() => _cgflixShowPassword ^= true)),
           ),
           // Empty passwords are valid on some MediaBrowser servers, so don't
           // require a value.

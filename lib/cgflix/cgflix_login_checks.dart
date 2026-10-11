@@ -1,5 +1,9 @@
 // CGFLIX (1.5.0): mensagens claras no login antes de ir ao servidor. Com campo vazio ou endereço
 // torto, o servidor devolvia erro técnico (ou o "Falha ao entrar: ..." com o texto da exceção).
+import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
+import '../widgets/app_icon.dart';
 
 const cgflixLoginMissingMessage = 'Preencha o usuário e a senha.';
 const cgflixServerEmptyMessage = 'Digite o endereço do servidor, por exemplo https://seu.servidor.com';
@@ -35,3 +39,10 @@ bool _looksLikeAddress(String url) {
   if (withScheme.contains('[')) return true;
   return _hostChars.hasMatch(host) && !host.startsWith('.') && !host.endsWith('..');
 }
+
+/// Olho do campo de senha (mostrar/esconder), com dica para o leitor de tela.
+Widget cgflixPasswordToggle(bool visible, VoidCallback onToggle) => IconButton(
+  tooltip: visible ? 'Esconder senha' : 'Mostrar senha',
+  onPressed: onToggle,
+  icon: AppIcon(visible ? Symbols.visibility_off_rounded : Symbols.visibility_rounded, fill: 1),
+);

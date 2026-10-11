@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../../utils/snackbar_helper.dart';
 import '../../media/ids.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
@@ -242,12 +243,16 @@ class DownloadsScreenState extends State<DownloadsScreen>
                               final client = getClient(globalKey);
                               if (client != null) {
                                 downloadProvider.resumeDownload(globalKey, client);
+                              } else {
+                                showErrorSnackBar(context, t.errors.connectionFailed); // CGFLIX: servidor fora
                               }
                             },
                             onRetry: (globalKey) {
                               final client = getClient(globalKey);
                               if (client != null) {
                                 downloadProvider.retryDownload(globalKey, client);
+                              } else {
+                                showErrorSnackBar(context, t.errors.connectionFailed); // CGFLIX: servidor fora
                               }
                             },
                             onCancel: downloadProvider.cancelDownload,

@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/cgflix/cgflix_version.dart';
 
 void main() {
-  test('Sobre mostra "CGFLIX 1.0.0"', () {
-    expect(cgflixVersionLabel('1.0.0'), 'CGFLIX 1.0.0');
-    expect(cgflixVersionLabel(''), 'CGFLIX');
+  test('Sobre mostra "Versão 1.5.0" abaixo do nome', () {
+    expect(cgflixVersionLabel('1.5.0'), 'Versão 1.5.0');
+    expect(cgflixVersionLabel(''), '');
   });
 
   test('pubspec: versão 1.5.0 (refino 1) com versionCode 700 (o tema Heitor usou o 600)', () {

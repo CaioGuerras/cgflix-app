@@ -137,6 +137,7 @@ class _PlayerTile extends StatelessWidget {
               onPressed: () => svc.removeCustomExternalPlayer(player.id),
               autoScroll: false,
               child: IconButton(
+                tooltip: t.common.delete, // CGFLIX: leitor de tela
                 icon: const AppIcon(Symbols.delete_rounded, fill: 1, size: 20),
                 onPressed: () => svc.removeCustomExternalPlayer(player.id),
               ),

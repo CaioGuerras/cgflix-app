@@ -248,7 +248,8 @@ class _CgflixPreviewState extends State<_CgflixPreview> {
                       Expanded(
                         child: _SecondaryAction(
                           icon: (_favorite ?? false) ? Symbols.check_rounded : Symbols.add_rounded,
-                          label: 'Minha lista',
+                          // Leitor de tela: o rótulo diz se já está na lista (o ícone ✓/+ só se vê).
+                          label: (_favorite ?? false) ? 'Na Minha lista' : 'Minha lista',
                           onTap: () async {
                             final updated = await cgflixToggleMyList(widget.hostContext, item, _favorite ?? false);
                             if (mounted) setState(() => _favorite = updated);

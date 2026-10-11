@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../cgflix/cgflix_feedback.dart';
 import '../models/download_models.dart';
 import '../utils/platform_detector.dart';
 import '../widgets/app_icon.dart';
@@ -54,18 +55,19 @@ class DownloadStatusIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = CgflixStatusColors.of(context); // CGFLIX: cores do tema
     if (PlatformDetector.isAppleTV()) return const SizedBox.shrink();
     final s = status;
     if (s == null) return const SizedBox.shrink();
 
     switch (s) {
       case DownloadStatus.queued:
-        return AppIcon(Symbols.schedule_rounded, fill: 1, size: size, color: _tint(Colors.orange));
+        return AppIcon(Symbols.schedule_rounded, fill: 1, size: size, color: _tint(c.idle));
       case DownloadStatus.downloading:
         // No progress value — render a static "downloading" icon (callers
         // without per-item progress, e.g. the download tree view).
         if (progress == null) {
-          return AppIcon(Symbols.downloading_rounded, fill: 1, size: size, color: _tint(overrideColor ?? Colors.blue));
+          return AppIcon(Symbols.downloading_rounded, fill: 1, size: size, color: _tint(overrideColor ?? c.active));
         }
         final primary = overrideColor ?? Theme.of(context).colorScheme.primary;
         final tinted = _tint(primary);
@@ -93,17 +95,17 @@ class DownloadStatusIcon extends StatelessWidget {
           Symbols.pause_circle_outline_rounded,
           fill: 1,
           size: size,
-          color: _tint(variant == DownloadStatusIconVariant.muted ? Colors.amber : Colors.grey),
+          color: _tint(variant == DownloadStatusIconVariant.muted ? c.idle : c.idle),
         );
       case DownloadStatus.failed:
         return AppIcon(
           variant == DownloadStatusIconVariant.muted ? Symbols.error_outline_rounded : Symbols.error_rounded,
           fill: 1,
           size: size,
-          color: _tint(Colors.red),
+          color: _tint(c.failed),
         );
       case DownloadStatus.cancelled:
-        return AppIcon(Symbols.cancel_rounded, fill: 1, size: size, color: _tint(Colors.grey));
+        return AppIcon(Symbols.cancel_rounded, fill: 1, size: size, color: _tint(c.idle));
       case DownloadStatus.completed:
         return AppIcon(
           variant == DownloadStatusIconVariant.muted
@@ -111,10 +113,10 @@ class DownloadStatusIcon extends StatelessWidget {
               : Symbols.check_circle_rounded,
           fill: 1,
           size: size,
-          color: _tint(Colors.green),
+          color: _tint(c.done),
         );
       case DownloadStatus.partial:
-        return AppIcon(Symbols.downloading_rounded, fill: 1, size: size, color: _tint(Colors.orange));
+        return AppIcon(Symbols.downloading_rounded, fill: 1, size: size, color: _tint(c.idle));
     }
   }
 }

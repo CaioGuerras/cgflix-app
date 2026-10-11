@@ -38,7 +38,8 @@ const cgflixIsisScheme = ColorScheme(
   surfaceContainer: Color(0xFF120E1A),
   surfaceContainerHigh: Color(0xFF1C1626),
   surfaceContainerHighest: Color(0xFF1C1626),
-  outline: Color(0x1FFFFFFF),
+  // 1.5.0: borda dos botões com contorno e dos campos visível no preto (3:1); divisores seguem suaves.
+  outline: Color(0x61FFFFFF),
   outlineVariant: Color(0x1FFFFFFF),
   shadow: Color(0x00000000),
   scrim: Color(0xFF000000),

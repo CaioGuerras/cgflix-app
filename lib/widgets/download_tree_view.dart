@@ -730,7 +730,7 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
                 const SizedBox(height: 4),
                 Text(
                   widget.node.downloadProgress!.errorMessage!,
-                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.red.withValues(alpha: 0.8)),
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error), // CGFLIX
                   maxLines: 2,
                   overflow: .ellipsis,
                 ),
@@ -867,8 +867,10 @@ class _DownloadTreeItemState extends State<_DownloadTreeItem> {
       child: Tooltip(
         message: action.tooltip,
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque, // CGFLIX: área de toque inteira
           onTap: action.onPressed,
-          child: Padding(padding: const EdgeInsets.all(8.0), child: AppIcon(action.icon, fill: 1, size: 20)),
+          // CGFLIX: 14 + 20 + 14 = 48 dp de toque (antes 36)
+          child: Padding(padding: const EdgeInsets.all(14.0), child: AppIcon(action.icon, fill: 1, size: 20)),
         ),
       ),
     );

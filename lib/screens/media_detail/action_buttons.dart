@@ -782,7 +782,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       return _DownloadButtonSpec(
         icon: const AppIcon(Symbols.pause_circle_outline_rounded, fill: 1),
         tooltip: t.downloads.resumeDownload,
-        foregroundColor: Colors.amber,
+        foregroundColor: CgflixStatusColors.of(context).idle, // CGFLIX: cor do tema
       );
     }
 
@@ -791,7 +791,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       return _DownloadButtonSpec(
         icon: const AppIcon(Symbols.error_outline_rounded, fill: 1),
         tooltip: t.downloads.retryDownload,
-        foregroundColor: Colors.red,
+        foregroundColor: CgflixStatusColors.of(context).failed, // CGFLIX: cor do tema
       );
     }
 
@@ -800,7 +800,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       return _DownloadButtonSpec(
         icon: const AppIcon(Symbols.cancel_rounded, fill: 1),
         tooltip: t.downloads.cancelledDownload,
-        foregroundColor: Colors.grey,
+        foregroundColor: CgflixStatusColors.of(context).idle, // CGFLIX: cor do tema
       );
     }
 
@@ -821,7 +821,9 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       return _DownloadButtonSpec(
         icon: AppIcon(isEnabled ? Symbols.sync_rounded : Symbols.sync_disabled_rounded, fill: 1),
         tooltip: tooltip,
-        foregroundColor: isEnabled ? Colors.teal : Colors.grey,
+        foregroundColor: isEnabled
+            ? CgflixStatusColors.of(context).active
+            : CgflixStatusColors.of(context).idle, // CGFLIX: cor do tema
       );
     }
 
@@ -833,7 +835,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
         tooltip: currentFile != null
             ? t.downloads.downloadedFileClickToComplete(file: currentFile)
             : t.downloads.partialDownloadClickToComplete,
-        foregroundColor: Colors.orange,
+        foregroundColor: CgflixStatusColors.of(context).idle, // CGFLIX: cor do tema
       );
     }
 
@@ -845,7 +847,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
       return _DownloadButtonSpec(
         icon: const AppIcon(Symbols.download_rounded, fill: 1),
         tooltip: canDownloadMore ? t.downloads.manage : t.downloads.deleteDownload,
-        foregroundColor: Colors.orange,
+        foregroundColor: CgflixStatusColors.of(context).idle, // CGFLIX: cor do tema
       );
     }
 

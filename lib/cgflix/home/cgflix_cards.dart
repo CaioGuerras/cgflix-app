@@ -202,6 +202,8 @@ class _CgflixPressableState extends State<CgflixPressable> {
     return Semantics(
       button: true,
       label: widget.semanticLabel,
+      // Leitor de tela: avisa que tocar e segurar abre mais opções.
+      onLongPressHint: widget.onLongPress == null ? null : 'mais opções',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: (_) => _set(true),
@@ -424,38 +426,42 @@ class CgflixTop10Card extends StatelessWidget {
         ..strokeWidth = 3
         ..color = context.cgflix.rankStroke,
     );
-    return SizedBox(
-      width: widthFor(rank),
-      height: cgflixPosterHeight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            left: 0,
-            bottom: -10,
-            child: ExcludeSemantics(
-              child: Stack(
-                children: [
-                  // Preenchimento da cor do fundo por baixo do contorno: o número "vaza" o fundo.
-                  Text(number, style: baseStyle.copyWith(color: context.cgflix.background)),
-                  Text(number, style: strokeStyle),
-                ],
+    return Semantics(
+      // O número grande não é lido; a posição vai junto do nome do título.
+      label: 'Em alta, posição $rank',
+      child: SizedBox(
+        width: widthFor(rank),
+        height: cgflixPosterHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: 0,
+              bottom: -10,
+              child: ExcludeSemantics(
+                child: Stack(
+                  children: [
+                    // Preenchimento da cor do fundo por baixo do contorno: o número "vaza" o fundo.
+                    Text(number, style: baseStyle.copyWith(color: context.cgflix.background)),
+                    Text(number, style: strokeStyle),
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            child: CgflixPosterCard(
-              item: item,
-              client: client,
-              heroTag: heroTag,
-              onTap: onTap,
-              onLongPress: onLongPress,
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: CgflixPosterCard(
+                item: item,
+                client: client,
+                heroTag: heroTag,
+                onTap: onTap,
+                onLongPress: onLongPress,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
