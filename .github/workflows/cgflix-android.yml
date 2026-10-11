@@ -215,6 +215,13 @@ jobs:
       - name: Roteiro de navegação (Início → Filmes/Séries/Animes → Busca com pedidos → título → menu → Meus pedidos → Baixados)
         run: python3 -u scripts/cgflix/emulador_navegacao.py --apk build/app/outputs/flutter-apk/app-debug.apk --out build/cgflix-capturas
 
+      # Refino 2: quando o emulador cai no meio do roteiro ("no devices"), o motivo fica no log dele.
+      - name: Log do emulador (só se falhar)
+        if: failure()
+        run: |
+          tail -80 emulator.log || true
+          free -m || true
+
       - name: Publicar capturas (retrato e paisagem) e logcat
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
