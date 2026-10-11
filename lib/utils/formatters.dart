@@ -3,6 +3,7 @@ import 'package:duration/locale.dart';
 import 'package:intl/intl.dart';
 import '../i18n/app_locale_utils.dart';
 import '../i18n/strings.g.dart';
+import '../cgflix/cgflix_units.dart';
 
 /// Formats a number with a minimum number of digits using leading zeros.
 ///
@@ -110,6 +111,7 @@ String formatDurationTimestamp(Duration duration) {
 ///
 /// Used for: audio sync sheet, sync offset controls.
 String formatSyncOffset(double offsetMs) {
+  if (LocaleSettings.currentLocale == AppLocale.pt) return cgflixFormatSyncOffsetSeconds(offsetMs); // CGFLIX
   final sign = offsetMs >= 0 ? '+' : '-';
   final absMs = offsetMs.abs().round();
   final durationLocale = _getDurationLocale();
