@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:plezy/cgflix/cgflix_collapsible.dart';
+import 'package:plezy/cgflix/cgflix_config_itens.dart';
 import 'package:plezy/cgflix/cgflix_dicas.dart';
 import 'package:plezy/cgflix/cgflix_menus.dart';
 import 'package:plezy/cgflix/cgflix_theme.dart';
@@ -191,7 +191,7 @@ void main() {
     await _carregarFontes();
     await initializeDateFormatting('pt');
     await LocaleSettings.setLocale(AppLocale.pt); // carrega o português (biblioteca adiada)
-    CgflixCollapsibleCard.debugExpandAll = false;
+    cgflixSettingsDebugInline = false;
   });
 
   setUp(() async {
