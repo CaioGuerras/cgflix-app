@@ -187,20 +187,25 @@ Future<DialogOption<T>?> showSelectionDialog<T>({
             mainAxisSize: .min,
             children: options.map((option) {
               final selected = option.value == currentValue;
-              return FocusableListTile(
-                key: ValueKey(option.value),
-                leading: AppIcon(
-                  selected ? Symbols.radio_button_checked_rounded : Symbols.radio_button_unchecked_rounded,
-                  color: selected ? Theme.of(dialogContext).colorScheme.primary : null,
+              // CGFLIX (refino 2b): o leitor de tela lê como botão de opção ("selecionado").
+              return Semantics(
+                checked: selected,
+                inMutuallyExclusiveGroup: true,
+                child: FocusableListTile(
+                  key: ValueKey(option.value),
+                  leading: AppIcon(
+                    selected ? Symbols.radio_button_checked_rounded : Symbols.radio_button_unchecked_rounded,
+                    color: selected ? Theme.of(dialogContext).colorScheme.primary : null,
+                  ),
+                  title: Text(
+                    option.title,
+                    semanticsLabel: cgflixOptionSemantics(option.title, option.semanticsHint),
+                  ), // CGFLIX
+                  subtitle: option.subtitle != null ? Text(option.subtitle!) : null,
+                  selected: selected,
+                  autofocus: focusFirstItem && selected,
+                  onTap: () => Navigator.pop(dialogContext, option),
                 ),
-                title: Text(
-                  option.title,
-                  semanticsLabel: cgflixOptionSemantics(option.title, option.semanticsHint),
-                ), // CGFLIX
-                subtitle: option.subtitle != null ? Text(option.subtitle!) : null,
-                selected: selected,
-                autofocus: focusFirstItem && selected,
-                onTap: () => Navigator.pop(dialogContext, option),
               );
             }).toList(),
           ),

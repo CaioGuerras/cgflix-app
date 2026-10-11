@@ -118,46 +118,76 @@ void main() {
       LocaleSettings.setLocaleSync(AppLocale.en);
     });
 
-    testWidgets('Pular abertura e Legendas em cima e abertos; técnico embaixo', (tester) async {
+    Future<void> montar(WidgetTester tester, Widget home) async {
       tester.view.physicalSize = const Size(412, 4000);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       await tester.pumpWidget(
         MaterialApp(
           theme: cgflixAppTheme().copyWith(platform: TargetPlatform.android),
-          home: const PlaybackSettingsScreen(),
+          home: home,
         ),
       );
       await tester.pumpAndSettle();
+    }
+
+    testWidgets('Ao assistir: pular abertura em cima, gestos e avançar/voltar; nada técnico (refino 2b)', (
+      tester,
+    ) async {
+      await montar(tester, const PlaybackSettingsScreen());
       double y(String text) => tester.getTopLeft(find.text(text).first).dy;
-      // Abertos: os itens de dentro aparecem sem tocar.
+      // Lista plana: tudo aparece sem tocar (sem sanfonas).
       expect(find.text(t.settings.skipIntroMode), findsOneWidget);
-      expect(find.text(t.settings.subtitleStyling), findsOneWidget);
-      // Ordem dos cartões.
-      expect(y(t.settings.autoPlayAndSkip), lessThan(y(t.settings.subtitles)));
-      expect(y(t.settings.subtitles), lessThan(y(t.settings.gestures)));
-      expect(y(t.settings.gestures), lessThan(y(t.settings.player)));
-      expect(y(t.settings.player), lessThan(y(t.settings.audio)));
-      expect(y(t.settings.audio), lessThan(y(t.settings.quality)));
-      // Áudio (técnico) agora começa fechado.
-      expect(find.text(t.settings.audioChannelLimit), findsNothing);
-      // A parte técnica de Pular abertura saiu daqui (está no Avançado), sem repetir.
-      expect(find.text(t.settings.introPattern), findsNothing);
-      expect(find.text(t.settings.forceSkipMarkerFallback), findsNothing);
-      // Dica no Pular abertura.
+      expect(find.text(t.settings.gestureBrightnessSwipe), findsOneWidget);
+      expect(y(t.settings.autoPlayAndSkip), lessThan(y(t.settings.gestures)));
+      expect(y(t.settings.gestures), lessThan(y(t.settings.seekAndTiming)));
+      // O técnico foi para Avançado › Reprodução avançada.
+      for (final tecnico in [
+        t.settings.player,
+        t.settings.audio,
+        t.settings.quality,
+        t.settings.behavior,
+        t.settings.audioChannelLimit,
+        t.settings.shuffleStartsFromBeginning,
+        t.settings.autoSkipDelay,
+        t.settings.introPattern,
+        t.settings.forceSkipMarkerFallback,
+      ]) {
+        expect(find.text(tecnico), findsNothing, reason: tecnico);
+      }
+      // Resumo só com o valor (sem a explicação repetida).
+      expect(find.text(t.settings.skipMarkerModeButton), findsNWidgets(2));
       expect(find.byKey(const ValueKey('cgflix-dica-botao-pularAbertura')), findsOneWidget);
+    });
+
+    testWidgets('Reprodução avançada tem o técnico e não repete o comum', (tester) async {
+      await montar(tester, const PlaybackSettingsScreen(cgflixTechnical: true));
+      expect(find.text(PlaybackSettingsScreen.cgflixTechnicalTitle), findsWidgets);
+      for (final tecnico in [
+        t.settings.player,
+        t.settings.audio,
+        t.settings.quality,
+        t.settings.behavior,
+        t.settings.shuffleStartsFromBeginning,
+      ]) {
+        expect(find.text(tecnico), findsWidgets, reason: tecnico);
+      }
+      expect(find.text(t.settings.skipIntroMode), findsNothing);
+      expect(find.text(t.settings.gestures), findsNothing);
     });
 
     testWidgets('Avançado tem a parte técnica de Pular abertura', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: cgflixAppTheme(),
-          home: const Scaffold(body: SingleChildScrollView(child: CgflixAdvancedFeatures())),
+          home: const Scaffold(body: SingleChildScrollView(child: CgflixAdvancedPlayback())),
         ),
       );
       expect(find.text(t.settings.forceSkipMarkerFallback), findsOneWidget);
       expect(find.text(t.settings.introPattern), findsOneWidget);
       expect(find.text(t.settings.creditsPattern), findsOneWidget);
+      expect(find.text(t.settings.autoSkipDelay), findsOneWidget);
+      expect(find.text(PlaybackSettingsScreen.cgflixTechnicalTitle), findsOneWidget);
     });
   });
 }

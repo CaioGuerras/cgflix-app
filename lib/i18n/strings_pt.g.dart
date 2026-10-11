@@ -232,7 +232,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get theme => 'Tema';
 	@override String get appearance => 'Aparência';
 	@override String get videoPlayback => 'Ao assistir';
-	@override String get videoPlaybackDescription => 'Pular abertura, legendas, gestos e próximo episódio';
+	@override String get videoPlaybackDescription => 'gestos e janelinha';
 	@override String get advanced => 'Avançado';
 	@override String get episodePosterMode => 'Imagem dos episódios';
 	@override String get seriesPoster => 'Pôster da série';
@@ -316,7 +316,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get videoCodecsAlwaysAccepted => 'Sempre aceito';
 	@override String get musicQualityTitle => 'Qualidade da música';
 	@override String get subtitleStyling => 'Estilo das legendas';
-	@override String get subtitleStylingDescription => 'Mudar a aparência das legendas';
+	@override String get subtitleStylingDescription => 'Tamanho, cor, contorno e fundo da legenda';
 	@override String get smallSkipDuration => 'Avançar e voltar (toque curto)';
 	@override String get largeSkipDuration => 'Avançar e voltar (toque longo)';
 	@override String get rewindOnResume => 'Voltar um pouco ao continuar';
@@ -511,7 +511,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get liveTvDefaultFavorites => 'Canais favoritos por padrão';
 	@override String get liveTvDefaultFavoritesDescription => 'Mostrar só os canais favoritos ao abrir a TV ao vivo';
 	@override String get general => 'Geral';
-	@override String get generalDescription => 'Idioma do app e modo TV';
+	@override String get generalDescription => 'Modo TV, perfil ao abrir e som de abertura';
 	@override String get languageAndRegion => 'Idioma e região';
 	@override String get startup => 'Ao abrir o app';
 	@override String get display => 'Tela';
@@ -1010,15 +1010,15 @@ class _Translations$subtitlingStyling$pt extends Translations$subtitlingStyling$
 
 	// Translations
 	@override String get text => 'Texto';
-	@override String get border => 'Borda';
+	@override String get border => 'Contorno';
 	@override String get background => 'Fundo';
-	@override String get fontSize => 'Tamanho da letra';
+	@override String get fontSize => 'Tamanho';
 	@override String get textColor => 'Cor do texto';
-	@override String get borderSize => 'Tamanho da borda';
-	@override String get borderColor => 'Cor da borda';
-	@override String get backgroundOpacity => 'Transparência do fundo';
+	@override String get borderSize => 'Espessura do contorno';
+	@override String get borderColor => 'Cor do contorno';
+	@override String get backgroundOpacity => 'Fundo atrás do texto';
 	@override String get backgroundColor => 'Cor do fundo';
-	@override String get position => 'Posição';
+	@override String get position => 'Altura na tela';
 	@override String get assOverride => 'Estilo das legendas ASS (anime)';
 	@override String get overrideScale => 'Só ajustar o tamanho';
 	@override String get overrideForce => 'Forçar o meu estilo';
@@ -1156,8 +1156,8 @@ class _Translations$connections$pt extends Translations$connections$en {
 	// Translations
 	@override String get sectionTitle => 'Contas e servidores';
 	@override String get addConnection => 'Adicionar conexão';
-	@override String get addConnectionSubtitleNoProfile => 'Entre com Plex ou conecte um servidor Jellyfin ou Emby';
-	@override String addConnectionSubtitleScoped({required Object displayName}) => 'Adicionar a ${displayName}: Plex, Jellyfin, Emby ou a conexão de outro perfil';
+	@override String get addConnectionSubtitleNoProfile => 'Servidor novo: Plex, Jellyfin ou Emby';
+	@override String addConnectionSubtitleScoped({required Object displayName}) => 'Servidor novo no perfil ${displayName}: Plex, Jellyfin ou Emby';
 	@override String sessionExpiredOne({required Object name}) => 'O acesso a ${name} expirou';
 	@override String sessionExpiredMany({required Object count}) => 'O acesso a ${count} servidores expirou';
 	@override String accessDeniedOne({required Object name}) => '${name} recusou o acesso desta conta';
@@ -1174,9 +1174,9 @@ class _Translations$accountPreferences$pt extends Translations$accountPreference
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get sectionTitle => 'Áudio, legenda e conta';
-	@override String hubSubtitleSingle({required Object account}) => 'Idioma do áudio e da legenda, salvo em ${account}';
-	@override String hubSubtitleMultiple({required Object count}) => 'Idioma do áudio e da legenda, salvo em ${count} contas';
+	@override String get sectionTitle => 'Áudio e legenda';
+	@override String hubSubtitleSingle({required Object account}) => 'Idioma do áudio e da legenda da conta ${account}';
+	@override String hubSubtitleMultiple({required Object count}) => 'Idioma do áudio e da legenda de ${count} contas';
 	@override String get pickAccount => 'Cada conta guarda suas próprias preferências. Escolha qual quer editar.';
 	@override String get storedOnAccount => 'Estas opções ficam salvas na sua conta do servidor, então valem em todos os apps conectados a ela — inclusive o CGFLIX nos seus outros aparelhos.';
 	@override String get noAccounts => 'Nenhuma conta para configurar';
@@ -3216,7 +3216,7 @@ extension on TranslationsPt {
 			'settings.theme' => 'Tema',
 			'settings.appearance' => 'Aparência',
 			'settings.videoPlayback' => 'Ao assistir',
-			'settings.videoPlaybackDescription' => 'Pular abertura, legendas, gestos e próximo episódio',
+			'settings.videoPlaybackDescription' => 'gestos e janelinha',
 			'settings.advanced' => 'Avançado',
 			'settings.episodePosterMode' => 'Imagem dos episódios',
 			'settings.seriesPoster' => 'Pôster da série',
@@ -3300,7 +3300,7 @@ extension on TranslationsPt {
 			'settings.videoCodecsAlwaysAccepted' => 'Sempre aceito',
 			'settings.musicQualityTitle' => 'Qualidade da música',
 			'settings.subtitleStyling' => 'Estilo das legendas',
-			'settings.subtitleStylingDescription' => 'Mudar a aparência das legendas',
+			'settings.subtitleStylingDescription' => 'Tamanho, cor, contorno e fundo da legenda',
 			'settings.smallSkipDuration' => 'Avançar e voltar (toque curto)',
 			'settings.largeSkipDuration' => 'Avançar e voltar (toque longo)',
 			'settings.rewindOnResume' => 'Voltar um pouco ao continuar',
@@ -3495,7 +3495,7 @@ extension on TranslationsPt {
 			'settings.liveTvDefaultFavorites' => 'Canais favoritos por padrão',
 			'settings.liveTvDefaultFavoritesDescription' => 'Mostrar só os canais favoritos ao abrir a TV ao vivo',
 			'settings.general' => 'Geral',
-			'settings.generalDescription' => 'Idioma do app e modo TV',
+			'settings.generalDescription' => 'Modo TV, perfil ao abrir e som de abertura',
 			'settings.languageAndRegion' => 'Idioma e região',
 			'settings.startup' => 'Ao abrir o app',
 			'settings.display' => 'Tela',
@@ -3916,15 +3916,15 @@ extension on TranslationsPt {
 			'messages.trackSelectionNotRemembered' => 'Esta escolha de áudio ou legenda vale só para este vídeo.',
 			'messages.serverUnavailableForProfile' => 'Nenhum servidor disponível para este perfil',
 			'subtitlingStyling.text' => 'Texto',
-			'subtitlingStyling.border' => 'Borda',
+			'subtitlingStyling.border' => 'Contorno',
 			'subtitlingStyling.background' => 'Fundo',
-			'subtitlingStyling.fontSize' => 'Tamanho da letra',
+			'subtitlingStyling.fontSize' => 'Tamanho',
 			'subtitlingStyling.textColor' => 'Cor do texto',
-			'subtitlingStyling.borderSize' => 'Tamanho da borda',
-			'subtitlingStyling.borderColor' => 'Cor da borda',
-			'subtitlingStyling.backgroundOpacity' => 'Transparência do fundo',
+			'subtitlingStyling.borderSize' => 'Espessura do contorno',
+			'subtitlingStyling.borderColor' => 'Cor do contorno',
+			'subtitlingStyling.backgroundOpacity' => 'Fundo atrás do texto',
 			'subtitlingStyling.backgroundColor' => 'Cor do fundo',
-			'subtitlingStyling.position' => 'Posição',
+			'subtitlingStyling.position' => 'Altura na tela',
 			'subtitlingStyling.assOverride' => 'Estilo das legendas ASS (anime)',
 			'subtitlingStyling.overrideScale' => 'Só ajustar o tamanho',
 			'subtitlingStyling.overrideForce' => 'Forçar o meu estilo',
@@ -4026,8 +4026,8 @@ extension on TranslationsPt {
 			'profiles.tokenIdentityMismatch' => 'O acesso deste perfil do Plex veio de um servidor diferente do esperado. Entre de novo.',
 			'connections.sectionTitle' => 'Contas e servidores',
 			'connections.addConnection' => 'Adicionar conexão',
-			'connections.addConnectionSubtitleNoProfile' => 'Entre com Plex ou conecte um servidor Jellyfin ou Emby',
-			'connections.addConnectionSubtitleScoped' => ({required Object displayName}) => 'Adicionar a ${displayName}: Plex, Jellyfin, Emby ou a conexão de outro perfil',
+			'connections.addConnectionSubtitleNoProfile' => 'Servidor novo: Plex, Jellyfin ou Emby',
+			'connections.addConnectionSubtitleScoped' => ({required Object displayName}) => 'Servidor novo no perfil ${displayName}: Plex, Jellyfin ou Emby',
 			'connections.sessionExpiredOne' => ({required Object name}) => 'O acesso a ${name} expirou',
 			'connections.sessionExpiredMany' => ({required Object count}) => 'O acesso a ${count} servidores expirou',
 			'connections.accessDeniedOne' => ({required Object name}) => '${name} recusou o acesso desta conta',
@@ -4035,9 +4035,9 @@ extension on TranslationsPt {
 			'connections.signInAgain' => 'Entrar de novo',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Editar conexão do ${product}',
 			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Adicione ou remova endereços de ${serverName}. O CGFLIX usa o endereço que responder mais rápido.',
-			'accountPreferences.sectionTitle' => 'Áudio, legenda e conta',
-			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Idioma do áudio e da legenda, salvo em ${account}',
-			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Idioma do áudio e da legenda, salvo em ${count} contas',
+			'accountPreferences.sectionTitle' => 'Áudio e legenda',
+			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Idioma do áudio e da legenda da conta ${account}',
+			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Idioma do áudio e da legenda de ${count} contas',
 			'accountPreferences.pickAccount' => 'Cada conta guarda suas próprias preferências. Escolha qual quer editar.',
 			'accountPreferences.storedOnAccount' => 'Estas opções ficam salvas na sua conta do servidor, então valem em todos os apps conectados a ela — inclusive o CGFLIX nos seus outros aparelhos.',
 			'accountPreferences.noAccounts' => 'Nenhuma conta para configurar',

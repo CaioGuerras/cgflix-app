@@ -28,7 +28,9 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: cgflixAppTheme(),
-        home: const Scaffold(body: SingleChildScrollView(child: CgflixAdvancedFeatures())),
+        home: const Scaffold(
+          body: SingleChildScrollView(child: Column(children: [CgflixAdvancedFeatures(), CgflixAdvancedPlayback()])),
+        ),
       ),
     );
     expect(find.text('Mostrar dedicatória'), findsNothing);

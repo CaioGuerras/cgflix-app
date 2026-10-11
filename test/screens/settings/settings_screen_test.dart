@@ -44,7 +44,7 @@ import 'package:plezy/widgets/dialog_action_button.dart';
 import 'package:plezy/widgets/focusable_list_tile.dart';
 import 'package:plezy/widgets/loading_indicator_box.dart';
 import 'package:plezy/widgets/setting_tile.dart';
-import 'package:plezy/cgflix/cgflix_collapsible.dart';
+import 'package:plezy/cgflix/cgflix_config_itens.dart';
 import 'package:provider/provider.dart';
 
 import '../../test_helpers/io_fakes.dart';
@@ -57,8 +57,8 @@ void main() {
   setUpAll(() => cgflixDownloadOnWifiOnlyDefault = false);
   tearDownAll(() => cgflixDownloadOnWifiOnlyDefault = true);
   // CGFLIX: as seções das Configurações começam fechadas; estes testes olham as opções por dentro.
-  setUpAll(() => CgflixCollapsibleCard.debugExpandAll = true);
-  tearDownAll(() => CgflixCollapsibleCard.debugExpandAll = false);
+  setUpAll(() => cgflixSettingsDebugInline = true);
+  tearDownAll(() => cgflixSettingsDebugInline = false);
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -172,8 +172,8 @@ void main() {
 
       expect(focusable.dense, isTrue, reason: '${row.title} must use the shared compact row density');
       expect(focusable.visualDensity, const VisualDensity(vertical: -3));
-      expect(materialTile.dense, isTrue);
-      expect(materialTile.visualDensity, const VisualDensity(vertical: -3));
+      expect(materialTile.dense, isFalse); // CGFLIX (refino 2b): nas Configurações, linha M3 (56/72 dp)
+      expect(materialTile.visualDensity, VisualDensity.standard);
       expect(focusable.onTap, isNotNull, reason: '${row.title} must remain pointer activatable');
       expect(materialTile.onTap, isNotNull);
       expect(materialTile.focusNode, isNotNull, reason: '${row.title} must remain D-pad focusable');
@@ -233,8 +233,8 @@ void main() {
       final subtitle = downloadTile.subtitle! as Text;
 
       expect(_navigationTileFor(t.settings.downloadLocationDefault), findsNothing);
-      expect(materialDownloadTile.dense, isTrue);
-      expect(materialDownloadTile.visualDensity, const VisualDensity(vertical: -3));
+      expect(materialDownloadTile.dense, isFalse);
+      expect(materialDownloadTile.visualDensity, VisualDensity.standard);
       expect(downloadTile.dense, isTrue);
       expect(downloadTile.visualDensity, const VisualDensity(vertical: -3));
       expect(downloadTile.leading, isA<AppIcon>());
@@ -269,8 +269,8 @@ void main() {
 
     expect(_navigationTileFor(t.settings.checkForUpdates), findsNothing);
     expect(updateTile.dense, isTrue);
-    expect(materialUpdateTile.dense, isTrue);
-    expect(materialUpdateTile.visualDensity, const VisualDensity(vertical: -3));
+    expect(materialUpdateTile.dense, isFalse);
+    expect(materialUpdateTile.visualDensity, VisualDensity.standard);
     expect(updateTile.visualDensity, const VisualDensity(vertical: -3));
     expect(updateTile.trailing, isA<AppIcon>());
     expect(updateTile.onTap, isNotNull);

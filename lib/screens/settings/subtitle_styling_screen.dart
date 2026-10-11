@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../cgflix/cgflix_config_itens.dart';
+import '../../cgflix/cgflix_controles.dart';
 import '../../i18n/strings.g.dart';
 import '../../services/settings_service.dart';
 import '../../widgets/setting_tile.dart';
@@ -47,18 +49,21 @@ class SubtitleStylingScreen extends StatelessWidget {
     return SettingsPage(
       title: Text(t.screens.subtitleStyling),
       children: [
+        const CgflixSubtitlePreview(), // CGFLIX (refino 2b): prévia ao vivo no topo
         SettingsGroup(
           title: t.subtitlingStyling.text,
           children: [
-            SettingSelectionTile<SubAssOverride>(
-              pref: SettingsService.subAssOverride,
-              icon: Symbols.subtitles_rounded,
-              title: t.subtitlingStyling.assOverride,
-              subtitleBuilder: _assOverrideLabel,
-              options: SubAssOverride.values.map((v) => DialogOption(value: v, title: _assOverrideLabel(v))).toList(),
-            ),
+            // CGFLIX (refino 2b): estilo ASS e resolução são técnicos; ficam em Configurações › Avançado.
+            if (cgflixSettingsDebugInline)
+              SettingSelectionTile<SubAssOverride>(
+                pref: SettingsService.subAssOverride,
+                icon: Symbols.subtitles_rounded,
+                title: t.subtitlingStyling.assOverride,
+                subtitleBuilder: _assOverrideLabel,
+                options: SubAssOverride.values.map((v) => DialogOption(value: v, title: _assOverrideLabel(v))).toList(),
+              ),
             // iOS/tvOS avfoundation VO: screen vs video-resolution basis.
-            if (Platform.isIOS)
+            if (Platform.isIOS && cgflixSettingsDebugInline)
               SettingSelectionTile<SubtitleRenderResolution>(
                 pref: SettingsService.subtitleRenderResolution,
                 icon: Symbols.aspect_ratio_rounded,
@@ -71,7 +76,7 @@ class SubtitleStylingScreen extends StatelessWidget {
               ),
             // Android libass overlay: full or a fractional render scale (perf knob for
             // render-bound low-end TVs; heavy/animated signs raster faster at < 1).
-            if (Platform.isAndroid)
+            if (Platform.isAndroid && cgflixSettingsDebugInline)
               SettingSelectionTile<SubtitleRenderResolution>(
                 pref: SettingsService.subtitleRenderResolution,
                 icon: Symbols.aspect_ratio_rounded,
@@ -159,7 +164,7 @@ class SubtitleStylingScreen extends StatelessWidget {
               pref: SettingsService.subtitleBackgroundOpacity,
               icon: Symbols.opacity_rounded,
               title: t.subtitlingStyling.backgroundOpacity,
-              subtitleBuilder: (v) => '$v%',
+              subtitleBuilder: (v) => v == 0 ? 'Sem fundo' : '$v%', // CGFLIX
               labelText: t.subtitlingStyling.backgroundOpacity,
               suffixText: '%',
             ),

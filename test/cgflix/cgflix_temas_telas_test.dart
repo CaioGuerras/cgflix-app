@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:plezy/cgflix/cgflix_collapsible.dart';
 import 'package:plezy/cgflix/cgflix_layout.dart';
 import 'package:plezy/cgflix/cgflix_navigation.dart';
 import 'package:plezy/cgflix/cgflix_theme.dart';
@@ -14,7 +13,10 @@ import 'package:plezy/media/media_item.dart';
 import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/providers/theme_provider.dart';
 import 'package:plezy/screens/auth_screen.dart';
-import 'package:plezy/screens/settings/appearance_settings_screen.dart';
+import 'package:plezy/cgflix/cgflix_configuracoes.dart';
+import 'package:plezy/cgflix/cgflix_theme_picker.dart';
+import 'package:plezy/widgets/settings_page.dart';
+import 'package:plezy/widgets/settings_section.dart';
 import 'package:plezy/services/settings_service.dart' as settings;
 import 'package:provider/provider.dart';
 
@@ -59,9 +61,6 @@ Color? _fundoDoBotao(WidgetTester tester, String rotulo) {
 }
 
 void main() {
-  setUpAll(() => CgflixCollapsibleCard.debugExpandAll = true);
-  tearDownAll(() => CgflixCollapsibleCard.debugExpandAll = false);
-
   setUp(() async {
     resetSharedPreferencesForTest();
     settings.SettingsService.resetForTesting();
@@ -120,8 +119,17 @@ void main() {
       expect(sheet.backgroundColor, _paleta(variante).surface);
     });
 
-    testWidgets('$nome: Configurações → Aparência com a escolha de tema', (tester) async {
-      await _montar(tester, variante, const AppearanceSettingsScreen());
+    testWidgets('$nome: Configurações (lista M3) com a escolha de tema', (tester) async {
+      await _montar(
+        tester,
+        variante,
+        SettingsPage(
+          title: const Text('Configurações'),
+          children: [
+            SettingsGroup(title: t.settings.appearance, children: const [CgflixThemeSelector()]),
+          ],
+        ),
+      );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.text('Tema'), findsOneWidget);
@@ -131,6 +139,12 @@ void main() {
           tester.widget<Scaffold>(find.byType(Scaffold).first).backgroundColor ??
           Theme.of(tester.element(find.byType(Scaffold).first)).scaffoldBackgroundColor;
       expect(fundo, _paleta(variante).background);
+      // Refino 2b: cabeçalho na cor primary do tema (Isis lilás, Heitor verde).
+      final cabecalho = tester.widget<Text>(find.text(t.settings.appearance));
+      expect(
+        cabecalho.style?.color,
+        variante == CgflixThemeVariant.isis ? cgflixIsisPrimary : cgflixHeitorScheme.primary,
+      );
     });
 
     testWidgets('$nome: Login (entrada) com a marca do tema', (tester) async {

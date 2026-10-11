@@ -8,14 +8,14 @@ import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/theme/mono_theme.dart';
 import 'package:plezy/models/player_setting_scope.dart';
 import 'package:plezy/utils/platform_detector.dart';
-import 'package:plezy/cgflix/cgflix_collapsible.dart';
+import 'package:plezy/cgflix/cgflix_config_itens.dart';
 
 import '../../test_helpers/prefs.dart';
 
 void main() {
   // CGFLIX: as seções das Configurações começam fechadas; estes testes olham as opções por dentro.
-  setUpAll(() => CgflixCollapsibleCard.debugExpandAll = true);
-  tearDownAll(() => CgflixCollapsibleCard.debugExpandAll = false);
+  setUpAll(() => cgflixSettingsDebugInline = true);
+  tearDownAll(() => cgflixSettingsDebugInline = false);
 
   setUp(() async {
     resetSharedPreferencesForTest(initialAsync: {'music_quality_preset': 'medium'});
@@ -94,10 +94,12 @@ void main() {
     await tester.ensureVisible(title);
     await tester.pumpAndSettle();
 
-    await tester.tap(title);
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), '0');
-    await tester.tap(find.text('Save'));
+    // CGFLIX (refino 2b): nas Configurações o número é um controle deslizante; arrasta até o 0.
+    final slider = find.descendant(
+      of: find.ancestor(of: title, matching: find.byType(Column)).first,
+      matching: find.byType(Slider),
+    );
+    await tester.drag(slider, const Offset(-2000, 0));
     await tester.pumpAndSettle();
 
     final settings = SettingsService.instance;

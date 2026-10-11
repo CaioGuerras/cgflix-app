@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../cgflix/cgflix_config_itens.dart';
 import '../../cgflix/cgflix_defaults.dart';
 import '../../cgflix/cgflix_dicas.dart';
 
@@ -23,10 +24,16 @@ import '../../widgets/settings_section.dart';
 import 'external_player_screen.dart';
 import 'mpv_config_screen.dart';
 import 'settings_utils.dart';
-import 'subtitle_styling_screen.dart';
 
 class PlaybackSettingsScreen extends StatelessWidget {
-  const PlaybackSettingsScreen({super.key});
+  const PlaybackSettingsScreen({super.key, this.cgflixTechnical = false});
+
+  /// CGFLIX (refino 2b): `false` = "Ao assistir" (o que se usa no dia a dia); `true` = "Reprodução
+  /// avançada", aberta de Configurações › Avançado (reprodutor, decodificação, HDR, áudio, buffer).
+  final bool cgflixTechnical;
+
+  /// Título da tela técnica (o mesmo rótulo do item que a abre no Avançado).
+  static const cgflixTechnicalTitle = 'Reprodução avançada';
 
   @override
   Widget build(BuildContext context) {
@@ -65,95 +72,92 @@ class PlaybackSettingsScreen extends StatelessWidget {
         // conversion choices would change nothing.
         final showDvConversionMode = Platform.isAndroid && (exoActive || !svc.read(SettingsService.disableDolbyVision));
 
+        // CGFLIX (refino 2b): "Ao assistir" fica com o comum (pular abertura, próximo episódio, gestos,
+        // janelinha, avançar e voltar); o técnico mora em Avançado › Reprodução avançada. Idiomas,
+        // estilo das legendas e qualidade estão na tela principal das Configurações.
+        final common = !cgflixTechnical || cgflixSettingsDebugInline;
+        final technical = cgflixTechnical || cgflixSettingsDebugInline;
         return SettingsPage(
-          title: Text(t.settings.videoPlayback),
-          collapsible: true, // CGFLIX
+          title: Text(cgflixTechnical ? cgflixTechnicalTitle : t.settings.videoPlayback),
           children: [
-            // CGFLIX (refino 2): o que se usa toda semana em cima; o técnico (player, tela, áudio,
-            // qualidade) embaixo.
-            _autoPlayAndSkipGroup(),
-            SettingsGroup(
-              initiallyExpanded: true,
-              title: t.settings.subtitles,
-              children: [
-                SettingNavigationTile(
-                  icon: Symbols.subtitles_rounded,
-                  title: t.settings.subtitleStyling,
-                  subtitle: t.settings.subtitleStylingDescription,
-                  destinationBuilder: (_) => const SubtitleStylingScreen(),
+            if (common) ...[
+              _autoPlayAndSkipGroup(),
+              if (isMobile) _gesturesGroup(),
+              if (PlatformDetector.supportsPictureInPicture())
+                SettingsGroup(
+                  title: 'Janelinha',
+                  children: [CgflixComDica(dica: CgflixDica.janelinha, child: _autoPipTile())],
                 ),
-              ],
-            ),
+              _seekAndTimingGroup(),
+            ],
+            if (technical) ...[
+              _behaviorGroup(context, isMobile),
+              SettingsGroup(
+                title: t.settings.player,
+                children: [
+                  if (Platform.isAndroid) _playerBackendSelector(),
+                  if (PlatformDetector.supportsExternalPlayers()) _externalPlayerTile(),
+                  if (!exoActive && !cgflixMpvConfigOnlyInAdvanced) _mpvConfigTile(), // CGFLIX: vai para Avançado
+                  _hardwareDecodingTile(),
+                  if (exoActive) _playbackBufferTile(),
+                  if (exoActive) _tunneledPlaybackTile(),
+                ],
+              ),
 
-            if (isMobile) _gesturesGroup(),
-            _seekAndTimingGroup(),
-            _behaviorGroup(context, isMobile),
-            SettingsGroup(
-              title: t.settings.player,
-              children: [
-                if (Platform.isAndroid) _playerBackendSelector(),
-                if (PlatformDetector.supportsExternalPlayers()) _externalPlayerTile(),
-                if (!exoActive && !cgflixMpvConfigOnlyInAdvanced) _mpvConfigTile(), // CGFLIX: vai para Avançado
-                _hardwareDecodingTile(),
-                if (exoActive) _playbackBufferTile(),
-                if (exoActive) _tunneledPlaybackTile(),
-                if (PlatformDetector.supportsPictureInPicture())
-                  CgflixComDica(dica: CgflixDica.janelinha, child: _autoPipTile()), // CGFLIX
-              ],
-            ),
+              SettingsGroup(
+                title: t.settings.videoAndDisplay,
+                children: [
+                  if (Platform.isAndroid) _matchContentFrameRateTile(),
+                  if (Platform.isAndroid && PlatformDetector.isTV()) _matchContentResolutionTile(),
+                  if (Platform.isWindows) _matchRefreshRateTile(),
+                  if (Platform.isWindows) _matchDynamicRangeTile(),
+                  if (showDisplaySwitchDelay) _displaySwitchDelayTile(),
+                  if (showDisableDolbyVision) _disableDolbyVisionTile(),
+                  if (showDvConversionMode) _dvConversionModeTile(),
+                  // mpv-only: ExoPlayer always leaves the conversion to the device.
+                  if (Platform.isAndroid && !exoActive) _hdrSdrConversionTile(),
+                  // mpv-only (#2149): ExoPlayer has no filter chain, so the
+                  // tile disappears while the ExoPlayer backend is active.
+                  if (!exoActive) _deinterlaceTile(),
+                  // TODO: "Extend video into display cutout" toggle (#1769)
+                  // goes here, Android-only.
+                ],
+              ),
 
-            SettingsGroup(
-              title: t.settings.videoAndDisplay,
-              children: [
-                if (Platform.isAndroid) _matchContentFrameRateTile(),
-                if (Platform.isAndroid && PlatformDetector.isTV()) _matchContentResolutionTile(),
-                if (Platform.isWindows) _matchRefreshRateTile(),
-                if (Platform.isWindows) _matchDynamicRangeTile(),
-                if (showDisplaySwitchDelay) _displaySwitchDelayTile(),
-                if (showDisableDolbyVision) _disableDolbyVisionTile(),
-                if (showDvConversionMode) _dvConversionModeTile(),
-                // mpv-only: ExoPlayer always leaves the conversion to the device.
-                if (Platform.isAndroid && !exoActive) _hdrSdrConversionTile(),
-                // mpv-only (#2149): ExoPlayer has no filter chain, so the
-                // tile disappears while the ExoPlayer backend is active.
-                if (!exoActive) _deinterlaceTile(),
-                // TODO: "Extend video into display cutout" toggle (#1769)
-                // goes here, Android-only.
-              ],
-            ),
+              SettingsGroup(
+                title: t.settings.audio,
+                children: [
+                  if (PlatformDetector.supportsAudioPassthrough()) _audioPassthroughTile(),
+                  _audioChannelLimitTile(exoActive: exoActive),
+                  // Only a stereo fold mixes the center away; any fold can clip.
+                  if (channelLimit == AudioChannelLimit.stereo) _downmixCenterBoostTile(),
+                  if (channelLimit != AudioChannelLimit.original) _downmixNormalizeTile(),
+                  _maxVolumeTile(),
+                ],
+              ),
 
-            SettingsGroup(
-              title: t.settings.audio, // CGFLIX: fechado (técnico); abertos ficam Pular abertura e Legendas
-              children: [
-                if (PlatformDetector.supportsAudioPassthrough()) _audioPassthroughTile(),
-                _audioChannelLimitTile(exoActive: exoActive),
-                // Only a stereo fold mixes the center away; any fold can clip.
-                if (channelLimit == AudioChannelLimit.stereo) _downmixCenterBoostTile(),
-                if (channelLimit != AudioChannelLimit.original) _downmixNormalizeTile(),
-                _maxVolumeTile(),
-              ],
-            ),
+              SettingsGroup(
+                title: t.settings.quality,
+                children: [
+                  // CGFLIX: qualidade padrão e nos dados móveis ficam na tela principal das Configurações.
+                  if (cgflixSettingsDebugInline) _defaultQualityTile(),
+                  // Only a phone/tablet has a cellular radio; desktop and TV
+                  // never report a cellular-only connection.
+                  if (isMobile && cgflixSettingsDebugInline) _cellularQualityTile(),
+                  // TODO: "Remote streaming quality" selector (#2064) goes here,
+                  // mirroring cellularQualityPreset's nullable "same as default"
+                  // pattern; needs local/remote connection detection in the
+                  // failover client.
+                  _directPlayCoveredQualityTile(),
+                  // Desktop has no hardware-decode probe, so this is where a
+                  // machine too weak for a codec says so (#2443).
+                  if (PlatformDetector.isDesktopOS()) _videoCodecsTile(),
+                  _musicQualityTile(),
+                ],
+              ),
 
-            SettingsGroup(
-              title: t.settings.quality,
-              children: [
-                CgflixComDica(dica: CgflixDica.qualidade, child: _defaultQualityTile()), // CGFLIX
-                // Only a phone/tablet has a cellular radio; desktop and TV
-                // never report a cellular-only connection.
-                if (isMobile) _cellularQualityTile(),
-                // TODO: "Remote streaming quality" selector (#2064) goes here,
-                // mirroring cellularQualityPreset's nullable "same as default"
-                // pattern; needs local/remote connection detection in the
-                // failover client.
-                _directPlayCoveredQualityTile(),
-                // Desktop has no hardware-decode probe, so this is where a
-                // machine too weak for a codec says so (#2443).
-                if (PlatformDetector.isDesktopOS()) _videoCodecsTile(),
-                _musicQualityTile(),
-              ],
-            ),
-
-            _rememberPlayerChangesGroup(),
+              _rememberPlayerChangesGroup(),
+            ],
             const SizedBox(height: 24),
           ],
         );
@@ -247,6 +251,13 @@ class PlaybackSettingsScreen extends StatelessWidget {
   Widget _behaviorGroup(BuildContext context, bool isMobile) => SettingsGroup(
     title: t.settings.behavior,
     children: [
+      // CGFLIX (refino 2b): veio de "Pular abertura e próximo episódio" (é técnico).
+      SettingSwitchTile(
+        pref: SettingsService.shuffleStartsFromBeginning,
+        icon: Symbols.shuffle_rounded,
+        title: t.settings.shuffleStartsFromBeginning,
+        subtitle: t.settings.shuffleStartsFromBeginningDescription,
+      ),
       SettingSwitchTile(
         pref: SettingsService.rememberTrackSelections,
         icon: Symbols.bookmark_rounded,
@@ -304,7 +315,6 @@ class PlaybackSettingsScreen extends StatelessWidget {
   };
 
   Widget _autoPlayAndSkipGroup() => SettingsGroup(
-    initiallyExpanded: true, // CGFLIX
     title: t.settings.autoPlayAndSkip,
     children: [
       // CGFLIX: pular abertura e créditos primeiro (com a dica), o técnico no fim.
@@ -314,16 +324,24 @@ class PlaybackSettingsScreen extends StatelessWidget {
           pref: SettingsService.skipIntroMode,
           icon: Symbols.fast_forward_rounded,
           title: t.settings.skipIntroMode,
-          subtitleBuilder: (mode) => '${_skipMarkerModeLabel(mode)} · ${_skipIntroModeDescription(mode)}',
-          options: SkipMarkerMode.values.map((m) => DialogOption(value: m, title: _skipMarkerModeLabel(m))).toList(),
+          subtitleBuilder: _skipMarkerModeLabel, // CGFLIX: só o valor (a explicação está no "?")
+          options: SkipMarkerMode.values
+              .map(
+                (m) => DialogOption(value: m, title: _skipMarkerModeLabel(m), subtitle: _skipIntroModeDescription(m)),
+              )
+              .toList(),
         ),
       ),
       SettingSelectionTile<SkipMarkerMode>(
         pref: SettingsService.skipCreditsMode,
         icon: Symbols.skip_next_rounded,
         title: t.settings.skipCreditsMode,
-        subtitleBuilder: (mode) => '${_skipMarkerModeLabel(mode)} · ${_skipCreditsModeDescription(mode)}',
-        options: SkipMarkerMode.values.map((m) => DialogOption(value: m, title: _skipMarkerModeLabel(m))).toList(),
+        subtitleBuilder: _skipMarkerModeLabel, // CGFLIX: só o valor
+        options: SkipMarkerMode.values
+            .map(
+              (m) => DialogOption(value: m, title: _skipMarkerModeLabel(m), subtitle: _skipCreditsModeDescription(m)),
+            )
+            .toList(),
       ),
       // Also togglable from the in-player settings sheet; both write the same
       // pref, and this pref gates the play-next prompt.
@@ -342,23 +360,18 @@ class PlaybackSettingsScreen extends StatelessWidget {
         labelText: t.settings.secondsLabel,
         suffixText: t.settings.secondsShort,
       ),
-      SettingSwitchTile(
-        pref: SettingsService.shuffleStartsFromBeginning,
-        icon: Symbols.shuffle_rounded,
-        title: t.settings.shuffleStartsFromBeginning,
-        subtitle: t.settings.shuffleStartsFromBeginningDescription,
-      ),
-      SettingNumberTile(
-        pref: SettingsService.autoSkipDelay,
-        icon: Symbols.timer_rounded,
-        title: t.settings.autoSkipDelay,
-        subtitleBuilder: (v) => t.settings.autoSkipDelayDescription(seconds: v.toString()),
-        labelText: t.settings.secondsLabel,
-        suffixText: t.settings.secondsShort,
-      ),
-      // CGFLIX (refino 2): detectar abertura pelos capítulos e os nomes de capítulo são técnicos;
+      // CGFLIX (refino 2b): "Modo aleatório começa do início" foi para Reprodução avançada ›
+      // Comportamento; "Espera antes de pular", detectar pelos capítulos e os nomes de capítulo
       // ficam em Configurações › Avançado (lib/cgflix/cgflix_advanced.dart).
-      if (!cgflixSkipTechInAdvanced) ...[
+      if (cgflixSettingsDebugInline) ...[
+        SettingNumberTile(
+          pref: SettingsService.autoSkipDelay,
+          icon: Symbols.timer_rounded,
+          title: t.settings.autoSkipDelay,
+          subtitleBuilder: (v) => t.settings.autoSkipDelayDescription(seconds: v.toString()),
+          labelText: t.settings.secondsLabel,
+          suffixText: t.settings.secondsShort,
+        ),
         SettingSwitchTile(
           pref: SettingsService.forceSkipMarkerFallback,
           icon: Symbols.tune_rounded,

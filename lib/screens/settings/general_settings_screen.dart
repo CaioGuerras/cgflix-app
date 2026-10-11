@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../cgflix/cgflix_config_itens.dart';
+import '../../cgflix/cgflix_intro.dart';
 import '../../cgflix/cgflix_navigation.dart';
 import '../../i18n/strings.g.dart';
 import '../../navigation/navigation_tabs.dart';
@@ -30,13 +32,10 @@ class GeneralSettingsScreen extends StatelessWidget {
     final hasMultipleProfiles = context.watch<ActiveProfileProvider>().hasMultipleProfiles;
     return SettingsPage(
       title: Text(t.settings.general),
-      collapsible: true, // CGFLIX
       children: [
-        SettingsGroup(
-          title: t.settings.languageAndRegion,
-          initiallyExpanded: true,
-          children: [_languageSelector(context)],
-        ),
+        // CGFLIX (refino 2b): o idioma do app fica em Configurações › Aparência (tela principal).
+        if (cgflixSettingsDebugInline)
+          SettingsGroup(title: t.settings.languageAndRegion, children: [_languageSelector(context)]),
 
         SettingsGroup(
           title: t.settings.startup,
@@ -57,6 +56,7 @@ class GeneralSettingsScreen extends StatelessWidget {
                 title: t.settings.forceTvMode,
                 subtitle: t.settings.forceTvModeDescription,
               ),
+            if (Platform.isAndroid) const CgflixIntroSoundTile(), // CGFLIX: som de abertura (veio do Avançado)
           ],
         ),
 

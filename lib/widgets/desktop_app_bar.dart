@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../cgflix/cgflix_configuracoes.dart';
 import '../utils/desktop_window_padding.dart';
 import '../services/fullscreen_state_manager.dart';
 import 'app_bar_back_button.dart';
@@ -49,6 +50,16 @@ class DesktopSliverAppBar extends StatelessWidget {
       context: context,
     );
 
+    // CGFLIX (refino 2b): Configurações do celular com a barra grande do M3, que recolhe ao rolar.
+    if (cgflixUsesLargeAppBar(context)) {
+      return SliverAppBar.large(
+        title: title,
+        actions: actions,
+        leading: _impliedLeading(context),
+        automaticallyImplyLeading: false,
+        pinned: true,
+      );
+    }
     return SliverAppBar(
       title: title == null
           ? null

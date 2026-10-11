@@ -1,4 +1,4 @@
-import '../cgflix/cgflix_collapsible.dart';
+import '../cgflix/cgflix_configuracoes.dart';
 import 'package:flutter/material.dart';
 
 import 'focused_scroll_scaffold.dart';
@@ -14,9 +14,6 @@ class SettingsPage extends StatelessWidget {
   final bool automaticallyImplyLeading;
   final VoidCallback? onBackPressed;
 
-  /// CGFLIX: as seções com título viram cartões recolhíveis (começam fechados).
-  final bool collapsible;
-
   const SettingsPage({
     super.key,
     required this.title,
@@ -26,7 +23,6 @@ class SettingsPage extends StatelessWidget {
     this.pinned = true,
     this.automaticallyImplyLeading = true,
     this.onBackPressed,
-    this.collapsible = false,
   }) : slivers = null;
 
   const SettingsPage.slivers({
@@ -37,7 +33,6 @@ class SettingsPage extends StatelessWidget {
     this.pinned = true,
     this.automaticallyImplyLeading = true,
     this.onBackPressed,
-    this.collapsible = false,
   }) : children = null,
        padding = null;
 
@@ -52,7 +47,7 @@ class SettingsPage extends StatelessWidget {
       onBackPressed: onBackPressed,
       slivers: pageSlivers,
     );
-    return collapsible ? CgflixCollapsibleScope(child: page) : page;
+    return CgflixSettingsScope(child: page); // CGFLIX: Configurações no padrão M3 (refino 2b)
   }
 
   Widget _buildListSliver() {
