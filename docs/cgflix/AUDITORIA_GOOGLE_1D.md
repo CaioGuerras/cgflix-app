@@ -14,7 +14,7 @@ da etapa, com arquivo:linha; esta tabela diz o que mudou depois.
 | Permissões mínimas | Core app quality | parcial | `REORDER_TASKS` sem uso (upstream) — próxima etapa |
 | Ponta a ponta (edge-to-edge) | [Edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) | OK | Barras transparentes (1C); recortes da câmera respeitados no topo deitado (1D) |
 | Película da navegação de 3 botões | Edge-to-edge | **corrigido** | `systemNavigationBarContrastEnforced: true` |
-| Voltar preditivo | [Predictive back](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) | pendente | Navegação nova usa rotas com Voltar (botão e gesto). `enableOnBackInvokedCallback` continua sem declarar: precisa de teste numa TV box (a tecla VOLTAR do controle) |
+| Voltar preditivo | [Predictive back](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) | **corrigido na 1.6.1** (ver Refino 2b) | Navegação nova usa rotas com Voltar (botão e gesto). `enableOnBackInvokedCallback` continua sem declarar: precisa de teste numa TV box (a tecla VOLTAR do controle) |
 | Splash Screen API e ícone adaptativo + monocromático | [Splash screens](https://developer.android.com/develop/ui/views/launch/splash-screen) | OK | Já da 1B/1C |
 | MediaSession / notificação / tela de bloqueio | [Media apps](https://developer.android.com/media/implement/surfaces/mobile) | parcial | Música tem; vídeo pausa em segundo plano (esperado). PiP cobre o "sair do app" |
 | PiP | [PiP](https://developer.android.com/develop/ui/views/picture-in-picture) | OK | Entrada automática (upstream); falta `sourceRectHint` |
@@ -28,12 +28,44 @@ da etapa, com arquivo:linha; esta tabela diz o que mudou depois.
 | Destaque que troca sozinho | [WCAG 2.2.2](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide) | **corrigido** | Para com TalkBack ou "remover animações"; arrastar continua |
 | "Remover animações" nas transições | Accessibility | **corrigido** | Transição de página seca |
 | Fonte 200% | Accessibility | parcial | Barra do topo, Pedir da busca e destaque testados a 200%; cartões ainda limitam a 1,2× (próxima etapa) |
-| Teclado/controle nos cartões da Início | Accessibility | pendente | `CgflixPressable` usa `GestureDetector`; só afeta quem não é detectado como TV |
+| Teclado/controle nos cartões da Início | Accessibility | **corrigido na 1.6.1** (ver Refino 2b) | `CgflixPressable` usa `GestureDetector`; só afeta quem não é detectado como TV |
 | Estados (pressionado/foco) | [M3 states](https://m3.material.io/foundations/interaction/states/overview) | **corrigido** (parcial) | Botões e chips do CGFLIX mostram pressionado/foco; o tema do upstream desliga o efeito de toque no resto |
 | Componentes padrão do M3 | M3 | parcial | Chips da barra são desenho próprio (para 36 dp de desenho com 48 dp de toque); menu do usuário usa `ListTile`/folha padrão |
 | Tema e cores | M3 | **corrigido** | Tema único (`cgflixAppTheme`), sem cores soltas para o tema |
 | Imagens no tamanho exibido, listas preguiçosas | [Performance](https://developer.android.com/topic/performance) | OK | `OptimizedMediaImage` com tamanho; `SliverList.builder` |
 | Nada pesado na thread de UI | Performance | pendente | Cache da Início decodificado na UI; som da abertura com `MediaPlayer.create` síncrono |
+
+## Refino 2b (1.6.1) — cada item reaberto depois do refino 2
+
+Conferido de novo no código da 1.6.1 (11/10). **Mudou** = mexido nesta etapa.
+
+| Item | Situação na 1.6.1 | O que mudou / evidência |
+|---|---|---|
+| targetSdk/compileSdk 36, minSdk 25 | OK | sem mudança |
+| R8 + shrinkResources | OK | sem mudança |
+| Baseline Profile | pendente | sem mudança (ganho pequeno em Flutter) |
+| Backup sem credenciais | parcial | `allowBackup="false"` continua; `dataExtractionRules` ainda falta |
+| Permissões mínimas | parcial | `REORDER_TASKS` ainda declarada (linha a mais de diferença do upstream) |
+| Ponta a ponta | OK | **mudou**: Configurações e subtelas com a barra de título grande sob a barra de status e lista até embaixo da barra de navegação (`SliverSystemBottomInset`), sem faixa preta |
+| Película da navegação de 3 botões | OK | sem mudança |
+| **Voltar preditivo** | **corrigido** | **mudou**: `android:enableOnBackInvokedCallback="true"` no `<application>`; a transição do CGFLIX recebe o gesto e acompanha o dedo (encolhe, arredonda e volta se desistir) — `lib/cgflix/cgflix_theme.dart`, `test/cgflix/cgflix_voltar_preditivo_test.dart`. Risco: TV com Android 13–15 passa a receber o VOLTAR do controle pelo caminho do sistema (o mesmo que o Android 16 já usava; o upstream trata os dois caminhos). TV box com Android 9–12 não muda. Conferir numa TV box com Android 14 |
+| Splash Screen API, ícone adaptativo/monocromático | OK | sem mudança |
+| MediaSession / PiP | parcial | sem mudança (falta `sourceRectHint`) |
+| Foco de áudio, retomar | OK | sem mudança |
+| Paisagem | OK | **mudou**: Configurações testadas deitadas (914 × 412) |
+| Tablet/TV | parcial | Configurações em duas colunas (≥ 840 dp) **não** feitas: exigiria reescrever a navegação das Configurações |
+| Alvos de toque ≥ 48 dp | OK | **mudou**: linhas das Configurações com 56/72 dp; "?" de 48 dp; círculos de cor de 40 dp com toque de 48 dp |
+| Contraste | OK | **mudou**: contraste AA das Configurações medido em teste nos dois temas (cabeçalho, título, resumo, switch) |
+| TalkBack | OK | **mudou**: cabeçalhos lidos como cabeçalho; switch com papel de switch e estado; opções dos diálogos como botões de opção; cores com nome |
+| Destaque que troca sozinho, remover animações | OK | sem mudança; o voltar preditivo também fica seco com "remover animações" |
+| Fonte 200% | parcial | **mudou**: Configurações sem corte a 200% (capturas `*-fonte200-*`, teste a 360 dp); cartões da Início continuam limitados a 1,2× |
+| **Teclado/controle nos cartões** | **corrigido** | **mudou**: `CgflixPressable` com `FocusableActionDetector`, contorno de foco e Enter/OK — `test/cgflix/cgflix_cartao_foco_test.dart` |
+| Estados (pressionado/foco) | parcial | **mudou**: foco das linhas das Configurações com realce `primary` 16% |
+| **Componentes padrão do M3** | **corrigido nas Configurações** | **mudou**: `ListTile`/`SwitchListTile` M3, `Switch` com check, `Slider`, diálogo com botões de opção, `SliverAppBar.large`, cabeçalhos e divisores M3 (`docs/cgflix/REFINO_2B.md`). Chips da barra continuam desenho próprio |
+| Tema e cores | OK | **mudou**: Configurações pintadas só pelo `ColorScheme` (Isis com `primary` lilás nas Configurações e nos controles; Heitor verde); cor fixa da marca, sem cor dinâmica |
+| Ícones | OK | **mudou**: Configurações só com Material Symbols Rounded em contorno, 24 dp, `onSurfaceVariant` |
+| Imagens, listas preguiçosas | OK | sem mudança |
+| Nada pesado na thread de UI | parcial | som da abertura já roda fora da thread principal (1E); cache da Início ainda decodifica na UI |
 
 ## Detalhe da auditoria
 

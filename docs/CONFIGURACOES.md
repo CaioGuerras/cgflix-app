@@ -3,55 +3,57 @@
 O CGFLIX segue a ideia "omakase": o app já vem pronto do jeito que o dono usaria, com poucas escolhas na cara de quem só
 quer assistir. O avançado existe, mas fica escondido.
 
-**Como é a tela** (Configurações):
+**Como é a tela** (versão 1.6.1, refino 2b — padrão das Configurações do Android / Material 3):
 
-- Cada seção com título é um **cartão que abre e fecha**. Todas começam **fechadas**, exceto as mais usadas
-  (marcadas "aberta" abaixo).
-- No fim da lista há o cartão **Avançado**, que não mostra nada até a pessoa tocar nele.
+- **Lista plana**, sem cartões nem sanfonas: grupos com **cabeçalho na cor do tema** (Isis lilás, Heitor verde).
+- Cada item mostra no resumo o **valor atual** ("Português (Brasil)", "Original", "Mostrar botão"); liga/desliga é um
+  **switch** à direita (o item inteiro alterna); item que abre outra tela **não tem seta** (como no Android).
+- Escolhas curtas abrem um diálogo com botões de opção; números são **controles deslizantes**; cores são **círculos**.
+- **Avançado** é um item no fim, **fechado**, que abre uma subtela; depois dele só o **Apoie o CGFLIX**.
 - Só a apresentação foi reorganizada: nenhuma opção foi removida do código.
 
 ## Padrões já escolhidos para o CGFLIX
 
 | Assunto | Padrão |
 |---|---|
-| Tema | escuro **OLED** (preto `#07060a`) em todos os aparelhos |
+| Tema | **Isis** (escuro OLED, roxo); Heitor (claro, verde) e Automático na tela principal |
 | Idioma | **português (Brasil)**; aparelho em outro idioma traduzido (ex.: espanhol) é respeitado, inglês vira português |
 | Reprodução | **direta** (qualidade original; o servidor não transcodifica vídeo) |
 | Player | **mpv** (necessário para legenda ASS com estilo) |
 | Áudio e legenda | **seguem a preferência do usuário no servidor** (`por`), também ao trocar de episódio |
+| Baixar só no Wi-Fi | **ligado** (refino 2) |
 | Servidor Jellyfin | campo **vazio** (nada pré-preenchido), dica `https://seu.servidor.com` |
 
-## Estrutura da tela principal
+## Tela principal (1.6.1)
 
-| Item | Onde fica | Estado inicial |
-|---|---|---|
-| Geral, Aparência, Reprodução, Bibliotecas, Serviços | lista básica no topo | sempre visível; **Serviços** só aparece quando o build tem o Trakt do CGFLIX (Etapa 1E) |
-| Conexões (servidores e perfis) | cartão | **aberto** |
-| Downloads | cartão | fechado |
-| Atualizações (se disponível) | cartão | fechado |
-| Backup (exportar/importar configurações) | cartão | fechado |
-| Sobre | lista no fim | sempre visível |
-| **Avançado** | cartão | fechado e vazio até tocar |
+| Grupo | Itens (resumo = valor atual) |
+|---|---|
+| **Conta** (só com Jellyfin conectado ou vários perfis) | Minha conta (foto e senha) · Perfis (com vários perfis) |
+| **Aparência** | Tema (Isis/Heitor/Automático) · Idioma do app · Mais opções de aparência (cartões, bibliotecas, efeitos) |
+| **Assistir** | Áudio e legenda (idiomas da conta, com "?") · Estilo das legendas · Ao assistir (pular abertura e créditos, próximo episódio, gestos, janelinha, avançar e voltar) · Qualidade padrão (com "?") · Qualidade nos dados móveis |
+| — | Baixados (subtela: pasta, só no Wi-Fi com "?", apagar o que já assisti, baixar em segundo plano) |
+| **Ajuda** | Dicas do CGFLIX · Sobre |
+| — | **Avançado** (subtela, fechado) · **Apoie o CGFLIX** (sempre o último) |
 
-## Avançado (tudo que o usuário comum não precisa)
+## Avançado (subtela; tudo que o usuário comum não precisa)
 
-| Opção | O que faz | Padrão |
-|---|---|---|
-| Assistir juntos | Assistir ao mesmo título ao mesmo tempo que outra pessoa, cada um no seu aparelho | — (antes ficava na Início) |
-| Controle remoto | Controla **outro** aparelho com o CGFLIX aberto, na mesma rede Wi-Fi e na mesma conta. Não reconhece TV comum | — (antes ficava na Início) |
-| Opções do mpv | Ajustes técnicos do player (arquivo de configuração do mpv) | vazio (antes ficava em Reprodução) |
-| Som de abertura (Android) | Um "tum" curto ao abrir o app; fica mudo no silencioso e no vibrar | **ligado** (Etapa 1E: saiu da lista principal) |
-| Controles (atalhos de teclado, navegação do player, servidor do controle remoto) | só aparecem quando o aparelho suporta | depende do aparelho |
-| Relay do Assistir juntos (rede) | Endereço do servidor de retransmissão | padrão do app |
-| Relatório de falhas | Opção de enviar relatórios de erro | marcada, mas **inócua**: este build é compilado sem Sentry (\`ENABLE_SENTRY\` desligado), então nada é enviado |
-| Registro de depuração / Ver logs | Registro detalhado e tela de logs | desligado |
-| Ocultar o painel de desempenho automaticamente | Painel de desempenho do player | padrão do app |
-| Limpar cache de imagens | Libera espaço de imagens baixadas | — |
-| Restaurar configurações | Volta tudo ao padrão | — |
+| Grupo | Itens |
+|---|---|
+| Contas e servidores | Adicionar conexão (Plex, Jellyfin ou Emby) · Perfis (com um perfil só) · Organizar bibliotecas · Serviços (Trakt) |
+| Recursos extras | Assistir juntos · Controle remoto (outro aparelho com o CGFLIX, mesma rede e conta; não reconhece TV comum) · atalhos de teclado e controle pelo celular (quando o aparelho suporta) |
+| Ao assistir (técnico) | **Reprodução avançada** (subtela: Comportamento — inclui "Modo aleatório começa do início" —, Reprodutor, Vídeo e tela, Áudio, Qualidade técnica, Lembrar ajustes) · Opções do mpv · Espera antes de pular · Sempre detectar abertura pelos capítulos · Nome do capítulo de abertura · Nome do capítulo de créditos |
+| Legendas (técnico) | Estilo das legendas ASS (anime) · Resolução da legenda |
+| Este aparelho | Geral (subtela: forçar modo TV, perfil ao abrir, som de abertura, seção inicial na TV, tela cheia no computador) |
+| Atualizações | (só quando o build tem o verificador) |
+| Diagnóstico | Servidor do Assistir juntos · Registros de diagnóstico · Esconder o painel de desempenho · Ver registros · Limpar memória de imagens · Restaurar configurações |
+| Cópia de segurança | Exportar e importar configurações (fora da TV) |
 
 Na **Início**, o botão Recarregar virou **puxar para atualizar** (além da atualização automática que já existe).
 
 # Tabelas por tela
+
+> Até a 1.6.0 as seções eram cartões ("aberta"/"fechada" abaixo). Desde a 1.6.1 tudo é lista plana; onde cada
+> opção mora agora está nas duas tabelas de cima e em `docs/cgflix/REFINO_2B.md`.
 
 As tabelas abaixo foram geradas a partir do código das telas e dos textos em português. "padrão do app" significa que o
 valor padrão é o do Plezy (sem alteração do CGFLIX).
@@ -271,3 +273,10 @@ As tabelas acima seguem valendo para cada opção; mudou a **ordem** e o lugar d
 - **Padrão novo**: Baixar só no Wi-Fi = **ligado** (antes desligado).
 - Itens com "?" (dica): Pular abertura, Áudio, legenda e conta, Baixar só no Wi-Fi, Gestos, Abrir a janelinha ao
   sair, Qualidade padrão. Todas as dicas: Sobre › Dicas do CGFLIX.
+
+## Refino 2b (versão 1.6.1)
+
+Configurações no padrão do Android/Material 3: lista plana com cabeçalhos, sem sanfonas nem setas, switch M3 com
+check, números em controle deslizante, cores em círculos, prévia ao vivo da legenda, Avançado fechado no fim. A
+subtela Geral saiu da frente (o idioma foi para Aparência; o resto está em Avançado › Este aparelho). Tabela completa
+"item → onde estava → onde ficou → por quê" em `docs/cgflix/REFINO_2B.md`.
