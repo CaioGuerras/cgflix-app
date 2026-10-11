@@ -58,7 +58,10 @@ Future<void> cgflixFixThemePref(settings.SettingsService service) async {
 }
 
 /// Troca de página no Android: entra deslizando de leve e aparecendo; a de baixo recua um
-/// pouco. 300 ms para ir, 250 ms para voltar (o gesto de voltar acompanha o dedo).
+/// pouco. 300 ms para ir, 250 ms para voltar. Refino 2b: com o voltar preditivo ligado
+/// (`android:enableOnBackInvokedCallback`), o gesto de voltar do Android 13+ arrasta a página
+/// junto com o dedo (ela encolhe um pouco e arredonda os cantos, como no sistema) e só fecha se
+/// a pessoa soltar; se desistir, volta para o lugar.
 class CgflixPageTransitionsBuilder extends PageTransitionsBuilder {
   const CgflixPageTransitionsBuilder();
 
@@ -78,16 +81,88 @@ class CgflixPageTransitionsBuilder extends PageTransitionsBuilder {
   ) {
     // "Remover animações" do Android: troca de página seca, sem deslizar.
     if (MediaQuery.disableAnimationsOf(context)) return child;
-    final enter = CurvedAnimation(parent: animation, curve: CgflixMotion.curve, reverseCurve: Curves.easeInCubic);
-    final under = CurvedAnimation(parent: secondaryAnimation, curve: CgflixMotion.curve);
-    return SlideTransition(
-      position: Tween(begin: Offset.zero, end: const Offset(-0.06, 0)).animate(under),
-      child: SlideTransition(
-        position: Tween(begin: const Offset(0.08, 0), end: Offset.zero).animate(enter),
-        child: FadeTransition(opacity: enter, child: child),
-      ),
+    return _CgflixPredictiveBack(
+      route: route,
+      builder: (context) {
+        if (route.popGestureInProgress) {
+          // Durante o gesto a animação segue o dedo (sem curva), como no voltar preditivo do sistema.
+          return SlideTransition(
+            position: Tween(begin: const Offset(0.08, 0), end: Offset.zero).animate(animation),
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.9, end: 1).animate(animation),
+              child: ClipRRect(borderRadius: BorderRadius.circular(28), child: child),
+            ),
+          );
+        }
+        final enter = CurvedAnimation(parent: animation, curve: CgflixMotion.curve, reverseCurve: Curves.easeInCubic);
+        final under = CurvedAnimation(parent: secondaryAnimation, curve: CgflixMotion.curve);
+        return SlideTransition(
+          position: Tween(begin: Offset.zero, end: const Offset(-0.06, 0)).animate(under),
+          child: SlideTransition(
+            position: Tween(begin: const Offset(0.08, 0), end: Offset.zero).animate(enter),
+            child: FadeTransition(opacity: enter, child: child),
+          ),
+        );
+      },
     );
   }
+}
+
+/// Recebe o gesto de voltar preditivo do Android (Flutter → [WidgetsBindingObserver]) e passa para
+/// a rota, que move a animação junto com o dedo. Mesma lógica do `PredictiveBackPageTransitionsBuilder`
+/// do Flutter, com a transição do CGFLIX.
+class _CgflixPredictiveBack extends StatefulWidget {
+  const _CgflixPredictiveBack({required this.route, required this.builder});
+
+  final PageRoute<dynamic> route;
+  final WidgetBuilder builder;
+
+  @override
+  State<_CgflixPredictiveBack> createState() => _CgflixPredictiveBackState();
+}
+
+class _CgflixPredictiveBackState extends State<_CgflixPredictiveBack> with WidgetsBindingObserver {
+  bool get _enabled => widget.route.isCurrent && widget.route.popGestureEnabled;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  bool handleStartBackGesture(PredictiveBackEvent backEvent) {
+    if (backEvent.isButtonEvent || !_enabled) return false;
+    widget.route.handleStartBackGesture(progress: 1 - backEvent.progress);
+    setState(() {});
+    return true;
+  }
+
+  @override
+  void handleUpdateBackGestureProgress(PredictiveBackEvent backEvent) {
+    widget.route.handleUpdateBackGestureProgress(progress: 1 - backEvent.progress);
+  }
+
+  @override
+  void handleCancelBackGesture() {
+    widget.route.handleCancelBackGesture();
+    setState(() {});
+  }
+
+  @override
+  void handleCommitBackGesture() {
+    widget.route.handleCommitBackGesture();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context);
 }
 
 /// Marca do CGFLIX sobre o tema do upstream. [oled] = Isis; o tema claro do upstream vira o
