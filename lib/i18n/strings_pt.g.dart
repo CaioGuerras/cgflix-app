@@ -156,7 +156,7 @@ class _Translations$common$pt extends Translations$common$en {
 	@override String get createNew => 'Criar novo';
 	@override String get connect => 'Conectar';
 	@override String get disconnect => 'Desconectar';
-	@override String get play => 'Reproduzir';
+	@override String get play => 'Assistir';
 	@override String get pause => 'Pausar';
 	@override String get resume => 'Continuar';
 	@override String get error => 'Erro';
@@ -231,8 +231,8 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get language => 'Idioma';
 	@override String get theme => 'Tema';
 	@override String get appearance => 'Aparência';
-	@override String get videoPlayback => 'Reprodução de vídeo';
-	@override String get videoPlaybackDescription => 'Escolha como os vídeos são reproduzidos';
+	@override String get videoPlayback => 'Ao assistir';
+	@override String get videoPlaybackDescription => 'Pular abertura, legendas, gestos e próximo episódio';
 	@override String get advanced => 'Avançado';
 	@override String get episodePosterMode => 'Imagem dos episódios';
 	@override String get seriesPoster => 'Pôster da série';
@@ -299,7 +299,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get playerBackend => 'Reprodutor de vídeo';
 	@override String get exoPlayer => 'ExoPlayer';
 	@override String get mpv => 'mpv';
-	@override String get hardwareDecoding => 'Decodificação por hardware';
+	@override String get hardwareDecoding => 'Aceleração de vídeo';
 	@override String get hardwareDecodingDescription => 'Usar o chip de vídeo do aparelho quando possível (mais leve e economiza bateria)';
 	@override String get playbackBuffer => 'Carregamento antecipado';
 	@override String get playbackBufferAuto => 'Automático (recomendado)';
@@ -373,7 +373,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get shortcutsReset => 'Atalhos voltaram ao padrão';
 	@override String get resetShortcutsConfirm => 'Isso troca seus atalhos personalizados pelos padrões. Continuar?';
 	@override String get about => 'Sobre';
-	@override String get aboutDescription => 'Informações do app e licenças';
+	@override String get aboutDescription => 'Versão, dicas do CGFLIX e licenças';
 	@override String get updates => 'Atualizações';
 	@override String get updateAvailable => 'Atualização disponível';
 	@override String get checkForUpdates => 'Procurar atualizações';
@@ -384,8 +384,8 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String shortcutAlreadyAssigned({required Object action}) => 'Este atalho já é usado em ${action}';
 	@override String shortcutUpdated({required Object action}) => 'Atalho atualizado para ${action}';
 	@override String get saveFailed => 'Não deu para salvar as alterações. Tente de novo.';
-	@override String get autoPlayAndSkip => 'Reprodução automática e pular trechos';
-	@override String get autoPlayNextEpisode => 'Assistir o próximo episódio automaticamente';
+	@override String get autoPlayAndSkip => 'Pular abertura e próximo episódio';
+	@override String get autoPlayNextEpisode => 'Próximo episódio sozinho';
 	@override String get autoPlayNextEpisodeDescription => 'Começar o próximo episódio quando o atual terminar';
 	@override String get shuffleStartsFromBeginning => 'Modo aleatório começa do início';
 	@override String get shuffleStartsFromBeginningDescription => 'No modo aleatório, começar cada episódio do início em vez de continuar de onde parou';
@@ -424,7 +424,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get downloadLocationInvalid => 'Não dá para salvar arquivos nessa pasta. Escolha outra.';
 	@override String get downloadLocationPickerUnavailable => 'Não dá para escolher pasta neste aparelho';
 	@override String get downloadOnWifiOnly => 'Baixar só no Wi-Fi';
-	@override String get downloadOnWifiOnlyDescription => 'Não baixar usando dados móveis';
+	@override String get downloadOnWifiOnlyDescription => 'Não gasta seus dados móveis (4G/5G)';
 	@override String get autoRemoveWatchedDownloads => 'Apagar baixados já assistidos';
 	@override String get autoRemoveWatchedDownloadsDescription => 'Apagar sozinho os vídeos baixados depois que você assistir';
 	@override String get cellularDownloadBlocked => 'Baixar está bloqueado nos dados móveis. Conecte no Wi-Fi ou mude essa opção nas Configurações.';
@@ -434,13 +434,13 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get discordRichPresence => 'Discord Rich Presence';
 	@override String get discordRichPresenceDescription => 'Mostrar o que você está assistindo no Discord';
 	@override String get services => 'Serviços';
-	@override String get servicesDescription => 'Conecte Trakt, MyAnimeList, Seerr e outros';
+	@override String get servicesDescription => 'Conecte o Trakt para registrar o que você assiste';
 	@override String get manageLibrariesDescription => 'Mudar a ordem e ocultar bibliotecas';
 	@override String get companionRemoteServer => 'Servidor de controle remoto';
 	@override String get companionRemoteServerDescription => 'Deixar celulares na sua rede Wi-Fi controlarem este app';
 	@override String get companionRemoteServerStartFailed => 'Não deu para ligar o controle remoto. Tente de novo.';
 	@override String get companionRemoteServerStopFailed => 'Não deu para desligar o controle remoto. Tente de novo.';
-	@override String get autoPip => 'Janelinha automática (picture-in-picture)';
+	@override String get autoPip => 'Abrir a janelinha ao sair';
 	@override String get autoPipDescription => 'Continuar o vídeo numa janelinha ao sair do app durante a reprodução';
 	@override String get matchContentFrameRate => 'Ajustar à taxa de quadros do conteúdo';
 	@override String get matchContentFrameRateDescription => 'Ajustar a frequência da tela ao vídeo (evita imagem tremida)';
@@ -511,7 +511,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get liveTvDefaultFavorites => 'Canais favoritos por padrão';
 	@override String get liveTvDefaultFavoritesDescription => 'Mostrar só os canais favoritos ao abrir a TV ao vivo';
 	@override String get general => 'Geral';
-	@override String get generalDescription => 'Idioma, abertura do app e janela';
+	@override String get generalDescription => 'Idioma do app e modo TV';
 	@override String get languageAndRegion => 'Idioma e região';
 	@override String get startup => 'Ao abrir o app';
 	@override String get display => 'Tela';
@@ -540,7 +540,7 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get rememberPlayerChanges => 'Lembrar ajustes do reprodutor';
 	@override String get rememberPlayerChangesDescription => 'Onde guardar e repetir um ajuste feito durante o vídeo';
 	@override String get scopePlaybackSpeed => 'Velocidade de reprodução';
-	@override String get scopeShaderPreset => 'Filtro de imagem (shader)';
+	@override String get scopeShaderPreset => 'Filtro de imagem';
 	@override String get scopeAspectRatio => 'Proporção da tela';
 	@override String get scopeSyncOffsets => 'Sincronização de áudio e legendas';
 	@override String get playerScopeOff => 'Não salvar';
@@ -718,7 +718,7 @@ class _Translations$mediaMenu$pt extends Translations$mediaMenu$en {
 	@override String get goToSeries => 'Ir para a série';
 	@override String get shufflePlay => 'Assistir em ordem aleatória';
 	@override String get shuffleNotAvailableOffline => 'A ordem aleatória não funciona sem internet';
-	@override String get fileInfo => 'Informações do arquivo';
+	@override String get fileInfo => 'Detalhes técnicos do arquivo';
 	@override String get deleteEpisodeFromServer => 'Excluir episódio do servidor';
 	@override String get deleteSeasonFromServer => 'Excluir temporada do servidor';
 	@override String get deleteShowFromServer => 'Excluir série do servidor';
@@ -751,8 +751,8 @@ class _Translations$mediaMenu$pt extends Translations$mediaMenu$en {
 	@override String get mediaDeletedSuccessfully => 'Item excluído';
 	@override String get mediaFailedToDelete => 'Não deu para excluir o item. Tente de novo.';
 	@override String get rate => 'Avaliar';
-	@override String get playFromBeginning => 'Assistir do início';
-	@override String get playVersion => 'Assistir versão...';
+	@override String get playFromBeginning => 'Assistir do começo';
+	@override String get playVersion => 'Assistir outra versão';
 }
 
 // Path: rateSheet
@@ -854,15 +854,15 @@ class _Translations$videoControls$pt extends Translations$videoControls$en {
 	@override String get stillWatching => 'Você ainda está assistindo?';
 	@override String pausingIn({required Object seconds}) => 'Pausando em ${seconds} s';
 	@override String get continueWatching => 'Continuar';
-	@override String get autoPlayNext => 'Próximo automaticamente';
+	@override String get autoPlayNext => 'Próximo episódio sozinho';
 	@override String get playNext => 'Assistir o próximo';
-	@override String get playButton => 'Reproduzir';
+	@override String get playButton => 'Assistir';
 	@override String get pauseButton => 'Pausar';
 	@override String get playbackPaused => 'Pausado';
-	@override String get playbackResumed => 'Reproduzindo';
+	@override String get playbackResumed => 'Tocando';
 	@override String get loadingVideo => 'Carregando vídeo';
-	@override String get showPlaybackControls => 'Mostrar controles de reprodução';
-	@override String get hidePlaybackControls => 'Ocultar controles de reprodução';
+	@override String get showPlaybackControls => 'Mostrar os botões';
+	@override String get hidePlaybackControls => 'Esconder os botões';
 	@override String seekBackwardButton({required Object seconds}) => 'Voltar ${seconds} segundos';
 	@override String seekForwardButton({required Object seconds}) => 'Avançar ${seconds} segundos';
 	@override String get previousButton => 'Episódio anterior';
@@ -871,7 +871,7 @@ class _Translations$videoControls$pt extends Translations$videoControls$en {
 	@override String get nextChapterButton => 'Próximo capítulo';
 	@override String get muteButton => 'Silenciar';
 	@override String get unmuteButton => 'Ligar o som';
-	@override String get settingsButton => 'Configurações de reprodução';
+	@override String get settingsButton => 'Ajustes do vídeo';
 	@override String get tracksButton => 'Áudio e legendas';
 	@override String get chaptersButton => 'Capítulos';
 	@override String get versionQualityButton => 'Versão e qualidade';
@@ -881,7 +881,7 @@ class _Translations$videoControls$pt extends Translations$videoControls$en {
 	@override String qualityPresetLabel({required Object resolution, required Object bitrate}) => '${resolution}p ${bitrate} Mbps';
 	@override String get transcodeUnavailableFallback => 'Não dá para converter este vídeo no servidor — tocando na qualidade original';
 	@override String get subtitleUnavailableFallback => 'Não deu para carregar a legenda escolhida — o vídeo vai continuar sem legenda';
-	@override String get pipButton => 'Janelinha (picture-in-picture)';
+	@override String get pipButton => 'Janelinha';
 	@override String get aspectRatioButton => 'Proporção';
 	@override String get ambientLighting => 'Iluminação ambiente';
 	@override String get fullscreenButton => 'Entrar em tela cheia';
@@ -902,8 +902,8 @@ class _Translations$videoControls$pt extends Translations$videoControls$en {
 	@override late final _Translations$videoControls$pipErrors$pt pipErrors = _Translations$videoControls$pipErrors$pt._(_root);
 	@override String get chapters => 'Capítulos';
 	@override String get noChaptersAvailable => 'Nenhum capítulo disponível';
-	@override String get queue => 'Fila';
-	@override String get noQueueItems => 'Nenhum item na fila';
+	@override String get queue => 'A seguir';
+	@override String get noQueueItems => 'Nada a seguir';
 	@override String get noAudioDevicesAvailable => 'Nenhuma saída de áudio disponível';
 	@override String get searchSubtitles => 'Buscar legendas';
 	@override String get language => 'Idioma';
@@ -1154,7 +1154,7 @@ class _Translations$connections$pt extends Translations$connections$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get sectionTitle => 'Conexões';
+	@override String get sectionTitle => 'Contas e servidores';
 	@override String get addConnection => 'Adicionar conexão';
 	@override String get addConnectionSubtitleNoProfile => 'Entre com Plex ou conecte um servidor Jellyfin ou Emby';
 	@override String addConnectionSubtitleScoped({required Object displayName}) => 'Adicionar a ${displayName}: Plex, Jellyfin, Emby ou a conexão de outro perfil';
@@ -1174,9 +1174,9 @@ class _Translations$accountPreferences$pt extends Translations$accountPreference
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get sectionTitle => 'Preferências da conta';
-	@override String hubSubtitleSingle({required Object account}) => 'Opções de áudio, legendas e biblioteca salvas em ${account}';
-	@override String hubSubtitleMultiple({required Object count}) => 'Opções de áudio, legendas e biblioteca salvas em ${count} contas';
+	@override String get sectionTitle => 'Áudio, legenda e conta';
+	@override String hubSubtitleSingle({required Object account}) => 'Idioma do áudio e da legenda, salvo em ${account}';
+	@override String hubSubtitleMultiple({required Object count}) => 'Idioma do áudio e da legenda, salvo em ${count} contas';
 	@override String get pickAccount => 'Cada conta guarda suas próprias preferências. Escolha qual quer editar.';
 	@override String get storedOnAccount => 'Estas opções ficam salvas na sua conta do servidor, então valem em todos os apps conectados a ela — inclusive o CGFLIX nos seus outros aparelhos.';
 	@override String get noAccounts => 'Nenhuma conta para configurar';
@@ -1892,7 +1892,7 @@ class _Translations$shaders$pt extends Translations$shaders$en {
 	final TranslationsPt _root; // ignore: unused_field
 
 	// Translations
-	@override String get title => 'Filtros de imagem (shaders)';
+	@override String get title => 'Filtros de imagem';
 	@override String get noShaderDescription => 'Sem melhoria de imagem';
 	@override String get nvscalerDescription => 'Ampliação de imagem da NVIDIA para vídeos mais nítidos';
 	@override String get artcnnVariantNeutral => 'Neutro';
@@ -1949,7 +1949,7 @@ class _Translations$videoSettings$pt extends Translations$videoSettings$en {
 	@override String get hdrToneMappingPlayerDescription => 'O reprodutor ajusta as cores para o brilho máximo da tela e avisa o sistema.';
 	@override String get hdrToneMappingFailed => 'Não deu para mudar o ajuste de cores HDR — continua o modo anterior.';
 	@override String get audioOutput => 'Saída de áudio';
-	@override String get performanceOverlay => 'Painel de desempenho';
+	@override String get performanceOverlay => 'Informações técnicas na tela';
 	@override String get audioOutputDolbyAtmos => 'Dolby Atmos';
 	@override String get audioOutputDolbyAudio => 'Dolby Audio';
 	@override String get audioOutputSurround => 'Surround';
@@ -3146,7 +3146,7 @@ extension on TranslationsPt {
 			'common.createNew' => 'Criar novo',
 			'common.connect' => 'Conectar',
 			'common.disconnect' => 'Desconectar',
-			'common.play' => 'Reproduzir',
+			'common.play' => 'Assistir',
 			'common.pause' => 'Pausar',
 			'common.resume' => 'Continuar',
 			'common.error' => 'Erro',
@@ -3215,8 +3215,8 @@ extension on TranslationsPt {
 			'settings.language' => 'Idioma',
 			'settings.theme' => 'Tema',
 			'settings.appearance' => 'Aparência',
-			'settings.videoPlayback' => 'Reprodução de vídeo',
-			'settings.videoPlaybackDescription' => 'Escolha como os vídeos são reproduzidos',
+			'settings.videoPlayback' => 'Ao assistir',
+			'settings.videoPlaybackDescription' => 'Pular abertura, legendas, gestos e próximo episódio',
 			'settings.advanced' => 'Avançado',
 			'settings.episodePosterMode' => 'Imagem dos episódios',
 			'settings.seriesPoster' => 'Pôster da série',
@@ -3283,7 +3283,7 @@ extension on TranslationsPt {
 			'settings.playerBackend' => 'Reprodutor de vídeo',
 			'settings.exoPlayer' => 'ExoPlayer',
 			'settings.mpv' => 'mpv',
-			'settings.hardwareDecoding' => 'Decodificação por hardware',
+			'settings.hardwareDecoding' => 'Aceleração de vídeo',
 			'settings.hardwareDecodingDescription' => 'Usar o chip de vídeo do aparelho quando possível (mais leve e economiza bateria)',
 			'settings.playbackBuffer' => 'Carregamento antecipado',
 			'settings.playbackBufferAuto' => 'Automático (recomendado)',
@@ -3357,7 +3357,7 @@ extension on TranslationsPt {
 			'settings.shortcutsReset' => 'Atalhos voltaram ao padrão',
 			'settings.resetShortcutsConfirm' => 'Isso troca seus atalhos personalizados pelos padrões. Continuar?',
 			'settings.about' => 'Sobre',
-			'settings.aboutDescription' => 'Informações do app e licenças',
+			'settings.aboutDescription' => 'Versão, dicas do CGFLIX e licenças',
 			'settings.updates' => 'Atualizações',
 			'settings.updateAvailable' => 'Atualização disponível',
 			'settings.checkForUpdates' => 'Procurar atualizações',
@@ -3368,8 +3368,8 @@ extension on TranslationsPt {
 			'settings.shortcutAlreadyAssigned' => ({required Object action}) => 'Este atalho já é usado em ${action}',
 			'settings.shortcutUpdated' => ({required Object action}) => 'Atalho atualizado para ${action}',
 			'settings.saveFailed' => 'Não deu para salvar as alterações. Tente de novo.',
-			'settings.autoPlayAndSkip' => 'Reprodução automática e pular trechos',
-			'settings.autoPlayNextEpisode' => 'Assistir o próximo episódio automaticamente',
+			'settings.autoPlayAndSkip' => 'Pular abertura e próximo episódio',
+			'settings.autoPlayNextEpisode' => 'Próximo episódio sozinho',
 			'settings.autoPlayNextEpisodeDescription' => 'Começar o próximo episódio quando o atual terminar',
 			'settings.shuffleStartsFromBeginning' => 'Modo aleatório começa do início',
 			'settings.shuffleStartsFromBeginningDescription' => 'No modo aleatório, começar cada episódio do início em vez de continuar de onde parou',
@@ -3408,7 +3408,7 @@ extension on TranslationsPt {
 			'settings.downloadLocationInvalid' => 'Não dá para salvar arquivos nessa pasta. Escolha outra.',
 			'settings.downloadLocationPickerUnavailable' => 'Não dá para escolher pasta neste aparelho',
 			'settings.downloadOnWifiOnly' => 'Baixar só no Wi-Fi',
-			'settings.downloadOnWifiOnlyDescription' => 'Não baixar usando dados móveis',
+			'settings.downloadOnWifiOnlyDescription' => 'Não gasta seus dados móveis (4G/5G)',
 			'settings.autoRemoveWatchedDownloads' => 'Apagar baixados já assistidos',
 			'settings.autoRemoveWatchedDownloadsDescription' => 'Apagar sozinho os vídeos baixados depois que você assistir',
 			'settings.cellularDownloadBlocked' => 'Baixar está bloqueado nos dados móveis. Conecte no Wi-Fi ou mude essa opção nas Configurações.',
@@ -3418,13 +3418,13 @@ extension on TranslationsPt {
 			'settings.discordRichPresence' => 'Discord Rich Presence',
 			'settings.discordRichPresenceDescription' => 'Mostrar o que você está assistindo no Discord',
 			'settings.services' => 'Serviços',
-			'settings.servicesDescription' => 'Conecte Trakt, MyAnimeList, Seerr e outros',
+			'settings.servicesDescription' => 'Conecte o Trakt para registrar o que você assiste',
 			'settings.manageLibrariesDescription' => 'Mudar a ordem e ocultar bibliotecas',
 			'settings.companionRemoteServer' => 'Servidor de controle remoto',
 			'settings.companionRemoteServerDescription' => 'Deixar celulares na sua rede Wi-Fi controlarem este app',
 			'settings.companionRemoteServerStartFailed' => 'Não deu para ligar o controle remoto. Tente de novo.',
 			'settings.companionRemoteServerStopFailed' => 'Não deu para desligar o controle remoto. Tente de novo.',
-			'settings.autoPip' => 'Janelinha automática (picture-in-picture)',
+			'settings.autoPip' => 'Abrir a janelinha ao sair',
 			'settings.autoPipDescription' => 'Continuar o vídeo numa janelinha ao sair do app durante a reprodução',
 			'settings.matchContentFrameRate' => 'Ajustar à taxa de quadros do conteúdo',
 			'settings.matchContentFrameRateDescription' => 'Ajustar a frequência da tela ao vídeo (evita imagem tremida)',
@@ -3495,7 +3495,7 @@ extension on TranslationsPt {
 			'settings.liveTvDefaultFavorites' => 'Canais favoritos por padrão',
 			'settings.liveTvDefaultFavoritesDescription' => 'Mostrar só os canais favoritos ao abrir a TV ao vivo',
 			'settings.general' => 'Geral',
-			'settings.generalDescription' => 'Idioma, abertura do app e janela',
+			'settings.generalDescription' => 'Idioma do app e modo TV',
 			'settings.languageAndRegion' => 'Idioma e região',
 			'settings.startup' => 'Ao abrir o app',
 			'settings.display' => 'Tela',
@@ -3524,7 +3524,7 @@ extension on TranslationsPt {
 			'settings.rememberPlayerChanges' => 'Lembrar ajustes do reprodutor',
 			'settings.rememberPlayerChangesDescription' => 'Onde guardar e repetir um ajuste feito durante o vídeo',
 			'settings.scopePlaybackSpeed' => 'Velocidade de reprodução',
-			'settings.scopeShaderPreset' => 'Filtro de imagem (shader)',
+			'settings.scopeShaderPreset' => 'Filtro de imagem',
 			'settings.scopeAspectRatio' => 'Proporção da tela',
 			'settings.scopeSyncOffsets' => 'Sincronização de áudio e legendas',
 			'settings.playerScopeOff' => 'Não salvar',
@@ -3692,7 +3692,7 @@ extension on TranslationsPt {
 			'mediaMenu.goToSeries' => 'Ir para a série',
 			'mediaMenu.shufflePlay' => 'Assistir em ordem aleatória',
 			'mediaMenu.shuffleNotAvailableOffline' => 'A ordem aleatória não funciona sem internet',
-			'mediaMenu.fileInfo' => 'Informações do arquivo',
+			'mediaMenu.fileInfo' => 'Detalhes técnicos do arquivo',
 			'mediaMenu.deleteEpisodeFromServer' => 'Excluir episódio do servidor',
 			'mediaMenu.deleteSeasonFromServer' => 'Excluir temporada do servidor',
 			'mediaMenu.deleteShowFromServer' => 'Excluir série do servidor',
@@ -3716,8 +3716,8 @@ extension on TranslationsPt {
 			'mediaMenu.mediaDeletedSuccessfully' => 'Item excluído',
 			'mediaMenu.mediaFailedToDelete' => 'Não deu para excluir o item. Tente de novo.',
 			'mediaMenu.rate' => 'Avaliar',
-			'mediaMenu.playFromBeginning' => 'Assistir do início',
-			'mediaMenu.playVersion' => 'Assistir versão...',
+			'mediaMenu.playFromBeginning' => 'Assistir do começo',
+			'mediaMenu.playVersion' => 'Assistir outra versão',
 			'rateSheet.title' => 'Avaliar',
 			'rateSheet.server' => 'Servidor',
 			'rateSheet.favorite' => 'Favorito',
@@ -3774,15 +3774,15 @@ extension on TranslationsPt {
 			'videoControls.stillWatching' => 'Você ainda está assistindo?',
 			'videoControls.pausingIn' => ({required Object seconds}) => 'Pausando em ${seconds} s',
 			'videoControls.continueWatching' => 'Continuar',
-			'videoControls.autoPlayNext' => 'Próximo automaticamente',
+			'videoControls.autoPlayNext' => 'Próximo episódio sozinho',
 			'videoControls.playNext' => 'Assistir o próximo',
-			'videoControls.playButton' => 'Reproduzir',
+			'videoControls.playButton' => 'Assistir',
 			'videoControls.pauseButton' => 'Pausar',
 			'videoControls.playbackPaused' => 'Pausado',
-			'videoControls.playbackResumed' => 'Reproduzindo',
+			'videoControls.playbackResumed' => 'Tocando',
 			'videoControls.loadingVideo' => 'Carregando vídeo',
-			'videoControls.showPlaybackControls' => 'Mostrar controles de reprodução',
-			'videoControls.hidePlaybackControls' => 'Ocultar controles de reprodução',
+			'videoControls.showPlaybackControls' => 'Mostrar os botões',
+			'videoControls.hidePlaybackControls' => 'Esconder os botões',
 			'videoControls.seekBackwardButton' => ({required Object seconds}) => 'Voltar ${seconds} segundos',
 			'videoControls.seekForwardButton' => ({required Object seconds}) => 'Avançar ${seconds} segundos',
 			'videoControls.previousButton' => 'Episódio anterior',
@@ -3791,7 +3791,7 @@ extension on TranslationsPt {
 			'videoControls.nextChapterButton' => 'Próximo capítulo',
 			'videoControls.muteButton' => 'Silenciar',
 			'videoControls.unmuteButton' => 'Ligar o som',
-			'videoControls.settingsButton' => 'Configurações de reprodução',
+			'videoControls.settingsButton' => 'Ajustes do vídeo',
 			'videoControls.tracksButton' => 'Áudio e legendas',
 			'videoControls.chaptersButton' => 'Capítulos',
 			'videoControls.versionQualityButton' => 'Versão e qualidade',
@@ -3801,7 +3801,7 @@ extension on TranslationsPt {
 			'videoControls.qualityPresetLabel' => ({required Object resolution, required Object bitrate}) => '${resolution}p ${bitrate} Mbps',
 			'videoControls.transcodeUnavailableFallback' => 'Não dá para converter este vídeo no servidor — tocando na qualidade original',
 			'videoControls.subtitleUnavailableFallback' => 'Não deu para carregar a legenda escolhida — o vídeo vai continuar sem legenda',
-			'videoControls.pipButton' => 'Janelinha (picture-in-picture)',
+			'videoControls.pipButton' => 'Janelinha',
 			'videoControls.aspectRatioButton' => 'Proporção',
 			'videoControls.ambientLighting' => 'Iluminação ambiente',
 			'videoControls.fullscreenButton' => 'Entrar em tela cheia',
@@ -3829,8 +3829,8 @@ extension on TranslationsPt {
 			'videoControls.pipErrors.unknown' => ({required Object error}) => 'Ocorreu um erro: ${error}',
 			'videoControls.chapters' => 'Capítulos',
 			'videoControls.noChaptersAvailable' => 'Nenhum capítulo disponível',
-			'videoControls.queue' => 'Fila',
-			'videoControls.noQueueItems' => 'Nenhum item na fila',
+			'videoControls.queue' => 'A seguir',
+			'videoControls.noQueueItems' => 'Nada a seguir',
 			'videoControls.noAudioDevicesAvailable' => 'Nenhuma saída de áudio disponível',
 			'videoControls.searchSubtitles' => 'Buscar legendas',
 			'videoControls.language' => 'Idioma',
@@ -4024,7 +4024,7 @@ extension on TranslationsPt {
 			'profiles.continueButton' => 'Continuar',
 			'profiles.pinsDontMatch' => 'Os PINs não são iguais',
 			'profiles.tokenIdentityMismatch' => 'O acesso deste perfil do Plex veio de um servidor diferente do esperado. Entre de novo.',
-			'connections.sectionTitle' => 'Conexões',
+			'connections.sectionTitle' => 'Contas e servidores',
 			'connections.addConnection' => 'Adicionar conexão',
 			'connections.addConnectionSubtitleNoProfile' => 'Entre com Plex ou conecte um servidor Jellyfin ou Emby',
 			'connections.addConnectionSubtitleScoped' => ({required Object displayName}) => 'Adicionar a ${displayName}: Plex, Jellyfin, Emby ou a conexão de outro perfil',
@@ -4035,9 +4035,9 @@ extension on TranslationsPt {
 			'connections.signInAgain' => 'Entrar de novo',
 			'connections.editMediaBrowserTitle' => ({required Object product}) => 'Editar conexão do ${product}',
 			'connections.editMediaBrowserIntro' => ({required Object serverName}) => 'Adicione ou remova endereços de ${serverName}. O CGFLIX usa o endereço que responder mais rápido.',
-			'accountPreferences.sectionTitle' => 'Preferências da conta',
-			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Opções de áudio, legendas e biblioteca salvas em ${account}',
-			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Opções de áudio, legendas e biblioteca salvas em ${count} contas',
+			'accountPreferences.sectionTitle' => 'Áudio, legenda e conta',
+			'accountPreferences.hubSubtitleSingle' => ({required Object account}) => 'Idioma do áudio e da legenda, salvo em ${account}',
+			'accountPreferences.hubSubtitleMultiple' => ({required Object count}) => 'Idioma do áudio e da legenda, salvo em ${count} contas',
 			'accountPreferences.pickAccount' => 'Cada conta guarda suas próprias preferências. Escolha qual quer editar.',
 			'accountPreferences.storedOnAccount' => 'Estas opções ficam salvas na sua conta do servidor, então valem em todos os apps conectados a ela — inclusive o CGFLIX nos seus outros aparelhos.',
 			'accountPreferences.noAccounts' => 'Nenhuma conta para configurar',
@@ -4817,7 +4817,7 @@ extension on TranslationsPt {
 			'downloads.notificationDownloading' => 'Baixando...',
 			'downloads.notificationComplete' => 'Download concluído',
 			'downloads.notificationPaused' => 'Download pausado',
-			'shaders.title' => 'Filtros de imagem (shaders)',
+			'shaders.title' => 'Filtros de imagem',
 			'shaders.noShaderDescription' => 'Sem melhoria de imagem',
 			'shaders.nvscalerDescription' => 'Ampliação de imagem da NVIDIA para vídeos mais nítidos',
 			'shaders.artcnnVariantNeutral' => 'Neutro',
@@ -4914,7 +4914,7 @@ extension on TranslationsPt {
 			'videoSettings.hdrToneMappingPlayerDescription' => 'O reprodutor ajusta as cores para o brilho máximo da tela e avisa o sistema.',
 			'videoSettings.hdrToneMappingFailed' => 'Não deu para mudar o ajuste de cores HDR — continua o modo anterior.',
 			'videoSettings.audioOutput' => 'Saída de áudio',
-			'videoSettings.performanceOverlay' => 'Painel de desempenho',
+			'videoSettings.performanceOverlay' => 'Informações técnicas na tela',
 			'videoSettings.audioOutputDolbyAtmos' => 'Dolby Atmos',
 			'videoSettings.audioOutputDolbyAudio' => 'Dolby Audio',
 			'videoSettings.audioOutputSurround' => 'Surround',

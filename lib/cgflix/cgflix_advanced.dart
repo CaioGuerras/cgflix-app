@@ -51,7 +51,7 @@ class CgflixAdvancedFeatures extends StatelessWidget {
         SettingNavigationTile(
           icon: Symbols.tune_rounded,
           title: 'Opções do mpv',
-          subtitle: 'Ajustes técnicos do player. Só mexa se souber o que está fazendo.',
+          subtitle: 'Ajustes técnicos do reprodutor de vídeo. Só mexa se souber o que está fazendo.',
           destinationBuilder: (_) => const MpvConfigScreen(),
         ),
         // Só no Android, onde o som existe.

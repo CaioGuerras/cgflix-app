@@ -273,7 +273,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   Widget _buildGeneralTile() {
     return SettingNavigationTile(
       focusNode: _focusTracker.get(_kGeneral),
-      icon: Symbols.settings_rounded,
+      icon: Symbols.language_rounded, // CGFLIX: Geral = idioma do app (a engrenagem já é das Configurações)
       title: t.settings.general,
       subtitle: t.settings.generalDescription,
       destinationBuilder: (context) => const GeneralSettingsScreen(),
@@ -394,7 +394,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
         : t.accountPreferences.hubSubtitleMultiple(count: accounts.length);
     return SettingNavigationTile(
       focusNode: _focusTracker.get(_kAccountPreferences),
-      icon: Symbols.manage_accounts_rounded,
+      icon: Symbols.voice_selection_rounded, // CGFLIX: idioma do áudio e da legenda
       title: t.accountPreferences.sectionTitle,
       subtitle: subtitle,
       destinationBuilder: (context) =>

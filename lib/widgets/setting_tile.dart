@@ -91,7 +91,7 @@ class SettingSwitchTile extends StatelessWidget {
       valueListenable: SettingsService.instance.listenable(pref),
       builder: (_, value, _) => FocusableSwitchListTile(
         focusNode: focusNode,
-        secondary: AppIcon(icon, fill: 1),
+        secondary: AppIcon(icon, fill: value ? 1 : 0), // CGFLIX: preenchido ligado, contorno desligado
         title: Text(title),
         subtitle: subtitle != null ? Text(subtitle!) : null,
         value: value,

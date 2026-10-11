@@ -86,7 +86,7 @@ enum CgflixDica {
   ),
   gestos(
     Symbols.touch_app_rounded,
-    'Gestos do player',
+    'Gestos na tela do vídeo',
     'Toque duas vezes para avançar ou voltar; deslize para o volume e o brilho.',
     'Toque duas vezes no lado direito do vídeo para avançar e no esquerdo para voltar. '
         'Deslize para cima ou para baixo na beirada direita para o volume e na esquerda para o brilho. '
@@ -96,14 +96,14 @@ enum CgflixDica {
     Symbols.lock_rounded,
     'Travar a tela',
     'Trava os toques: ninguém pausa sem querer.',
-    'No player, o cadeado trava os toques na tela: bom para criança assistir sem pausar ou sair sem querer. '
+    'Na tela do vídeo, o cadeado trava os toques: bom para criança assistir sem pausar ou sair sem querer. '
         'Para destravar, toque na tela e segure o dedo no aviso do cadeado.',
   ),
   janelinha(
     Symbols.picture_in_picture_alt_rounded,
     'Janelinha (PiP)',
     'O vídeo continua numa janelinha enquanto você usa outro app.',
-    'Toque no botão da janelinha no player, ou saia do app com o vídeo tocando quando '
+    'Toque no botão da janelinha na tela do vídeo, ou saia do app com o vídeo tocando quando '
         '"Abrir a janelinha ao sair" estiver ligado. '
         'Arraste a janelinha para onde quiser; toque nela para voltar ao CGFLIX.',
   );
@@ -398,7 +398,7 @@ class CgflixDicasScreen extends StatelessWidget {
                 key: const ValueKey('cgflix-dicas-rever-player'),
                 style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
                 icon: const AppIcon(Symbols.replay_rounded, fill: 0),
-                label: const Text('Ver de novo a dica do player'),
+                label: const Text('Ver de novo a dica dos gestos'),
                 onPressed: () async {
                   await cgflixReverDicaPlayer();
                   if (!context.mounted) return;
@@ -411,7 +411,7 @@ class CgflixDicasScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Text(
-                'A dica do player aparece uma vez, na primeira vez que você abre um vídeo.',
+                'A dica dos gestos aparece uma vez, na primeira vez que você abre um vídeo.',
                 style: theme.textTheme.bodySmall?.copyWith(color: context.cgflix.textMuted),
               ),
             ),
