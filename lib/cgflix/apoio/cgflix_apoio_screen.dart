@@ -88,14 +88,13 @@ class CgflixApoioAboutLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!cgflixApoioAtual.disponivel) return const SizedBox.shrink();
-    final theme = Theme.of(context);
     return Center(
       child: TextButton.icon(
         key: const ValueKey('cgflix-about-apoio'),
         style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
         onPressed: () => cgflixAbrirApoio(context),
         icon: const AppIcon(Symbols.favorite_rounded, fill: 1, size: 18, color: cgflixApoioRosa),
-        label: Text('Gostou? Apoie o CGFLIX', style: theme.textTheme.bodyMedium),
+        label: const Text('Gostou? Apoie o CGFLIX'),
       ),
     );
   }

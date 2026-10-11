@@ -104,10 +104,22 @@ class _CgflixFavoritesScreenState extends State<CgflixFavoritesScreen> {
           }
           final items = snapshot.data ?? const <MediaItem>[];
           if (items.isEmpty) {
-            return const EmptyStateWidget(
-              message: 'Nenhum favorito ainda',
-              subtitle: 'Na página de um filme ou série, toque em "Minha lista" para guardar aqui.',
-              icon: Symbols.favorite_rounded,
+            // Puxar para atualizar também no vazio (favoritou em outro aparelho).
+            return RefreshIndicator(
+              onRefresh: _refresh,
+              child: LayoutBuilder(
+                builder: (context, box) => SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: box.maxHeight,
+                    child: const EmptyStateWidget(
+                      message: 'Nenhum favorito ainda',
+                      subtitle: 'Na página de um filme ou série, toque em "Minha lista" para guardar aqui.',
+                      icon: Symbols.favorite_rounded,
+                    ),
+                  ),
+                ),
+              ),
             );
           }
           return RefreshIndicator(

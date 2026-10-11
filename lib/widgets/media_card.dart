@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import '../cgflix/cgflix_units.dart';
 import '../media/ids.dart';
 
 import 'package:flutter/material.dart';
@@ -155,7 +156,9 @@ String mediaCardSemanticLabel(Object item) {
   String baseLabel;
   switch (item.kind) {
     case MediaKind.episode:
-      final episodeInfo = item.parentIndex != null && item.index != null ? 'S${item.parentIndex} E${item.index}' : '';
+      final episodeInfo = item.parentIndex != null && item.index != null
+          ? '$cgflixSeasonLetter${item.parentIndex} E${item.index}'
+          : '';
       baseLabel = t.accessibility.mediaCardEpisode(title: item.displayTitle, episodeInfo: episodeInfo);
     case MediaKind.season:
       final seasonInfo = item.title?.isNotEmpty == true
@@ -804,7 +807,7 @@ class _MediaCardList extends StatelessWidget {
       if (mi.kind == MediaKind.track) return mi.trackArtistTitle;
 
       if (mi.parentIndex != null && mi.index != null) {
-        return 'S${mi.parentIndex}${_episodeNumberSuffix(mi)}';
+        return '$cgflixSeasonLetter${mi.parentIndex}${_episodeNumberSuffix(mi)}'; // CGFLIX: T em português
       }
 
       if (mi.displaySubtitle != null) {
@@ -1228,7 +1231,7 @@ class _MediaCardHelpers {
     }
 
     if (mi.isEpisode && mi.parentIndex != null) {
-      final number = 'S${mi.parentIndex}${_episodeNumberSuffix(mi)}';
+      final number = '$cgflixSeasonLetter${mi.parentIndex}${_episodeNumberSuffix(mi)}'; // CGFLIX: T em português
       if (showTitleImplied) {
         // The headline already names the episode; identify it by number and
         // runtime instead of repeating the title.
@@ -1455,7 +1458,7 @@ Widget _buildEpisodeSubtitleRow(
   required bool enableDetailLinks,
   required bool isOffline,
 }) {
-  final seasonLabel = 'S${mi.parentIndex}';
+  final seasonLabel = '$cgflixSeasonLetter${mi.parentIndex}'; // CGFLIX: T em português
   return Row(
     children: [
       if (enableDetailLinks)

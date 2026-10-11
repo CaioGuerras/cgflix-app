@@ -53,7 +53,10 @@ class _CgflixShimmerState extends State<CgflixShimmer> with SingleTickerProvider
           shaderCallback: (bounds) => LinearGradient(
             begin: Alignment(-1.0 + 3 * t - 1, 0),
             end: Alignment(-1.0 + 3 * t, 0),
-            colors: [context.cgflix.surface, context.cgflix.surfaceHigh, context.cgflix.surface],
+            // Heitor: o cartão branco some no fundo claro; o esqueleto usa o tom mais escuro.
+            colors: context.cgflix.isLight
+                ? [context.cgflix.surfaceHigh, context.cgflix.surface, context.cgflix.surfaceHigh]
+                : [context.cgflix.surface, context.cgflix.surfaceHigh, context.cgflix.surface],
           ).createShader(bounds),
           child: child,
         );
@@ -72,7 +75,10 @@ class CgflixSkeletonBox extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     width: width,
     height: height,
-    decoration: BoxDecoration(color: context.cgflix.surface, borderRadius: BorderRadius.circular(radius)),
+    decoration: BoxDecoration(
+      color: context.cgflix.isLight ? context.cgflix.surfaceHigh : context.cgflix.surface,
+      borderRadius: BorderRadius.circular(radius),
+    ),
   );
 }
 

@@ -12,6 +12,7 @@ import '../watch_together/watch_together.dart';
 import '../widgets/companion_remote/remote_session_dialog.dart';
 import '../widgets/setting_tile.dart';
 import '../widgets/settings_section.dart';
+import 'cgflix_collapsible.dart';
 import 'cgflix_intro.dart';
 
 /// Grupo com os recursos avançados que não aparecem mais na Início.
@@ -30,6 +31,7 @@ class CgflixAdvancedFeatures extends StatelessWidget {
     }
 
     return SettingsGroup(
+      margin: cgflixInsideCardMargin,
       children: [
         SettingNavigationTile(
           icon: Symbols.group_rounded,

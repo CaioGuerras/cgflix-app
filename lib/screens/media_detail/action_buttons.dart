@@ -567,6 +567,7 @@ extension _MediaDetailActionButtons on _MediaDetailScreenState {
             }
           },
           icon: const AppIcon(Symbols.more_vert_rounded, fill: 1),
+          tooltip: t.common.options, // CGFLIX: leitor de tela
           iconSize: PlatformDetector.isTV() ? 21 * tvScale : 20,
           style: actionButtonStyle(showFocus: showFocus),
         ),

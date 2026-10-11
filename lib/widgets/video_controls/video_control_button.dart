@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plezy/widgets/app_icon.dart';
 
+import '../../cgflix/cgflix_feedback.dart'; // CGFLIX: destaque lilás no player
 import '../../focus/focus_theme.dart';
 import '../../focus/focusable_wrapper.dart';
 import 'widgets/player_focus_disc.dart';
@@ -68,7 +69,7 @@ class VideoControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final idleColor = color ?? (isActive ? Colors.amber : Colors.white);
+    final idleColor = color ?? (isActive ? cgflixPlayerAccent : Colors.white);
     final effectiveSemanticLabel = semanticLabel ?? tooltip;
 
     Widget button(Color iconColor) => IconButton(
@@ -76,7 +77,7 @@ class VideoControlButton extends StatelessWidget {
       iconSize: iconSize,
       onPressed: onPressed,
       tooltip: tooltip,
-      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48), // CGFLIX: toque de 48 dp
     );
 
     if (focusNode != null) {

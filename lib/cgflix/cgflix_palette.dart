@@ -25,8 +25,9 @@ const cgflixIsisScheme = ColorScheme(
   onSecondaryContainer: Color(0xFFEDEDED),
   tertiary: Color(0xFFEDEDED),
   onTertiary: Color(0xFF000000),
-  error: Color(0xFFB00020),
-  onError: Color(0xFFFFFFFF),
+  // 1.5.0: vermelho claro (o mesmo `danger`): o #B00020 dava 2,5:1 sobre o preto.
+  error: Color(0xFFF87171),
+  onError: Color(0xFF000000),
   surface: Color(0xFF120E1A),
   onSurface: Color(0xFFEDEDED),
   onSurfaceVariant: Color(0xB3FFFFFF),

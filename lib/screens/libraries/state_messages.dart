@@ -85,7 +85,7 @@ class StateMessageWidget extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleLarge?.copyWith(
-                color: textColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                color: textColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.75), // CGFLIX: contraste ≥ 4,5:1
               ),
             ),
             if (subtitle != null) ...[

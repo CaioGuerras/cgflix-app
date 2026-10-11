@@ -797,7 +797,7 @@
       "other": "${n} baixados já assistidos foram apagados automaticamente"
     },
     "removedFromContinueWatching": "Tirado de Continuar assistindo",
-    "errorLoading": "Erro: ${error}",
+    "errorLoading": "Não deu para carregar: ${error}",
     "searchPartialResults": "Não deu para buscar em todos os servidores. Mostrando o que foi encontrado.",
     "streamInterrupted": "O vídeo foi interrompido. Toque em reproduzir ou avance para tentar de novo.",
     "liveStreamInterrupted": "A transmissão ao vivo foi interrompida. Toque em reproduzir para tentar de novo.",
@@ -807,7 +807,7 @@
     "playbackDataInvalid": "O servidor mandou informações erradas para tocar este vídeo. Tente de novo.",
     "playbackCancelled": "O vídeo foi cancelado.",
     "playbackFailed": "Não deu para começar o vídeo. Confira a internet e tente de novo.",
-    "playbackFailedDetail": "Não deu para começar o vídeo: ${error}",
+    "playbackFailedDetail": "Não deu para começar o vídeo. Confira a internet e tente de novo.",
     "audioOutputFailed": "O som parou de responder. Confira a conexão de áudio da TV ou do receptor; se outros apps também estiverem sem som, reinicie o aparelho.",
     "mediaUnavailable": "Este conteúdo não está mais disponível.",
     "errorLoadingFileInfo": "Não deu para carregar as informações do arquivo: ${error}",

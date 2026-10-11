@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../utils/error_message_utils.dart';
 import '../connection/connection.dart';
 import '../connection/connection_registry.dart';
 import '../connection/plex_account_setup.dart';
@@ -227,7 +228,7 @@ class _AuthScreenState extends State<AuthScreen> {
       if (!mounted) return;
       setState(() {
         _isAuthenticating = false;
-        _errorMessage = t.serverSelection.failedToLoadServers(error: e);
+        _errorMessage = t.serverSelection.failedToLoadServers(error: localizedErrorReason(e)); // CGFLIX
       });
     }
   }
@@ -393,7 +394,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Text(
                   t.auth.or,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant, // CGFLIX: contraste no Heitor
                   ),
                 ),
               ),

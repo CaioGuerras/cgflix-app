@@ -54,13 +54,17 @@ class _CgflixCollapsibleCardState extends State<CgflixCollapsibleCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FocusableListTile(
-              title: Text(
-                widget.title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+            // Leitor de tela: diz se o cartão está aberto ou fechado.
+            Semantics(
+              expanded: _expanded,
+              child: FocusableListTile(
+                title: Text(
+                  widget.title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                trailing: AppIcon(_expanded ? Symbols.expand_less_rounded : Symbols.expand_more_rounded, fill: 1),
+                onTap: toggle,
               ),
-              trailing: AppIcon(_expanded ? Symbols.expand_less_rounded : Symbols.expand_more_rounded, fill: 1),
-              onTap: toggle,
             ),
             if (_expanded) widget.child,
             if (_expanded) const SizedBox(height: 8),
@@ -70,3 +74,6 @@ class _CgflixCollapsibleCardState extends State<CgflixCollapsibleCard> {
     );
   }
 }
+
+/// Grupos dentro de um cartão recolhível: recuo de 8 (o cartão já tem 16), como os outros cartões.
+const cgflixInsideCardMargin = EdgeInsets.symmetric(horizontal: 8);

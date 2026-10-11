@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../cgflix/cgflix_feedback.dart'; // CGFLIX: destaque lilás no player
 import '../../../focus/card_focus_scope.dart';
 import '../../../focus/focus_theme.dart';
 
@@ -30,7 +31,7 @@ class PlayerFocusDisc extends StatelessWidget {
   final Widget Function(BuildContext context, Color iconColor) builder;
 
   static const Color _fill = Colors.white;
-  static const Color _activeFill = Colors.amber;
+  static const Color _activeFill = cgflixPlayerAccent;
 
   @override
   Widget build(BuildContext context) {

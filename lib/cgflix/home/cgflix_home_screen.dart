@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../i18n/strings.g.dart';
 import '../../media/media_item.dart';
 import '../../mixins/refreshable.dart';
 import '../../mixins/tab_visibility_aware.dart';
@@ -22,6 +23,7 @@ import '../../screens/discover_screen.dart';
 import '../../services/jellyfin_client.dart';
 import '../../services/watch_actions.dart';
 import '../../utils/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
 import '../../widgets/app_icon.dart';
 import '../cgflix_layout.dart';
 import '../cgflix_navigation.dart';
@@ -252,6 +254,8 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
           key: ValueKey('hero:$key'),
           stream: () => repository.watchHero(filter: filter),
           loading: _HeroSkeleton(height: heroHeight),
+          // 1.5.0: sem o destaque (servidor fora), a Início diz o que houve em vez de ficar em branco.
+          failed: const _HomeLoadFailed(),
           builder: (data) => data.items.isEmpty
               ? SizedBox(height: MediaQuery.paddingOf(context).top + 72)
               : CgflixHero(items: data.items, height: heroHeight, paused: !_tabVisible || !_appActive),
@@ -298,12 +302,48 @@ class _CgflixHomeScreenState extends State<CgflixHomeScreen>
 // ---------------------------------------------------------------------------
 // Peças
 
+/// A Início não carregou (servidor fora ou sem internet).
+class _HomeLoadFailed extends StatelessWidget {
+  const _HomeLoadFailed();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.fromLTRB(24, MediaQuery.paddingOf(context).top + 96, 24, 24),
+    child: Column(
+      children: [
+        AppIcon(Symbols.cloud_off_rounded, fill: 1, size: 48, color: context.cgflix.textMuted),
+        const SizedBox(height: 16),
+        Text(
+          'Não deu para carregar a Início.',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Confira a internet e puxe a tela para baixo para tentar de novo.',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.cgflix.textMuted),
+        ),
+      ],
+    ),
+  );
+}
+
 /// Assina um fluxo de dados só quando a linha é montada (as linhas de baixo carregam
 /// quando chegam perto da tela) e troca o esqueleto pelo conteúdo com fade.
 class _StreamSection<T> extends StatefulWidget {
-  const _StreamSection({super.key, required this.stream, required this.loading, required this.builder});
+  const _StreamSection({
+    super.key,
+    required this.stream,
+    required this.loading,
+    required this.builder,
+    this.failed = const SizedBox.shrink(),
+  });
   final Stream<T> Function() stream;
   final Widget loading;
+
+  /// O que fica no lugar quando a linha falha (padrão: some).
+  final Widget failed;
   final Widget Function(T data) builder;
 
   @override
@@ -339,7 +379,7 @@ class _StreamSectionState<T> extends State<_StreamSection<T>> {
   @override
   Widget build(BuildContext context) {
     final data = _data;
-    if (_failed) return const SizedBox.shrink();
+    if (_failed) return widget.failed;
     return AnimatedSize(
       duration: CgflixMotion.medium,
       curve: CgflixMotion.curve,
@@ -348,7 +388,7 @@ class _StreamSectionState<T> extends State<_StreamSection<T>> {
         duration: CgflixMotion.medium,
         switchInCurve: CgflixMotion.curve,
         child: KeyedSubtree(
-          key: ValueKey(data == null ? 'loading' : 'data:${identityHashCode(data)}'),
+          key: ValueKey(data == null ? 'loading' : 'data'),
           child: data == null ? widget.loading : widget.builder(data),
         ),
       ),
@@ -485,7 +525,7 @@ class _ContinueWatchingRowState extends State<_ContinueWatchingRow> {
             ),
             ListTile(
               leading: const AppIcon(Symbols.remove_circle_rounded, fill: 1),
-              title: const Text('Remover de Continuar assistindo'),
+              title: Text(t.mediaMenu.removeFromContinueWatching),
               onTap: () => Navigator.of(sheetContext).pop(true),
             ),
             ListTile(
@@ -506,6 +546,7 @@ class _ContinueWatchingRowState extends State<_ContinueWatchingRow> {
       await WatchActions.removeFromContinueWatching(context, item);
     } catch (e) {
       appLogger.w('CGFLIX: remover de Continuar assistindo falhou', error: e);
+      if (context.mounted) showErrorSnackBar(context, 'Não deu para tirar de Continuar assistindo. Tente de novo.');
     }
   }
 

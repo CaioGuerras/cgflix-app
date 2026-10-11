@@ -85,6 +85,7 @@ import 'utils/media_server_timeouts.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
 import 'cgflix/cgflix_intro.dart';
+import 'cgflix/cgflix_locale.dart';
 import 'cgflix/cgflix_slogan.dart';
 import 'cgflix/cgflix_theme.dart';
 import 'i18n/app_locale_utils.dart';
@@ -829,6 +830,9 @@ class _StartupBootstrapState<T> extends State<StartupBootstrap<T>> {
         builder: (context) => InputModeTracker(
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
+            locale: cgflixMaterialLocale(context), // CGFLIX: Material no idioma do app
+            supportedLocales: cgflixSupportedLocales, // CGFLIX
+            localizationsDelegates: cgflixLocalizationsDelegates, // CGFLIX
             theme: widget.lightTheme,
             darkTheme: resolved?.darkTheme ?? widget.darkTheme,
             themeMode: resolved?.themeMode ?? widget.themeMode,
@@ -1857,6 +1861,9 @@ class _AppShell extends StatelessWidget {
                   child: MaterialApp(
                     title: t.app.title,
                     debugShowCheckedModeBanner: false,
+                    locale: cgflixMaterialLocale(context), // CGFLIX: Material no idioma do app
+                    supportedLocales: cgflixSupportedLocales, // CGFLIX
+                    localizationsDelegates: cgflixLocalizationsDelegates, // CGFLIX
                     theme: cgflixLightTheme(), // CGFLIX: Heitor (claro, verde)
                     darkTheme: cgflixDarkTheme(), // CGFLIX: Isis (escuro, roxo)
                     themeMode: cgflixMaterialThemeMode(themeProvider.themeMode), // CGFLIX

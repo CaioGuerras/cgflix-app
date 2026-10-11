@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../cgflix/cgflix_locale.dart';
 import '../../focus/focusable_text_field.dart';
 import '../../focus/input_mode_tracker.dart';
 import '../../i18n/strings.g.dart';
@@ -460,6 +461,7 @@ Future<void> _showColorInputDialogStandard({
       ColorPickerType.custom: false,
     },
     actionButtons: const ColorPickerActionButtons(okButton: true, closeButton: true, dialogActionButtons: false),
+    pickerTypeLabels: cgflixColorPickerLabels, // CGFLIX: abas em português
   );
   if (selected == initial || !context.mounted) return;
   try {

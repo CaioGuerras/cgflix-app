@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../utils/error_message_utils.dart';
 import '../cgflix/cgflix_defaults.dart';
 import '../cgflix/search/cgflix_search_extras.dart';
 import '../cgflix/search/cgflix_search_grouping.dart';
@@ -177,7 +178,7 @@ class _SearchScreenState extends State<SearchScreen>
     _resetFilter();
     final message = error is _SearchUnavailableException
         ? t.errors.searchUnavailable
-        : t.errors.searchFailed(error: error);
+        : t.errors.searchFailed(error: localizedErrorReason(error)); // CGFLIX: sem exceção crua
     showErrorSnackBar(context, message);
   }
 

@@ -12,6 +12,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # CGFLIX: textos do próprio Material (Voltar, Copiar/Colar, Fechar) no idioma do app
+  flutter_localizations:
+    sdk: flutter
   clock: ^1.1.2
   intl: ^0.20.2
   json_annotation: ^4.12.0

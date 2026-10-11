@@ -228,7 +228,7 @@ class _HeroInfo extends StatelessWidget {
               style: FilledButton.styleFrom(
                 backgroundColor: context.cgflix.secondaryAction,
                 foregroundColor: context.cgflix.onSecondaryAction,
-                minimumSize: const Size(132, 44),
+                minimumSize: const Size(132, 48), // mesma altura do "Assistir"
               ),
               onPressed: () => showCgflixPreview(context, item),
               icon: const AppIcon(Symbols.info_rounded, fill: 1),

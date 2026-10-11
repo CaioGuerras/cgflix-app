@@ -86,6 +86,7 @@ class _FocusableListTileState extends State<FocusableListTile> with FocusableTil
         selected: widget.selected,
         contentPadding: widget.contentPadding,
         visualDensity: automotive ? VisualDensity.standard : widget.visualDensity,
+        minTileHeight: automotive ? null : 48, // CGFLIX: linha de um texto só também com 48 dp de toque
         focusNode: effectiveFocusNode,
         autofocus: widget.autofocus,
         horizontalTitleGap: widget.horizontalTitleGap,

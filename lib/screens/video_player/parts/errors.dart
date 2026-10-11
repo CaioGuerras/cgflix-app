@@ -12,7 +12,8 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
     if (raw.contains('No client registered')) {
       return t.messages.errorLoading(error: t.messages.serverUnavailableForProfile);
     }
-    return t.messages.errorLoading(error: redacted);
+    appLogger.w('Player: falha ao carregar ($redacted)'); // CGFLIX: detalhe só no log
+    return t.messages.errorLoading(error: localizedErrorReason(error)); // CGFLIX: sem exceção crua na tela
   }
 
   void _onPlayerError(PlayerError err) {

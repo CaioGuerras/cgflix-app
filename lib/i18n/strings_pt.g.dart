@@ -940,7 +940,7 @@ class _Translations$messages$pt extends Translations$messages$en {
 		other: '${n} baixados já assistidos foram apagados automaticamente',
 	);
 	@override String get removedFromContinueWatching => 'Tirado de Continuar assistindo';
-	@override String errorLoading({required Object error}) => 'Erro: ${error}';
+	@override String errorLoading({required Object error}) => 'Não deu para carregar: ${error}';
 	@override String get searchPartialResults => 'Não deu para buscar em todos os servidores. Mostrando o que foi encontrado.';
 	@override String get streamInterrupted => 'O vídeo foi interrompido. Toque em reproduzir ou avance para tentar de novo.';
 	@override String get liveStreamInterrupted => 'A transmissão ao vivo foi interrompida. Toque em reproduzir para tentar de novo.';
@@ -950,7 +950,7 @@ class _Translations$messages$pt extends Translations$messages$en {
 	@override String get playbackDataInvalid => 'O servidor mandou informações erradas para tocar este vídeo. Tente de novo.';
 	@override String get playbackCancelled => 'O vídeo foi cancelado.';
 	@override String get playbackFailed => 'Não deu para começar o vídeo. Confira a internet e tente de novo.';
-	@override String playbackFailedDetail({required Object error}) => 'Não deu para começar o vídeo: ${error}';
+	@override String get playbackFailedDetail => 'Não deu para começar o vídeo. Confira a internet e tente de novo.';
 	@override String get audioOutputFailed => 'O som parou de responder. Confira a conexão de áudio da TV ou do receptor; se outros apps também estiverem sem som, reinicie o aparelho.';
 	@override String get mediaUnavailable => 'Este conteúdo não está mais disponível.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Não deu para carregar as informações do arquivo: ${error}';
@@ -3855,7 +3855,7 @@ extension on TranslationsPt {
 			'messages.autoRemovedWatchedDownload' => ({required Object title}) => 'Apagado automaticamente: ${title}',
 			'messages.autoRemovedWatchedDownloads' => ({required num n}) => (_root.$meta.cardinalResolver ?? PluralResolvers.cardinal('pt'))(n, one: '${n} baixado já assistido foi apagado automaticamente', other: '${n} baixados já assistidos foram apagados automaticamente', ), 
 			'messages.removedFromContinueWatching' => 'Tirado de Continuar assistindo',
-			'messages.errorLoading' => ({required Object error}) => 'Erro: ${error}',
+			'messages.errorLoading' => ({required Object error}) => 'Não deu para carregar: ${error}',
 			'messages.searchPartialResults' => 'Não deu para buscar em todos os servidores. Mostrando o que foi encontrado.',
 			'messages.streamInterrupted' => 'O vídeo foi interrompido. Toque em reproduzir ou avance para tentar de novo.',
 			'messages.liveStreamInterrupted' => 'A transmissão ao vivo foi interrompida. Toque em reproduzir para tentar de novo.',
@@ -3865,7 +3865,7 @@ extension on TranslationsPt {
 			'messages.playbackDataInvalid' => 'O servidor mandou informações erradas para tocar este vídeo. Tente de novo.',
 			'messages.playbackCancelled' => 'O vídeo foi cancelado.',
 			'messages.playbackFailed' => 'Não deu para começar o vídeo. Confira a internet e tente de novo.',
-			'messages.playbackFailedDetail' => ({required Object error}) => 'Não deu para começar o vídeo: ${error}',
+			'messages.playbackFailedDetail' => 'Não deu para começar o vídeo. Confira a internet e tente de novo.',
 			'messages.audioOutputFailed' => 'O som parou de responder. Confira a conexão de áudio da TV ou do receptor; se outros apps também estiverem sem som, reinicie o aparelho.',
 			'messages.mediaUnavailable' => 'Este conteúdo não está mais disponível.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Não deu para carregar as informações do arquivo: ${error}',
