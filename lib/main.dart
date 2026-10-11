@@ -85,6 +85,7 @@ import 'utils/media_server_timeouts.dart';
 import 'utils/orientation_helper.dart';
 import 'utils/watch_state_notifier.dart';
 import 'cgflix/cgflix_intro.dart';
+import 'cgflix/cgflix_slogan.dart';
 import 'cgflix/cgflix_theme.dart';
 import 'i18n/app_locale_utils.dart';
 import 'i18n/strings.g.dart';
@@ -2372,6 +2373,7 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const CgflixIntroEmblem(size: 160), // CGFLIX: abertura animada
+                  const CgflixSlogan(delay: cgflixSloganDelay, topPadding: 0), // CGFLIX
                   _buildStatusText(context),
                   const SizedBox(height: 16),
                   Center(
@@ -2395,6 +2397,12 @@ class _SetupScreenState extends State<SetupScreen> with MountedSetStateMixin {
       child: Stack(
         children: [
           Center(child: const CgflixIntroEmblem(size: 288)), // CGFLIX: abertura animada
+          Positioned(
+            left: 0,
+            right: 0,
+            top: height * 0.5 + 132,
+            child: const CgflixSlogan(delay: cgflixSloganDelay),
+          ), // CGFLIX
           Positioned(left: 0, right: 0, bottom: height * 0.5 - 170, child: _buildStatusText(context)),
           Positioned(
             left: 0,

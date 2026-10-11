@@ -18,6 +18,7 @@ import '../services/settings_service.dart';
 import '../services/storage_service.dart';
 import '../providers/account_preferences_controller.dart';
 import '../cgflix/cgflix_logo.dart';
+import '../cgflix/cgflix_slogan.dart';
 import '../i18n/strings.g.dart';
 import '../utils/app_logger.dart';
 import '../utils/dialogs.dart';
@@ -290,6 +291,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold),
                               textAlign: TextAlign.center,
                             ),
+                            const CgflixSlogan(), // CGFLIX
                           ],
                         ),
                       ),
@@ -319,6 +321,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: .bold),
                           textAlign: TextAlign.center,
                         ),
+                        const CgflixSlogan(), // CGFLIX
                         const SizedBox(height: 48),
                         _buildAuthBody(),
                       ],
