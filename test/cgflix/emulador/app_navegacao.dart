@@ -443,8 +443,10 @@ class _VideoFalso extends StatelessWidget {
   Widget build(BuildContext context) {
     return Theme(
       data: cgflixAppTheme(),
+      // Refino 2b: "cena" azulada (a mesma da prévia da legenda), clara o bastante para o detector de
+      // tela preta: a dica some sozinha em 8 s e a captura deitada pegava só o fundo quase preto.
       child: const Scaffold(
-        backgroundColor: Color(0xFF1B2A3A),
+        backgroundColor: Color(0xFF3A5068),
         body: Stack(
           children: [
             Center(
