@@ -193,7 +193,10 @@ Future<DialogOption<T>?> showSelectionDialog<T>({
                   selected ? Symbols.radio_button_checked_rounded : Symbols.radio_button_unchecked_rounded,
                   color: selected ? Theme.of(dialogContext).colorScheme.primary : null,
                 ),
-                title: Text(option.title, semanticsLabel: cgflixOptionSemantics(option.title, option.semanticsHint)), // CGFLIX
+                title: Text(
+                  option.title,
+                  semanticsLabel: cgflixOptionSemantics(option.title, option.semanticsHint),
+                ), // CGFLIX
                 subtitle: option.subtitle != null ? Text(option.subtitle!) : null,
                 selected: selected,
                 autofocus: focusFirstItem && selected,

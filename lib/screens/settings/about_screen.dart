@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../cgflix/apoio/cgflix_apoio_screen.dart';
 import '../../cgflix/cgflix_about.dart';
+import '../../cgflix/cgflix_dicas.dart';
 import '../../cgflix/cgflix_logo.dart';
 import '../../cgflix/cgflix_version.dart';
 import '../../widgets/focused_scroll_scaffold.dart';
@@ -66,6 +67,7 @@ class AboutScreen extends StatelessWidget {
                   SettingsGroup(
                     margin: EdgeInsets.zero,
                     children: [
+                      const CgflixDicasAboutTile(), // CGFLIX: dicas das funções (refino 2)
                       FocusableListTile(
                         leading: const AppIcon(Symbols.description_rounded, fill: 1),
                         title: Text(t.about.openSourceLicenses),

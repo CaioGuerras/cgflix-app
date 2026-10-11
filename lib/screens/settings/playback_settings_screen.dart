@@ -1,5 +1,6 @@
 import 'dart:io';
 import '../../cgflix/cgflix_defaults.dart';
+import '../../cgflix/cgflix_dicas.dart';
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -68,6 +69,25 @@ class PlaybackSettingsScreen extends StatelessWidget {
           title: Text(t.settings.videoPlayback),
           collapsible: true, // CGFLIX
           children: [
+            // CGFLIX (refino 2): o que se usa toda semana em cima; o técnico (player, tela, áudio,
+            // qualidade) embaixo.
+            _autoPlayAndSkipGroup(),
+            SettingsGroup(
+              initiallyExpanded: true,
+              title: t.settings.subtitles,
+              children: [
+                SettingNavigationTile(
+                  icon: Symbols.subtitles_rounded,
+                  title: t.settings.subtitleStyling,
+                  subtitle: t.settings.subtitleStylingDescription,
+                  destinationBuilder: (_) => const SubtitleStylingScreen(),
+                ),
+              ],
+            ),
+
+            if (isMobile) _gesturesGroup(),
+            _seekAndTimingGroup(),
+            _behaviorGroup(context, isMobile),
             SettingsGroup(
               title: t.settings.player,
               children: [
@@ -77,7 +97,8 @@ class PlaybackSettingsScreen extends StatelessWidget {
                 _hardwareDecodingTile(),
                 if (exoActive) _playbackBufferTile(),
                 if (exoActive) _tunneledPlaybackTile(),
-                if (PlatformDetector.supportsPictureInPicture()) _autoPipTile(),
+                if (PlatformDetector.supportsPictureInPicture())
+                  CgflixComDica(dica: CgflixDica.janelinha, child: _autoPipTile()), // CGFLIX
               ],
             ),
 
@@ -102,8 +123,7 @@ class PlaybackSettingsScreen extends StatelessWidget {
             ),
 
             SettingsGroup(
-              initiallyExpanded: true,
-              title: t.settings.audio,
+              title: t.settings.audio, // CGFLIX: fechado (técnico); abertos ficam Pular abertura e Legendas
               children: [
                 if (PlatformDetector.supportsAudioPassthrough()) _audioPassthroughTile(),
                 _audioChannelLimitTile(exoActive: exoActive),
@@ -117,7 +137,7 @@ class PlaybackSettingsScreen extends StatelessWidget {
             SettingsGroup(
               title: t.settings.quality,
               children: [
-                _defaultQualityTile(),
+                CgflixComDica(dica: CgflixDica.qualidade, child: _defaultQualityTile()), // CGFLIX
                 // Only a phone/tablet has a cellular radio; desktop and TV
                 // never report a cellular-only connection.
                 if (isMobile) _cellularQualityTile(),
@@ -133,23 +153,6 @@ class PlaybackSettingsScreen extends StatelessWidget {
               ],
             ),
 
-            SettingsGroup(
-              initiallyExpanded: true,
-              title: t.settings.subtitles,
-              children: [
-                SettingNavigationTile(
-                  icon: Symbols.subtitles_rounded,
-                  title: t.settings.subtitleStyling,
-                  subtitle: t.settings.subtitleStylingDescription,
-                  destinationBuilder: (_) => const SubtitleStylingScreen(),
-                ),
-              ],
-            ),
-
-            _seekAndTimingGroup(),
-            _autoPlayAndSkipGroup(),
-            _behaviorGroup(context, isMobile),
-            if (isMobile) _gesturesGroup(),
             _rememberPlayerChangesGroup(),
             const SizedBox(height: 24),
           ],
@@ -301,8 +304,27 @@ class PlaybackSettingsScreen extends StatelessWidget {
   };
 
   Widget _autoPlayAndSkipGroup() => SettingsGroup(
+    initiallyExpanded: true, // CGFLIX
     title: t.settings.autoPlayAndSkip,
     children: [
+      // CGFLIX: pular abertura e créditos primeiro (com a dica), o técnico no fim.
+      CgflixComDica(
+        dica: CgflixDica.pularAbertura,
+        child: SettingSelectionTile<SkipMarkerMode>(
+          pref: SettingsService.skipIntroMode,
+          icon: Symbols.fast_forward_rounded,
+          title: t.settings.skipIntroMode,
+          subtitleBuilder: (mode) => '${_skipMarkerModeLabel(mode)} · ${_skipIntroModeDescription(mode)}',
+          options: SkipMarkerMode.values.map((m) => DialogOption(value: m, title: _skipMarkerModeLabel(m))).toList(),
+        ),
+      ),
+      SettingSelectionTile<SkipMarkerMode>(
+        pref: SettingsService.skipCreditsMode,
+        icon: Symbols.skip_next_rounded,
+        title: t.settings.skipCreditsMode,
+        subtitleBuilder: (mode) => '${_skipMarkerModeLabel(mode)} · ${_skipCreditsModeDescription(mode)}',
+        options: SkipMarkerMode.values.map((m) => DialogOption(value: m, title: _skipMarkerModeLabel(m))).toList(),
+      ),
       // Also togglable from the in-player settings sheet; both write the same
       // pref, and this pref gates the play-next prompt.
       SettingSwitchTile(
@@ -310,12 +332,6 @@ class PlaybackSettingsScreen extends StatelessWidget {
         icon: Symbols.skip_next_rounded,
         title: t.settings.autoPlayNextEpisode,
         subtitle: t.settings.autoPlayNextEpisodeDescription,
-      ),
-      SettingSwitchTile(
-        pref: SettingsService.shuffleStartsFromBeginning,
-        icon: Symbols.shuffle_rounded,
-        title: t.settings.shuffleStartsFromBeginning,
-        subtitle: t.settings.shuffleStartsFromBeginningDescription,
       ),
       SettingNumberTile(
         pref: SettingsService.playNextCountdown,
@@ -326,19 +342,11 @@ class PlaybackSettingsScreen extends StatelessWidget {
         labelText: t.settings.secondsLabel,
         suffixText: t.settings.secondsShort,
       ),
-      SettingSelectionTile<SkipMarkerMode>(
-        pref: SettingsService.skipIntroMode,
-        icon: Symbols.fast_forward_rounded,
-        title: t.settings.skipIntroMode,
-        subtitleBuilder: (mode) => '${_skipMarkerModeLabel(mode)} · ${_skipIntroModeDescription(mode)}',
-        options: SkipMarkerMode.values.map((m) => DialogOption(value: m, title: _skipMarkerModeLabel(m))).toList(),
-      ),
-      SettingSelectionTile<SkipMarkerMode>(
-        pref: SettingsService.skipCreditsMode,
-        icon: Symbols.skip_next_rounded,
-        title: t.settings.skipCreditsMode,
-        subtitleBuilder: (mode) => '${_skipMarkerModeLabel(mode)} · ${_skipCreditsModeDescription(mode)}',
-        options: SkipMarkerMode.values.map((m) => DialogOption(value: m, title: _skipMarkerModeLabel(m))).toList(),
+      SettingSwitchTile(
+        pref: SettingsService.shuffleStartsFromBeginning,
+        icon: Symbols.shuffle_rounded,
+        title: t.settings.shuffleStartsFromBeginning,
+        subtitle: t.settings.shuffleStartsFromBeginningDescription,
       ),
       SettingSwitchTile(
         pref: SettingsService.forceSkipMarkerFallback,
@@ -394,11 +402,14 @@ class PlaybackSettingsScreen extends StatelessWidget {
   Widget _gesturesGroup() => SettingsGroup(
     title: t.settings.gestures,
     children: [
-      SettingSwitchTile(
-        pref: SettingsService.gestureBrightnessSwipe,
-        icon: Symbols.brightness_6_rounded,
-        title: t.settings.gestureBrightnessSwipe,
-        subtitle: t.settings.gestureBrightnessSwipeDescription,
+      CgflixComDica(
+        dica: CgflixDica.gestos, // CGFLIX
+        child: SettingSwitchTile(
+          pref: SettingsService.gestureBrightnessSwipe,
+          icon: Symbols.brightness_6_rounded,
+          title: t.settings.gestureBrightnessSwipe,
+          subtitle: t.settings.gestureBrightnessSwipeDescription,
+        ),
       ),
       // Remember the last swiped level between playbacks (#2178).
       SettingSwitchTile(

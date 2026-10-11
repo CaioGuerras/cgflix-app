@@ -35,6 +35,8 @@ void main() {
 
     final title = find.text('Music Quality');
     await tester.scrollUntilVisible(title, 500, scrollable: find.byType(Scrollable).first);
+    await tester.ensureVisible(title); // CGFLIX: com a nova ordem (refino 2) a linha fica no fim da área montada
+    await tester.pumpAndSettle();
 
     final tile = find.widgetWithText(ListTile, 'Music Quality');
     expect(find.descendant(of: tile, matching: find.text('192 kbps')), findsOneWidget);
