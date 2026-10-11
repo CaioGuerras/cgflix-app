@@ -9,6 +9,7 @@ import '../theme/mono_theme.dart';
 import '../theme/mono_tokens.dart';
 import '../utils/platform_detector.dart';
 import 'cgflix_app_icon.dart';
+import 'cgflix_configuracoes.dart';
 import 'cgflix_palette.dart';
 import 'cgflix_style.dart';
 
@@ -126,6 +127,9 @@ ThemeData _isis(ThemeData branded) {
     scaffoldBackgroundColor: p.background,
     canvasColor: p.background,
     colorScheme: scheme,
+    // Refino 2b: chaves, botões de opção e caixas no roxo da Isis em todo o app (no player também).
+    switchTheme: cgflixSwitchTheme(cgflixSettingsScheme(scheme, CgflixThemeVariant.isis)),
+    radioTheme: cgflixRadioTheme(cgflixSettingsScheme(scheme, CgflixThemeVariant.isis)),
     appBarTheme: branded.appBarTheme.copyWith(backgroundColor: p.background),
     bottomSheetTheme: branded.bottomSheetTheme.copyWith(backgroundColor: p.surface, modalBackgroundColor: p.surface),
     dialogTheme: branded.dialogTheme.copyWith(backgroundColor: p.surface),
@@ -229,15 +233,7 @@ ThemeData _heitor(ThemeData branded) {
       thumbColor: s.primary,
       inactiveTrackColor: s.onSurface.withValues(alpha: 0.12),
     ),
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.resolveWith((st) => st.contains(WidgetState.selected) ? s.onPrimary : s.outline),
-      trackColor: WidgetStateProperty.resolveWith(
-        (st) => st.contains(WidgetState.selected) ? s.primary : s.surfaceContainerHighest,
-      ),
-      trackOutlineColor: WidgetStateProperty.resolveWith(
-        (st) => st.contains(WidgetState.selected) ? Colors.transparent : s.outline,
-      ),
-    ),
+    switchTheme: cgflixSwitchTheme(s), // refino 2b: com o check no polegar (M3)
     radioTheme: RadioThemeData(
       fillColor: WidgetStateProperty.resolveWith((st) => st.contains(WidgetState.selected) ? s.primary : s.outline),
     ),
