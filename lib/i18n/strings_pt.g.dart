@@ -950,7 +950,7 @@ class _Translations$messages$pt extends Translations$messages$en {
 	@override String get playbackDataInvalid => 'O servidor mandou informações erradas para tocar este vídeo. Tente de novo.';
 	@override String get playbackCancelled => 'O vídeo foi cancelado.';
 	@override String get playbackFailed => 'Não deu para começar o vídeo. Confira a internet e tente de novo.';
-	@override String get playbackFailedDetail => 'Não deu para começar o vídeo. Confira a internet e tente de novo.';
+	@override String playbackFailedDetail({required Object error}) => 'Não deu para começar o vídeo (${error}). Confira a internet e tente de novo.';
 	@override String get audioOutputFailed => 'O som parou de responder. Confira a conexão de áudio da TV ou do receptor; se outros apps também estiverem sem som, reinicie o aparelho.';
 	@override String get mediaUnavailable => 'Este conteúdo não está mais disponível.';
 	@override String errorLoadingFileInfo({required Object error}) => 'Não deu para carregar as informações do arquivo: ${error}';
@@ -2284,12 +2284,12 @@ class _Translations$addServer$pt extends Translations$addServer$en {
 	@override String get signIn => 'Entrar';
 	@override String get change => 'Trocar';
 	@override String get required => 'Obrigatório';
-	@override String get couldNotReachServer => 'Não deu para falar com o servidor. Confira o endereço e a internet.';
-	@override String get signInFailed => 'Não deu para entrar. Confira a internet e tente de novo.';
-	@override String get quickConnectFailed => 'Não deu para entrar com o Quick Connect. Tente de novo.';
+	@override String couldNotReachServer({required Object error}) => 'Não deu para falar com o servidor (${error}). Confira o endereço e a internet.';
+	@override String signInFailed({required Object error}) => 'Não deu para entrar (${error}). Confira a internet e tente de novo.';
+	@override String quickConnectFailed({required Object error}) => 'Não deu para entrar com o Quick Connect (${error}). Tente de novo.';
 	@override String get addPlexTitle => 'Entrar com Plex';
 	@override String get pinExpired => 'O código expirou antes de você entrar. Tente de novo.';
-	@override String get failedToRegisterAccount => 'Não deu para salvar a conta neste aparelho. Tente de novo.';
+	@override String failedToRegisterAccount({required Object error}) => 'Não deu para salvar a conta neste aparelho (${error}). Tente de novo.';
 	@override String enterMediaBrowserUrlError({required Object product}) => 'Digite o endereço do seu servidor ${product}';
 	@override String get addConnectionTitle => 'Adicionar conexão';
 	@override String addConnectionTitleScoped({required Object name}) => 'Adicionar a ${name}';
@@ -2311,7 +2311,7 @@ class _Translations$addServer$pt extends Translations$addServer$en {
 	@override String get serverTimedOut => 'O servidor demorou demais para responder. Tente de novo.';
 	@override String get responseNotJson => 'O servidor respondeu algo inesperado. Confira o endereço.';
 	@override String responseMissingIdentity({required Object product}) => 'A resposta não parece de um servidor ${product}. Confira o endereço.';
-	@override String get probeFailed => 'Não deu para falar com o servidor. Confira o endereço e a internet.';
+	@override String probeFailed({required Object error}) => 'Não deu para falar com o servidor (${error}). Confira o endereço e a internet.';
 	@override String enterAtLeastOneUrl({required Object product}) => 'Digite pelo menos um endereço de servidor ${product}';
 	@override String noReachableServer({required Object product}) => 'Não deu para encontrar nenhum servidor ${product}. Confira o endereço e a internet.';
 	@override String urlsPointToDifferentServers({required Object product}) => 'Esses endereços levam a servidores ${product} diferentes';
@@ -3865,7 +3865,7 @@ extension on TranslationsPt {
 			'messages.playbackDataInvalid' => 'O servidor mandou informações erradas para tocar este vídeo. Tente de novo.',
 			'messages.playbackCancelled' => 'O vídeo foi cancelado.',
 			'messages.playbackFailed' => 'Não deu para começar o vídeo. Confira a internet e tente de novo.',
-			'messages.playbackFailedDetail' => 'Não deu para começar o vídeo. Confira a internet e tente de novo.',
+			'messages.playbackFailedDetail' => ({required Object error}) => 'Não deu para começar o vídeo (${error}). Confira a internet e tente de novo.',
 			'messages.audioOutputFailed' => 'O som parou de responder. Confira a conexão de áudio da TV ou do receptor; se outros apps também estiverem sem som, reinicie o aparelho.',
 			'messages.mediaUnavailable' => 'Este conteúdo não está mais disponível.',
 			'messages.errorLoadingFileInfo' => ({required Object error}) => 'Não deu para carregar as informações do arquivo: ${error}',
@@ -5194,12 +5194,12 @@ extension on TranslationsPt {
 			'addServer.signIn' => 'Entrar',
 			'addServer.change' => 'Trocar',
 			'addServer.required' => 'Obrigatório',
-			'addServer.couldNotReachServer' => 'Não deu para falar com o servidor. Confira o endereço e a internet.',
-			'addServer.signInFailed' => 'Não deu para entrar. Confira a internet e tente de novo.',
-			'addServer.quickConnectFailed' => 'Não deu para entrar com o Quick Connect. Tente de novo.',
+			'addServer.couldNotReachServer' => ({required Object error}) => 'Não deu para falar com o servidor (${error}). Confira o endereço e a internet.',
+			'addServer.signInFailed' => ({required Object error}) => 'Não deu para entrar (${error}). Confira a internet e tente de novo.',
+			'addServer.quickConnectFailed' => ({required Object error}) => 'Não deu para entrar com o Quick Connect (${error}). Tente de novo.',
 			'addServer.addPlexTitle' => 'Entrar com Plex',
 			'addServer.pinExpired' => 'O código expirou antes de você entrar. Tente de novo.',
-			'addServer.failedToRegisterAccount' => 'Não deu para salvar a conta neste aparelho. Tente de novo.',
+			'addServer.failedToRegisterAccount' => ({required Object error}) => 'Não deu para salvar a conta neste aparelho (${error}). Tente de novo.',
 			'addServer.enterMediaBrowserUrlError' => ({required Object product}) => 'Digite o endereço do seu servidor ${product}',
 			'addServer.addConnectionTitle' => 'Adicionar conexão',
 			'addServer.addConnectionTitleScoped' => ({required Object name}) => 'Adicionar a ${name}',
@@ -5221,7 +5221,7 @@ extension on TranslationsPt {
 			'addServer.serverTimedOut' => 'O servidor demorou demais para responder. Tente de novo.',
 			'addServer.responseNotJson' => 'O servidor respondeu algo inesperado. Confira o endereço.',
 			'addServer.responseMissingIdentity' => ({required Object product}) => 'A resposta não parece de um servidor ${product}. Confira o endereço.',
-			'addServer.probeFailed' => 'Não deu para falar com o servidor. Confira o endereço e a internet.',
+			'addServer.probeFailed' => ({required Object error}) => 'Não deu para falar com o servidor (${error}). Confira o endereço e a internet.',
 			'addServer.enterAtLeastOneUrl' => ({required Object product}) => 'Digite pelo menos um endereço de servidor ${product}',
 			'addServer.noReachableServer' => ({required Object product}) => 'Não deu para encontrar nenhum servidor ${product}. Confira o endereço e a internet.',
 			'addServer.urlsPointToDifferentServers' => ({required Object product}) => 'Esses endereços levam a servidores ${product} diferentes',

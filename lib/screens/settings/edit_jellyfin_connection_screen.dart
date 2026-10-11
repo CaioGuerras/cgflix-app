@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 
+import '../../utils/error_message_utils.dart';
 import '../../connection/connection.dart';
 import '../../connection/connection_registry.dart';
 import '../../exceptions/media_server_exceptions.dart';
@@ -53,7 +54,7 @@ class _EditJellyfinConnectionScreenState extends State<EditJellyfinConnectionScr
       errorMapper: (e) {
         if (e is MediaServerUrlException) return e.display ?? e.message;
         appLogger.e('Edit ${widget.connection.dialect.productName} connection failed', error: e);
-        return t.addServer.couldNotReachServer(error: e.toString());
+        return t.addServer.couldNotReachServer(error: localizedErrorReason(e));
       },
     );
   }

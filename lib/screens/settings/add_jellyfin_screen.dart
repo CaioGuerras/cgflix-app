@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../utils/error_message_utils.dart';
 import '../../cgflix/cgflix_login_checks.dart';
 import '../../connection/connection.dart';
 import '../../connection/connection_registry.dart';
@@ -263,8 +264,9 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
         if (!autoStart) requestFocusAfterFrame(_usernameFocus);
         return autoStart;
       },
-      errorMapper: (e) =>
-          e is MediaServerUrlException ? e.display ?? e.message : t.addServer.couldNotReachServer(error: e.toString()),
+      errorMapper: (e) => e is MediaServerUrlException
+          ? e.display ?? e.message
+          : t.addServer.couldNotReachServer(error: localizedErrorReason(e)),
     );
     // Sequenced after the probe's runAsync so busy stays set straight through
     // /QuickConnect/Initiate. Started from inside the probe body, the probe's
@@ -308,7 +310,7 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
       errorMapper: (e) {
         if (e is MediaServerAuthException) return e.display ?? e.message;
         appLogger.e('Add ${widget.dialect.productName} failed', error: e);
-        return t.addServer.signInFailed(error: e.toString());
+        return t.addServer.signInFailed(error: localizedErrorReason(e));
       },
     );
   }
@@ -355,7 +357,7 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
       errorMapper: (e) {
         if (e is MediaServerAuthException) return e.display ?? e.message;
         appLogger.e('Jellyfin Quick Connect failed', error: e);
-        return t.addServer.quickConnectFailed(error: e.toString());
+        return t.addServer.quickConnectFailed(error: localizedErrorReason(e));
       },
       shouldApplyState: () => isCurrentQuickConnectAttempt(attemptId),
     );

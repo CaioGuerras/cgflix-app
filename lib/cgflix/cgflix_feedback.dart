@@ -36,3 +36,17 @@ class CgflixStatusColors {
     );
   }
 }
+
+/// Motivo curto, em português, de uma falha do player a partir da linha crua do mpv/ffmpeg (que vai
+/// inteira para o log). Nada de inglês técnico na tela.
+String cgflixPlayerFailureReason(String? raw) {
+  final text = (raw ?? '').toLowerCase();
+  if (text.contains('404') || text.contains('not found')) return 'arquivo não encontrado no servidor';
+  if (text.contains('403') || text.contains('401') || text.contains('forbidden')) return 'acesso negado pelo servidor';
+  if (text.contains('timed out') || text.contains('timeout')) return 'o servidor demorou para responder';
+  if (text.contains('format') || text.contains('codec') || text.contains('decoder')) {
+    return 'formato de vídeo que este aparelho não abre';
+  }
+  if (text.contains('connection') || text.contains('network') || text.contains('resolve')) return 'falha na conexão';
+  return 'erro no reprodutor';
+}

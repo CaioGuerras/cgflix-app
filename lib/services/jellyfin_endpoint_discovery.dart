@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
+import '../utils/error_message_utils.dart';
 import '../i18n/strings.g.dart';
 
 import '../exceptions/media_server_exceptions.dart';
@@ -168,12 +169,17 @@ class JellyfinEndpointDiscovery {
       if (e.isCancellation) rethrow;
       throw MediaServerUrlException(
         'Server probe failed: ${e.message}',
-        display: t.addServer.probeFailed(error: e.message),
+        display: t.addServer.probeFailed(
+          error: localizedErrorReason(e),
+        ), // CGFLIX: motivo em português, sem exceção crua
       );
     } on TimeoutException {
       throw MediaServerUrlException('Server did not respond in time', display: t.addServer.serverTimedOut);
     } catch (e) {
-      throw MediaServerUrlException('Server probe failed: $e', display: t.addServer.probeFailed(error: e));
+      throw MediaServerUrlException(
+        'Server probe failed: $e',
+        display: t.addServer.probeFailed(error: localizedErrorReason(e)),
+      ); // CGFLIX: motivo em português, sem exceção crua
     } finally {
       client.close();
     }
