@@ -4,7 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:plezy/cgflix/cgflix_icones.dart';
 import 'package:plezy/cgflix/cgflix_menus.dart';
+import 'package:plezy/cgflix/cgflix_advanced.dart';
+import 'package:plezy/cgflix/cgflix_theme.dart';
+import 'package:plezy/i18n/strings.g.dart';
+import 'package:plezy/screens/settings/playback_settings_screen.dart';
+import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/widgets/app_menu.dart';
+
+import '../test_helpers/prefs.dart';
 
 AppMenuItem<String> _item(String value) => AppMenuItem<String>(value: value, label: value, icon: Symbols.info_rounded);
 
@@ -101,5 +108,56 @@ void main() {
     );
     expect(toque, isTrue);
     expect(remoto, isFalse);
+  });
+
+  group('Configurações › Ao assistir', () {
+    setUp(() async {
+      resetSharedPreferencesForTest();
+      SettingsService.resetForTesting();
+      await SettingsService.getInstance();
+      LocaleSettings.setLocaleSync(AppLocale.en);
+    });
+
+    testWidgets('Pular abertura e Legendas em cima e abertos; técnico embaixo', (tester) async {
+      tester.view.physicalSize = const Size(412, 4000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: cgflixAppTheme().copyWith(platform: TargetPlatform.android),
+          home: const PlaybackSettingsScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      double y(String text) => tester.getTopLeft(find.text(text).first).dy;
+      // Abertos: os itens de dentro aparecem sem tocar.
+      expect(find.text(t.settings.skipIntroMode), findsOneWidget);
+      expect(find.text(t.settings.subtitleStyling), findsOneWidget);
+      // Ordem dos cartões.
+      expect(y(t.settings.autoPlayAndSkip), lessThan(y(t.settings.subtitles)));
+      expect(y(t.settings.subtitles), lessThan(y(t.settings.gestures)));
+      expect(y(t.settings.gestures), lessThan(y(t.settings.player)));
+      expect(y(t.settings.player), lessThan(y(t.settings.audio)));
+      expect(y(t.settings.audio), lessThan(y(t.settings.quality)));
+      // Áudio (técnico) agora começa fechado.
+      expect(find.text(t.settings.audioChannelLimit), findsNothing);
+      // A parte técnica de Pular abertura saiu daqui (está no Avançado), sem repetir.
+      expect(find.text(t.settings.introPattern), findsNothing);
+      expect(find.text(t.settings.forceSkipMarkerFallback), findsNothing);
+      // Dica no Pular abertura.
+      expect(find.byKey(const ValueKey('cgflix-dica-botao-pularAbertura')), findsOneWidget);
+    });
+
+    testWidgets('Avançado tem a parte técnica de Pular abertura', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: cgflixAppTheme(),
+          home: const Scaffold(body: SingleChildScrollView(child: CgflixAdvancedFeatures())),
+        ),
+      );
+      expect(find.text(t.settings.forceSkipMarkerFallback), findsOneWidget);
+      expect(find.text(t.settings.introPattern), findsOneWidget);
+      expect(find.text(t.settings.creditsPattern), findsOneWidget);
+    });
   });
 }

@@ -49,3 +49,7 @@ const bool cgflixHidesUpstreamDonation = true;
 bool cgflixDownloadOnWifiOnlyDefault = true;
 
 bool cgflixDownloadOnWifiOnlyDefaultValue() => cgflixDownloadOnWifiOnlyDefault;
+
+/// Refino 2: "Sempre detectar abertura pelos capítulos" e os nomes de capítulo (expressão regular)
+/// saem de Configurações › Ao assistir e ficam em Configurações › Avançado.
+const bool cgflixSkipTechInAdvanced = true;

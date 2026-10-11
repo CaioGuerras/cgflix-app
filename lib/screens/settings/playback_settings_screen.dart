@@ -348,12 +348,6 @@ class PlaybackSettingsScreen extends StatelessWidget {
         title: t.settings.shuffleStartsFromBeginning,
         subtitle: t.settings.shuffleStartsFromBeginningDescription,
       ),
-      SettingSwitchTile(
-        pref: SettingsService.forceSkipMarkerFallback,
-        icon: Symbols.tune_rounded,
-        title: t.settings.forceSkipMarkerFallback,
-        subtitle: t.settings.forceSkipMarkerFallbackDescription,
-      ),
       SettingNumberTile(
         pref: SettingsService.autoSkipDelay,
         icon: Symbols.timer_rounded,
@@ -362,20 +356,30 @@ class PlaybackSettingsScreen extends StatelessWidget {
         labelText: t.settings.secondsLabel,
         suffixText: t.settings.secondsShort,
       ),
-      SettingRegexTile(
-        pref: SettingsService.introPattern,
-        icon: Symbols.match_case_rounded,
-        title: t.settings.introPattern,
-        subtitle: t.settings.introPatternDescription,
-        defaultValue: SettingsService.defaultIntroPattern,
-      ),
-      SettingRegexTile(
-        pref: SettingsService.creditsPattern,
-        icon: Symbols.match_case_rounded,
-        title: t.settings.creditsPattern,
-        subtitle: t.settings.creditsPatternDescription,
-        defaultValue: SettingsService.defaultCreditsPattern,
-      ),
+      // CGFLIX (refino 2): detectar abertura pelos capítulos e os nomes de capítulo são técnicos;
+      // ficam em Configurações › Avançado (lib/cgflix/cgflix_advanced.dart).
+      if (!cgflixSkipTechInAdvanced) ...[
+        SettingSwitchTile(
+          pref: SettingsService.forceSkipMarkerFallback,
+          icon: Symbols.tune_rounded,
+          title: t.settings.forceSkipMarkerFallback,
+          subtitle: t.settings.forceSkipMarkerFallbackDescription,
+        ),
+        SettingRegexTile(
+          pref: SettingsService.introPattern,
+          icon: Symbols.match_case_rounded,
+          title: t.settings.introPattern,
+          subtitle: t.settings.introPatternDescription,
+          defaultValue: SettingsService.defaultIntroPattern,
+        ),
+        SettingRegexTile(
+          pref: SettingsService.creditsPattern,
+          icon: Symbols.match_case_rounded,
+          title: t.settings.creditsPattern,
+          subtitle: t.settings.creditsPatternDescription,
+          defaultValue: SettingsService.defaultCreditsPattern,
+        ),
+      ],
     ],
   );
 
