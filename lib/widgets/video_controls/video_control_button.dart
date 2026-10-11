@@ -77,7 +77,7 @@ class VideoControlButton extends StatelessWidget {
       iconSize: iconSize,
       onPressed: onPressed,
       tooltip: tooltip,
-      constraints: const BoxConstraints(minWidth: 48, minHeight: 48), // CGFLIX: toque de 48 dp
+      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
     );
 
     if (focusNode != null) {

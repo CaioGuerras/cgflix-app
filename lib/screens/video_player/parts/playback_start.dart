@@ -382,7 +382,9 @@ extension _VideoPlayerPlaybackStartMethods on VideoPlayerScreenState {
         _reportStartFailure(
           e is PlayerInitializationException
               ? t.messages.playbackFailed
-              : t.messages.playbackFailedDetail(error: cgflixPlayerFailureReason(e.toString())), // CGFLIX
+              : t.messages.playbackFailedDetail(
+                  error: cgflixPlayerFailureReason(_redactPlayerError(e.toString())),
+                ), // CGFLIX
           primaryMediaOpened: primaryMediaOpened,
         );
       }

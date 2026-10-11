@@ -74,10 +74,12 @@ extension _VideoPlayerErrorMethods on VideoPlayerScreenState {
           PlayerError.openTimedOut =>
             lastLogError == null
                 ? t.messages.playbackFailed
-                : t.messages.playbackFailedDetail(error: cgflixPlayerFailureReason(lastLogError)), // CGFLIX
+                : t.messages.playbackFailedDetail(error: cgflixPlayerFailureReason(lastLogError)), // CGFLIX: PT
           PlayerError.audioOutputFailed => t.messages.audioOutputFailed,
           // CGFLIX: motivo curto em português; a linha do mpv vai só para o log
-          _ => t.messages.playbackFailedDetail(error: cgflixPlayerFailureReason(lastLogError ?? err.message)),
+          _ => t.messages.playbackFailedDetail(
+            error: cgflixPlayerFailureReason(_redactPlayerError(lastLogError ?? err.message)),
+          ),
         };
         // Live TV has no in-place reload to retry through: its own start
         // flow leaves the route on failure, so a dead live session does too.

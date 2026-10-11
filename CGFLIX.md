@@ -254,7 +254,7 @@ recarga. É acabamento: navegação e fluxos aprovados (1B–1E) não mudaram.
 | Início (leitor de tela) | Posição no Top 10 ("Em alta, posição 1"); "tocar e segurar: mais opções" nos cartões | `lib/cgflix/home/cgflix_cards.dart` |
 | Busca | Erro sem a exceção crua (às vezes em inglês) | `lib/screens/search_screen.dart` (1 linha) |
 | Detalhes do título | Botão de download e coração/estrela com cores legíveis no Heitor (âmbar/laranja davam ~1,7:1); no Jellyfin o coração diz "Minha lista"; dica "Opções" no ⋮; "Na Minha lista" para o leitor de tela na prévia | `lib/screens/media_detail_screen.dart`, `media_detail/action_buttons.dart`, `lib/cgflix/home/cgflix_preview_sheet.dart` |
-| Player | Falha sem a linha crua do mpv/ffmpeg (detalhe só no log); destaque lilás no lugar do âmbar (folha de ajustes, timer, botão ativo); botões do topo com 48 dp; "Assistir o próximo (5)" em vez de só "5"; "T1 E3" em português | `video_player/parts/errors.dart`, `pt.i18n.json`, `widgets/video_controls/**` (4 arquivos), `player_prompt_overlays.dart`, `video_controls_header.dart` |
+| Player | Falha com motivo curto em português ("arquivo não encontrado no servidor", "formato de vídeo que este aparelho não abre"…) no lugar da linha crua do mpv/ffmpeg (inteira só no log); destaque lilás no lugar do âmbar (folha de ajustes, timer, botão ativo); o leitor de tela diz "Assistir o próximo, 5" na contagem; "T1 E3" em português | `video_player/parts/errors.dart`, `pt.i18n.json`, `widgets/video_controls/**` (4 arquivos), `player_prompt_overlays.dart`, `video_controls_header.dart` |
 | Baixados | Botões de cada linha com 48 dp (eram 36); erro e estados com as cores da paleta (azul/laranja/âmbar soltos); Retomar/Tentar de novo com servidor fora agora avisam; regra automática na cor do tema | `widgets/download_tree_view.dart`, `download_status_icon.dart`, `screens/downloads/downloads_screen.dart`, `sync_rules_screen.dart` |
 | Bibliotecas / cartões | "T1 E3" (temporada) no lugar de "S1 E3" em português; mensagem dos estados vazio/erro com contraste ≥ 4,5:1 | `widgets/media_card.dart`, `libraries/folder_tree_item.dart`, `libraries/state_messages.dart` |
 | Meus pedidos | Puxar para atualizar não troca a lista por um círculo (piscava); erro com botão "Tentar de novo" (antes só "puxe"); temporada sem contagem sem linha vazia | `lib/cgflix/requests/cgflix_requests_ui.dart` |
@@ -264,6 +264,7 @@ recarga. É acabamento: navegação e fluxos aprovados (1B–1E) não mudaram.
 | Voltar das telas | A margem do botão também recebe o toque | `widgets/app_bar_back_button.dart` |
 
 **Vi e decidi não mudar** (e por quê):
+- Botões do topo do player: ficam com 40 dp (o 48 mudou o foco do controle remoto da TV nos testes do upstream).
 - Opções do mpv: botão de remover linha com 36 dp é de propósito (cabe dentro do campo); tela técnica, só no Avançado.
 - Pastas das Bibliotecas: botões Tocar/Aleatório de 36 dp ficam (mudar aumenta a altura de toda linha da árvore; visão pouco usada no celular).
 - Tela de registros (logs): cinzas e laranja soltos ficam (tela de diagnóstico, no Avançado; mudar mexe em muitas linhas do upstream).

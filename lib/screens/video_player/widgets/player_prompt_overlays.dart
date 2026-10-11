@@ -251,7 +251,8 @@ class VideoPlayerPlayNextOverlay extends StatelessWidget {
                 return Row(
                   mainAxisSize: .min,
                   children: [
-                    Text('${t.videoControls.playNext} ($countdown)'), // CGFLIX: o número sozinho não dizia nada
+                    // CGFLIX: o leitor de tela diz "Assistir o próximo, 5" (o número sozinho não dizia nada)
+                    Text('$countdown', semanticsLabel: '${t.videoControls.playNext}, $countdown'),
                     const SizedBox(width: 4),
                     const AppIcon(Symbols.play_arrow_rounded, fill: 1, size: 18),
                   ],

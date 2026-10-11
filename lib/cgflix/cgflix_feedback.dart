@@ -3,6 +3,7 @@
 // aviso é quase branco). Agora: erro = `error`/`onError` do tema; sucesso = aviso normal do tema.
 import 'package:flutter/material.dart';
 
+import '../i18n/strings.g.dart';
 import 'cgflix_palette.dart';
 
 /// Cores (fundo, texto) do aviso a partir da cor que o upstream pediu. Nulo = a do tema.
@@ -40,6 +41,8 @@ class CgflixStatusColors {
 /// Motivo curto, em português, de uma falha do player a partir da linha crua do mpv/ffmpeg (que vai
 /// inteira para o log). Nada de inglês técnico na tela.
 String cgflixPlayerFailureReason(String? raw) {
+  // Fora do português, o texto do upstream (a linha já sem dados pessoais).
+  if (LocaleSettings.currentLocale != AppLocale.pt) return raw ?? '';
   final text = (raw ?? '').toLowerCase();
   if (text.contains('404') || text.contains('not found')) return 'arquivo não encontrado no servidor';
   if (text.contains('403') || text.contains('401') || text.contains('forbidden')) return 'acesso negado pelo servidor';

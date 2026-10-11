@@ -1337,7 +1337,8 @@ class _MediaDetailScreenState extends State<MediaDetailScreen>
   String _userRatingChipLabel(MediaItem metadata) {
     final isNumeric = _getMediaClientForMetadata(context)?.capabilities.numericUserRating ?? true;
     final hasRating = metadata.userRating != null && metadata.userRating! > 0;
-    if (!isNumeric) return 'Minha lista'; // CGFLIX: no Jellyfin o coração é a Minha lista (como na prévia)
+    // CGFLIX: no Jellyfin o coração é a Minha lista (como na prévia)
+    if (!isNumeric && LocaleSettings.currentLocale == AppLocale.pt) return 'Minha lista';
     return isNumeric && hasRating ? formatRating(metadata.userRating! / 2.0) : t.mediaMenu.rate;
   }
 
