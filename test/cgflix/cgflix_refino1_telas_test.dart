@@ -1,7 +1,6 @@
 // Refino 1 (1.5.0): telas novas nos dois temas (Isis e Heitor), sem exceção nem overflow.
 // Apoie o CGFLIX (QR + botões), Minha conta (conta falsa: foto, senha, 403, falha), menu do
 // usuário (ordem, sem conexão, coração rosa), Favoritos (falsos) e o slogan.
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +9,6 @@ import 'package:plezy/cgflix/apoio/apoio.dart';
 import 'package:plezy/cgflix/apoio/apoio_pix.dart';
 import 'package:plezy/cgflix/apoio/apoio_pix_view.dart';
 import 'package:plezy/cgflix/apoio/cgflix_apoio_screen.dart';
-import 'package:plezy/cgflix/cgflix_palette.dart';
 import 'package:plezy/cgflix/cgflix_slogan.dart';
 import 'package:plezy/cgflix/cgflix_theme.dart';
 import 'package:plezy/cgflix/cgflix_units.dart';
