@@ -26,7 +26,12 @@ SnackBar _buildSnackBar(
   bool? dismissible,
 }) {
   final (cgflixBackground, cgflixText) = cgflixSnackBarColors(context, backgroundColor); // CGFLIX: cores do tema
-  final themed = cgflixText == null ? content : DefaultTextStyle.merge(style: TextStyle(color: cgflixText), child: content);
+  final themed = cgflixText == null
+      ? content
+      : DefaultTextStyle.merge(
+          style: TextStyle(color: cgflixText),
+          child: content,
+        );
   final isDesktop = PlatformDetector.isDesktopOS();
   final tapToDismiss = dismissible ?? isDesktop;
   final body = tapToDismiss
