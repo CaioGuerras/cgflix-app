@@ -101,7 +101,7 @@ enum CgflixDica {
   ),
   janelinha(
     Symbols.picture_in_picture_alt_rounded,
-    'Janelinha (PiP)',
+    'Janelinha',
     'O vídeo continua numa janelinha enquanto você usa outro app.',
     'Toque no botão da janelinha na tela do vídeo, ou saia do app com o vídeo tocando quando '
         '"Abrir a janelinha ao sair" estiver ligado. '

@@ -331,15 +331,12 @@ void main() {
 
     testWidgets('dica única e controles', skip: pular != null, (tester) async {
       await montarPlayer(tester);
-      chrome.hide();
-      chrome.markControlsHidden();
-      await tester.pump(const Duration(milliseconds: 400));
       await _salvar(tester, 'player-01-dica-unica');
 
       await tester.tap(find.byKey(const ValueKey('cgflix-dica-player')));
-      await tester.pump(const Duration(milliseconds: 400));
-      chrome.show();
-      await tester.pump(const Duration(milliseconds: 400));
+      for (var i = 0; i < 8; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
       await _salvar(tester, 'player-02-controles');
 
       await tester.tap(find.byTooltip(t.videoControls.settingsButton).first);
