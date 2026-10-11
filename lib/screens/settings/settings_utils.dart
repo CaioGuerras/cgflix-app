@@ -33,7 +33,10 @@ class DialogOption<T> {
   final String title;
   final String? subtitle;
 
-  const DialogOption({required this.value, required this.title, this.subtitle});
+  /// CGFLIX: texto extra só para o leitor de tela (ex.: o tema "Isis" diz "escuro, roxo").
+  final String? semanticsHint;
+
+  const DialogOption({required this.value, required this.title, this.subtitle, this.semanticsHint});
 }
 
 typedef _SettingsDialogContentBuilder =
@@ -190,7 +193,7 @@ Future<DialogOption<T>?> showSelectionDialog<T>({
                   selected ? Symbols.radio_button_checked_rounded : Symbols.radio_button_unchecked_rounded,
                   color: selected ? Theme.of(dialogContext).colorScheme.primary : null,
                 ),
-                title: Text(option.title),
+                title: Text(option.title, semanticsLabel: cgflixOptionSemantics(option.title, option.semanticsHint)), // CGFLIX
                 subtitle: option.subtitle != null ? Text(option.subtitle!) : null,
                 selected: selected,
                 autofocus: focusFirstItem && selected,

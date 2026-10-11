@@ -368,7 +368,7 @@ class _ConfiguracoesFalsas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tema = context.cgflix.isLight ? 'Heitor (claro, verde)' : 'Isis (escuro, roxo)';
+    final tema = context.cgflix.isLight ? 'Heitor' : 'Isis';
     return Scaffold(
       appBar: AppBar(title: const Text('Configurações')),
       body: ListView(
