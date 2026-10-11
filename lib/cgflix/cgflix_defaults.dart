@@ -38,3 +38,7 @@ const bool cgflixUnifiedSearch = true;
 /// (ice.plezy.app). Desligado: sem telemetria para terceiros. Copiar os logs continua.
 /// Variável (não const) só para os testes do upstream exercitarem o envio.
 bool cgflixAllowLogUpload = false;
+
+/// Doação: o Liberapay do autor do Plezy nunca aparece (nem com ENABLE_DONATIONS). O apoio do
+/// CGFLIX é a tela "Apoie o CGFLIX" (lib/cgflix/apoio/).
+const bool cgflixHidesUpstreamDonation = true;

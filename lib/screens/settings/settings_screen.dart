@@ -24,6 +24,7 @@ import '../../providers/account_preferences_controller.dart';
 import '../../providers/hidden_libraries_provider.dart';
 import '../../providers/download_provider.dart';
 import '../../providers/libraries_provider.dart';
+import '../../cgflix/apoio/cgflix_apoio_screen.dart';
 import '../../services/donation_service.dart';
 import '../../services/download_storage_service.dart';
 import '../../services/file_picker_service.dart';
@@ -250,6 +251,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                       ),
                     ],
                   ),
+                  const CgflixApoioSettingsTile(), // CGFLIX: "Apoie o CGFLIX", sempre o último item
                   const SizedBox(height: 24),
                 ]),
               ),
