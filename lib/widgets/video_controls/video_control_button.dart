@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plezy/widgets/app_icon.dart';
 
 import '../../cgflix/cgflix_feedback.dart'; // CGFLIX: destaque lilás no player
+import '../../cgflix/cgflix_icones.dart'; // CGFLIX: ícones e tamanho no celular
 import '../../focus/focus_theme.dart';
 import '../../focus/focusable_wrapper.dart';
 import 'widgets/player_focus_disc.dart';
@@ -72,12 +73,21 @@ class VideoControlButton extends StatelessWidget {
     final idleColor = color ?? (isActive ? cgflixPlayerAccent : Colors.white);
     final effectiveSemanticLabel = semanticLabel ?? tooltip;
 
+    // CGFLIX (refino 2): ícones mais claros, contorno quando desligado e, no celular, 28 dp com 48 dp de toque.
+    final touch = cgflixPlayerTouchSized(context, hasFocusNode: focusNode != null);
+    final size = touch && iconSize < cgflixPlayerIconSize ? cgflixPlayerIconSize : iconSize;
+    final target = touch ? cgflixPlayerTouchTarget : 40.0;
     Widget button(Color iconColor) => IconButton(
-      icon: AppIcon(icon, fill: 1, color: iconColor, size: iconSize),
-      iconSize: iconSize,
+      icon: AppIcon(
+        cgflixPlayerIcon(icon),
+        fill: cgflixPlayerIconFill(checked: checked, isActive: isActive),
+        color: iconColor,
+        size: size,
+      ),
+      iconSize: size,
       onPressed: onPressed,
       tooltip: tooltip,
-      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+      constraints: BoxConstraints(minWidth: target, minHeight: target),
     );
 
     if (focusNode != null) {

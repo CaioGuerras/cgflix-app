@@ -198,8 +198,8 @@ void main() {
         await _pumpBar(tester, const Size(412, 914));
         await tester.tap(find.byKey(const ValueKey('cgflix-top-menu')));
         await tester.pumpAndSettle();
-        // 1.5.0: Bibliotecas · Meus pedidos · Baixados ─ Configurações · Trocar usuário · Sobre · Sair
-        // ─ Apoie o CGFLIX (Favoritos só com Jellyfin conectado; aqui não há servidor).
+        // Refino 2: Baixados · Meus pedidos · Bibliotecas ─ Configurações · Sobre e dicas ─ Trocar usuário ·
+        // Sair ─ Apoie o CGFLIX (Favoritos só com Jellyfin conectado; aqui não há servidor).
         for (final i in cgflixUserMenuItems(online: true, hasFavorites: false)) {
           expect(find.byKey(ValueKey('cgflix-menu-${i.name}')), findsOneWidget, reason: i.name);
         }

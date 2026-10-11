@@ -212,17 +212,20 @@ void main() {
       expect(ordem, [
         'cgflix-menu-account',
         'cgflix-menu-favorites',
-        'cgflix-menu-libraries',
-        'cgflix-menu-myRequests',
         'cgflix-menu-downloads',
+        'cgflix-menu-myRequests',
+        'cgflix-menu-libraries',
         'cgflix-menu-settings',
-        'cgflix-menu-switchUser',
         'cgflix-menu-about',
+        'cgflix-menu-switchUser',
         'cgflix-menu-signOut',
         'cgflix-menu-support',
       ]);
-      // Dois divisores: depois de Baixados e depois de Sair.
-      expect(find.byType(Divider), findsNWidgets(2));
+      // Refino 2: três traços (depois de Bibliotecas, de Sobre e de Sair) e dois cabeçalhos curtos.
+      expect(find.byType(Divider), findsNWidgets(3));
+      expect(find.text('Ajustes e ajuda'), findsOneWidget);
+      expect(find.text('Conta'), findsOneWidget);
+      expect(find.text('Sobre e dicas'), findsOneWidget);
       final apoio = find.descendant(of: find.byKey(const ValueKey('cgflix-menu-support')), matching: find.byType(Icon));
       expect(tester.widget<Icon>(apoio).color, cgflixApoioRosa);
       final outro = find.descendant(
@@ -244,6 +247,8 @@ void main() {
       for (final fica in ['downloads', 'settings', 'switchUser', 'about', 'signOut', 'support']) {
         expect(find.byKey(ValueKey('cgflix-menu-$fica')), findsOneWidget, reason: fica);
       }
+      // Sem conexão, o primeiro traço vem logo depois de Baixados (refino 2).
+      expect(find.byType(Divider), findsNWidgets(3));
     });
 
     testWidgets('$nome: menu cabe deitado', (tester) async {

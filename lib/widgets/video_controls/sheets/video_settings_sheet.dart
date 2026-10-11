@@ -1,3 +1,4 @@
+import '../../../cgflix/cgflix_menus.dart'; // CGFLIX
 import '../../../cgflix/cgflix_feedback.dart'; // CGFLIX: destaque lilás no player
 import 'dart:async';
 import 'dart:io';
@@ -668,13 +669,13 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
   IconData _getIcon() {
     switch (_currentView) {
       case _SettingsView.menu:
-        return Symbols.tune_rounded;
+        return Symbols.settings_rounded; // CGFLIX: o mesmo do botão
       case _SettingsView.speed:
         return Symbols.speed_rounded;
       case _SettingsView.zoom:
         return Symbols.zoom_in_rounded;
       case _SettingsView.versionQuality:
-        return Symbols.art_track_rounded;
+        return Symbols.high_quality_rounded; // CGFLIX
       case _SettingsView.sleep:
         return Symbols.bedtime_rounded;
       case _SettingsView.audioDevice:
@@ -802,6 +803,16 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
     return ListView(
       shrinkWrap: true,
       children: [
+        // CGFLIX (refino 2): qualidade, velocidade e próximo episódio em cima; som e imagem depois.
+        if (_hasVersionQuality)
+          _SettingsMenuItem(
+            icon: Symbols.high_quality_rounded,
+            title: _versionQualityTitle(),
+            valueText: _versionQualityValueText(),
+            allowValueOverflow: true,
+            onTap: () => _navigateTo(_SettingsView.versionQuality),
+          ),
+
         // Playback Speed - hidden for live TV and when user cannot control playback
         if (_state.canControl && !_state.isLive)
           StreamBuilder<double>(
@@ -818,6 +829,12 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             },
           ),
 
+        _SettingsToggleItem(
+          pref: SettingsService.autoPlayNextEpisode,
+          icon: Symbols.skip_next_rounded,
+          title: t.videoControls.autoPlayNext,
+        ),
+
         if (_state.onVideoZoomChanged != null || _state.onResetVideoZoom != null)
           _SettingsMenuItem(
             icon: Symbols.zoom_in_rounded,
@@ -825,15 +842,6 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
             valueText: _formatZoomScale(_zoomScale),
             isHighlighted: (_zoomScale - 1.0).abs() > 0.0001,
             onTap: () => _navigateTo(_SettingsView.zoom),
-          ),
-
-        if (_hasVersionQuality)
-          _SettingsMenuItem(
-            icon: Symbols.art_track_rounded,
-            title: _versionQualityTitle(),
-            valueText: _versionQualityValueText(),
-            allowValueOverflow: true,
-            onTap: () => _navigateTo(_SettingsView.versionQuality),
           ),
 
         // Sleep Timer
@@ -851,8 +859,9 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           },
         ),
 
+        const CgflixSheetHeader(cgflixSheetHeaderSound), // CGFLIX
         _SettingsMenuItem(
-          icon: Symbols.sync_rounded,
+          icon: Symbols.av_timer_rounded, // CGFLIX
           title: t.videoSettings.audioSync,
           valueText: formatSyncOffset(_audioSyncOffset.toDouble()),
           isHighlighted: _audioSyncOffset != 0,
@@ -865,31 +874,6 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           valueText: formatSyncOffset(_subtitleSyncOffset.toDouble()),
           isHighlighted: _subtitleSyncOffset != 0,
           onTap: () => _openSyncBar(isSubtitle: true),
-        ),
-
-        if (_supportsHdrControl)
-          _SettingsToggleItem(
-            pref: SettingsService.enableHDR,
-            icon: Symbols.hdr_strong_rounded,
-            title: t.videoSettings.hdr,
-            onAfterWrite: _setHdrEnabled,
-          ),
-
-        // Only meaningful where the plane can actually carry HDR, and only the
-        // Linux plane lets us pick the curve: elsewhere the platform decides who
-        // tone-maps.
-        if (_supportsHdrControl && PlayerNative.usesLinuxVideoPlane)
-          _SettingsMenuItem(
-            icon: Symbols.tonality_rounded,
-            title: t.videoSettings.hdrToneMapping,
-            valueText: _formatHdrToneMapping(_hdrToneMapping),
-            onTap: () => _navigateTo(_SettingsView.hdrToneMapping),
-          ),
-
-        _SettingsToggleItem(
-          pref: SettingsService.autoPlayNextEpisode,
-          icon: Symbols.skip_next_rounded,
-          title: t.videoControls.autoPlayNext,
         ),
 
         if (isDesktop)
@@ -923,7 +907,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
 
         _SettingsToggleItem(
           pref: SettingsService.audioNormalization,
-          icon: Symbols.graphic_eq_rounded,
+          icon: Symbols.equalizer_rounded, // CGFLIX
           title: t.videoSettings.audioNormalization,
           // Normalization wins over passthrough; say so where passthrough
           // exists. Android also folds the track to stereo ahead of loudnorm
@@ -944,6 +928,27 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
           isHighlighted: _displayedAudioChannelLimit != AudioChannelLimit.original,
           onTap: () => _navigateTo(_SettingsView.audioChannelLimit),
         ),
+
+        const CgflixSheetHeader(cgflixSheetHeaderPicture), // CGFLIX
+        if (_supportsHdrControl)
+          _SettingsToggleItem(
+            pref: SettingsService.enableHDR,
+            icon: Symbols.hdr_strong_rounded,
+            title: t.videoSettings.hdr,
+            onAfterWrite: _setHdrEnabled,
+          ),
+
+        // CGFLIX: HDR desceu para "Imagem e técnico"
+        // Only meaningful where the plane can actually carry HDR, and only the
+        // Linux plane lets us pick the curve: elsewhere the platform decides who
+        // tone-maps.
+        if (_supportsHdrControl && PlayerNative.usesLinuxVideoPlane)
+          _SettingsMenuItem(
+            icon: Symbols.tonality_rounded,
+            title: t.videoSettings.hdrToneMapping,
+            valueText: _formatHdrToneMapping(_hdrToneMapping),
+            onTap: () => _navigateTo(_SettingsView.hdrToneMapping),
+          ),
 
         // Shader Preset (MPV only)
         if (_state.shaderService != null && _state.shaderService!.isSupported)
@@ -989,7 +994,7 @@ class _VideoSettingsSheetState extends State<VideoSettingsSheet> {
         // library's File Info entry. Read-only, so Watch Together guests get it.
         if (_fileInfoClient() case final client?)
           _SettingsMenuItem(
-            icon: Symbols.info_rounded,
+            icon: Symbols.description_rounded, // CGFLIX
             title: t.mediaMenu.fileInfo,
             valueText: '',
             onTap: () => unawaited(

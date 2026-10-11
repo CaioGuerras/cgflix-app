@@ -298,7 +298,7 @@ class _CgflixDicaPlayerState extends State<CgflixDicaPlayer> {
         behavior: HitTestBehavior.opaque,
         onTap: _fechar,
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 440, minHeight: 48),
+          constraints: const BoxConstraints(maxWidth: 600, minHeight: 48),
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
           decoration: BoxDecoration(
             // Player é sempre escuro: cartão escuro translúcido, texto branco.
@@ -324,7 +324,8 @@ class _CgflixDicaPlayerState extends State<CgflixDicaPlayer> {
       ),
     );
     return Align(
-      alignment: const Alignment(0, 0.55),
+      // Acima do centro: não cobre o play/pausa nem a barra de tempo.
+      alignment: const Alignment(0, -0.42),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: reduzir
