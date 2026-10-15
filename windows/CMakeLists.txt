@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(plezy LANGUAGES CXX)
+project(cgflix LANGUAGES CXX)
 
 # libmpv comes from our unified build repository
 # (https://github.com/edde746/mpv-build), which publishes per-commit,
@@ -99,7 +99,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(simdutf)
 
-set(BINARY_NAME "plezy")
+set(BINARY_NAME "cgflix")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

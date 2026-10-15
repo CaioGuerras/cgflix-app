@@ -39,10 +39,10 @@ Source: "staging\arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
     }
 
     return @"
-#define Name "Plezy"
+#define Name "CGFLIX"
 #define Version "$Version"
-#define Publisher "edde746"
-#define ExeName "plezy.exe"
+#define Publisher "CGFLIX"
+#define ExeName "cgflix.exe"
 
 [Setup]
 AppId={{$AppGuid}
@@ -53,7 +53,7 @@ DefaultDirName={autopf}\{#Name}
 DefaultGroupName={#Name}
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=plezy-windows-installer
+OutputBaseFilename=cgflix-windows-installer
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -286,11 +286,14 @@ if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
 
 if ($HasX64) {
     Write-Host "`nCreating x64 portable archive..." -ForegroundColor Cyan
-    $X64Portable = Join-Path $ResolvedOutput "plezy-windows-x64-portable.7z"
+    $X64Portable = Join-Path $ResolvedOutput "cgflix-windows-x64-portable.zip"
+    $X64Portable7z = Join-Path $ResolvedOutput "cgflix-windows-x64-portable.7z"
     Push-Location $X64BuildDir
     try {
         if (Test-Path $X64Portable) { Remove-Item $X64Portable -Force }
-        7z a -mx=9 $X64Portable *
+        if (Test-Path $X64Portable7z) { Remove-Item $X64Portable7z -Force }
+        Compress-Archive -Path * -DestinationPath $X64Portable -Force
+        7z a -mx=9 $X64Portable7z *
         Write-Host "Created: $X64Portable" -ForegroundColor Green
     } finally {
         Pop-Location
@@ -299,11 +302,14 @@ if ($HasX64) {
 
 if ($HasArm64) {
     Write-Host "`nCreating arm64 portable archive..." -ForegroundColor Cyan
-    $Arm64Portable = Join-Path $ResolvedOutput "plezy-windows-arm64-portable.7z"
+    $Arm64Portable = Join-Path $ResolvedOutput "cgflix-windows-arm64-portable.zip"
+    $Arm64Portable7z = Join-Path $ResolvedOutput "cgflix-windows-arm64-portable.7z"
     Push-Location $Arm64BuildDir
     try {
         if (Test-Path $Arm64Portable) { Remove-Item $Arm64Portable -Force }
-        7z a -mx=9 $Arm64Portable *
+        if (Test-Path $Arm64Portable7z) { Remove-Item $Arm64Portable7z -Force }
+        Compress-Archive -Path * -DestinationPath $Arm64Portable -Force
+        7z a -mx=9 $Arm64Portable7z *
         Write-Host "Created: $Arm64Portable" -ForegroundColor Green
     } finally {
         Pop-Location
@@ -362,4 +368,4 @@ Remove-Item $StagingDir -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host "`nBuild complete!" -ForegroundColor Green
 if ($HasX64)   { Write-Host "Portable (x64):   $X64Portable" -ForegroundColor White }
 if ($HasArm64) { Write-Host "Portable (arm64): $Arm64Portable" -ForegroundColor White }
-Write-Host "Installer:        $(Join-Path $ResolvedOutput 'plezy-windows-installer.exe')" -ForegroundColor White
+Write-Host "Installer:        $(Join-Path $ResolvedOutput 'cgflix-windows-installer.exe')" -ForegroundColor White
