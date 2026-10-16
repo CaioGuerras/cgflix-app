@@ -238,7 +238,7 @@ class _CgflixMinhaContaScreenState extends State<CgflixMinhaContaScreen> {
             _CampoSenha(
               key: const ValueKey('cgflix-conta-senha-atual'),
               controller: _atual,
-              rotulo: 'Senha atual',
+              rotulo: 'Senha atual (vazia se você não tem)',
               autofill: AutofillHints.password,
             ),
             const SizedBox(height: 12),

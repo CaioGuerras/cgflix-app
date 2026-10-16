@@ -2,16 +2,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/cgflix/cgflix_login_checks.dart';
 
 void main() {
-  group('usuário e senha', () {
-    test('vazios pedem para preencher', () {
-      expect(cgflixLoginMissing('', ''), cgflixLoginMissingMessage);
-      expect(cgflixLoginMissing('  ', 'x'), cgflixLoginMissingMessage);
-      expect(cgflixLoginMissing('maria', ''), cgflixLoginMissingMessage);
-      expect(cgflixLoginMissingMessage, 'Preencha o usuário e a senha.');
+  group('usuário', () {
+    test('vazio pede para preencher', () {
+      expect(cgflixLoginMissing(''), cgflixLoginMissingMessage);
+      expect(cgflixLoginMissing('  '), cgflixLoginMissingMessage);
+      expect(cgflixLoginMissingMessage, 'Preencha o usuário.');
     });
 
-    test('preenchidos seguem para o servidor', () {
-      expect(cgflixLoginMissing('maria', 'segredo'), isNull);
+    test('preenchido segue para o servidor, com ou sem senha', () {
+      expect(cgflixLoginMissing('maria'), isNull);
     });
   });
 

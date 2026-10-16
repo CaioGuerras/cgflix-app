@@ -278,7 +278,7 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
 
   Future<void> _signIn() async {
     // CGFLIX: campo vazio = mensagem clara em português, sem ir ao servidor.
-    if (cgflixLoginMissing(_usernameController.text, _passwordController.text) case final missing?) {
+    if (cgflixLoginMissing(_usernameController.text) case final missing?) {
       setErrorText(missing);
       return;
     }
@@ -585,6 +585,7 @@ class _AddJellyfinScreenState extends State<AddJellyfinScreen>
           onFieldSubmitted: busy ? null : (_) => _signIn(),
           decoration: InputDecoration(
             labelText: t.addServer.password,
+            helperText: 'Deixe vazio se a sua conta não tem senha.', // CGFLIX: a maioria das contas não tem
             prefixIcon: const AppIcon(Symbols.lock_rounded, fill: 1),
             suffixIcon: cgflixPasswordToggle(_cgflixShowPassword, () => setState(() => _cgflixShowPassword ^= true)),
           ),

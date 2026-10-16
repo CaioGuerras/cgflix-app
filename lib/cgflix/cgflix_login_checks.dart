@@ -5,15 +5,14 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../widgets/app_icon.dart';
 
-const cgflixLoginMissingMessage = 'Preencha o usuário e a senha.';
+const cgflixLoginMissingMessage = 'Preencha o usuário.';
 const cgflixServerEmptyMessage = 'Digite o endereço do servidor, por exemplo https://seu.servidor.com';
 const cgflixServerInvalidMessage =
     'Esse endereço não parece certo. Confira se digitou tudo, por exemplo https://seu.servidor.com';
 
-/// Usuário ou senha vazios. Nulo = pode ir ao servidor. (Os servidores do CGFLIX não têm conta
-/// sem senha; o upstream aceitava senha vazia.)
-String? cgflixLoginMissing(String username, String password) =>
-    username.trim().isEmpty || password.isEmpty ? cgflixLoginMissingMessage : null;
+/// Usuário vazio. Nulo = pode ir ao servidor. A senha pode ficar vazia: o Jellyfin tem conta sem
+/// senha (Caio, 16/10/2026: o 1.5.0 recusava esses usuários).
+String? cgflixLoginMissing(String username) => username.trim().isEmpty ? cgflixLoginMissingMessage : null;
 
 /// Endereço do servidor vazio ou que não tem como ser um endereço (espaço no meio, sem nome,
 /// símbolos). Aceita sem `https://` (o app completa) e com porta. Nulo = pode procurar.
