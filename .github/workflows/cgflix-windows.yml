@@ -58,13 +58,19 @@ jobs:
           }
           Get-ChildItem $bundleDir | Select-Object Name
 
-      - name: Pacote Portátil (.zip)
+      - name: Pacote Portátil (.zip) e Instalador (.exe)
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist
-          $bundleDir = (Resolve-Path "build/windows/x64/runner/Release").Path
-          Compress-Archive -Path "$bundleDir\*" -DestinationPath "dist/cgflix-windows-x64-portable.zip" -Force
+          .\windows\build-installer.ps1 -OutputDir dist -Version "1.6.2" -X64BuildDir "build/windows/x64/runner/Release"
           Get-ChildItem dist
+
+      - name: Upload Artifact Instalador Oficial
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: cgflix-windows-installer
+          path: dist/cgflix-windows-installer.exe
+          if-no-files-found: error
 
       - name: Upload Artifact Portátil
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -80,4 +86,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --title "CGFLIX $GITHUB_REF_NAME" --generate-notes
-          gh release upload "$GITHUB_REF_NAME" dist/cgflix-windows-x64-portable.zip --clobber
+          gh release upload "$GITHUB_REF_NAME" dist/cgflix-windows-installer.exe dist/cgflix-windows-x64-portable.zip --clobber

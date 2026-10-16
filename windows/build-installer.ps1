@@ -17,7 +17,8 @@ function New-InnoSetupScript {
     param(
         [Parameter(Mandatory)][string]$Version,
         [Parameter(Mandatory)][bool]$HasX64,
-        [Parameter(Mandatory)][bool]$HasArm64
+        [Parameter(Mandatory)][bool]$HasArm64,
+        [string]$OutputDir = "."
     )
 
     # Uninstall registry keys are named "{AppId}_is1", so the installer and the
@@ -52,7 +53,7 @@ AppPublisher={#Publisher}
 DefaultDirName={autopf}\{#Name}
 DefaultGroupName={#Name}
 AllowNoIcons=yes
-OutputDir=.
+OutputDir=$OutputDir
 OutputBaseFilename=cgflix-windows-installer
 Compression=lzma
 SolidCompression=yes
@@ -68,7 +69,7 @@ ArchitecturesInstallIn64BitMode=$ArchAllowed
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-ElevationRequired=Plezy is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://github.com/edde746/plezy/releases/latest
+ElevationRequired=CGFLIX is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://netflix.docaio.com.br/app
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -87,7 +88,7 @@ Filename: "{app}\{#ExeName}"; Description: "{cm:LaunchProgram,{#Name}}"; Flags: 
 [Code]
 const
   UninstallSubkey = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{$AppGuid}_is1';
-  WriteProbeName = 'plezy-write-probe.tmp';
+  WriteProbeName = 'cgflix-write-probe.tmp';
 
 function IsNoRun: Boolean;
 begin
@@ -207,7 +208,7 @@ begin
 
     { A machine-wide install that took over a directory registered per-user
       leaves that user's uninstall entry and Start Menu group pointing at files
-      this install now owns, listing Plezy twice in Apps & Features. }
+      this install now owns, listing CGFLIX twice in Apps & Features. }
     if IsAdminInstallMode then
     begin
       if RegQueryStringValue(HKCU, UninstallSubkey, 'Inno Setup: App Path', PreviousDir) and
@@ -260,7 +261,7 @@ $SetupScript = "setup.iss"
 if ($EmitScriptOnly) {
     $EmittedScript = Join-Path $ResolvedOutput $SetupScript
     Write-Host "`nGenerating Inno Setup script only..." -ForegroundColor Cyan
-    New-InnoSetupScript -Version $Version -HasX64 ([bool]$HasX64) -HasArm64 ([bool]$HasArm64) |
+    New-InnoSetupScript -Version $Version -HasX64 ([bool]$HasX64) -HasArm64 ([bool]$HasArm64) -OutputDir $ResolvedOutput |
         Out-File -FilePath $EmittedScript -Encoding ASCII
     Write-Host "Created: $EmittedScript" -ForegroundColor Green
     exit 0
@@ -268,19 +269,14 @@ if ($EmitScriptOnly) {
 
 Write-Host "`nChecking for 7-Zip..." -ForegroundColor Cyan
 if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
-    Write-Host "7-Zip not found in PATH. Installing via Chocolatey..." -ForegroundColor Yellow
-
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Error "Chocolatey is not installed. Please install it from https://chocolatey.org/install"
-        exit 1
-    }
-
-    choco install 7zip -y
-    refreshenv
-
-    if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
-        Write-Error "Failed to install 7-Zip"
-        exit 1
+    if (Test-Path "C:\Program Files\7-Zip\7z.exe") {
+        $env:Path += ";C:\Program Files\7-Zip"
+    } elseif (Get-Command choco -ErrorAction SilentlyContinue) {
+        Write-Host "7-Zip not found in PATH. Installing via Chocolatey..." -ForegroundColor Yellow
+        choco install 7zip -y
+        if (Test-Path "C:\Program Files\7-Zip\7z.exe") {
+            $env:Path += ";C:\Program Files\7-Zip"
+        }
     }
 }
 
@@ -293,7 +289,9 @@ if ($HasX64) {
         if (Test-Path $X64Portable) { Remove-Item $X64Portable -Force }
         if (Test-Path $X64Portable7z) { Remove-Item $X64Portable7z -Force }
         Compress-Archive -Path * -DestinationPath $X64Portable -Force
-        7z a -mx=9 $X64Portable7z *
+        if (Get-Command 7z -ErrorAction SilentlyContinue) {
+            7z a -mx=9 $X64Portable7z *
+        }
         Write-Host "Created: $X64Portable" -ForegroundColor Green
     } finally {
         Pop-Location
@@ -309,7 +307,9 @@ if ($HasArm64) {
         if (Test-Path $Arm64Portable) { Remove-Item $Arm64Portable -Force }
         if (Test-Path $Arm64Portable7z) { Remove-Item $Arm64Portable7z -Force }
         Compress-Archive -Path * -DestinationPath $Arm64Portable -Force
-        7z a -mx=9 $Arm64Portable7z *
+        if (Get-Command 7z -ErrorAction SilentlyContinue) {
+            7z a -mx=9 $Arm64Portable7z *
+        }
         Write-Host "Created: $Arm64Portable" -ForegroundColor Green
     } finally {
         Pop-Location
@@ -332,7 +332,7 @@ if ($HasArm64) {
 }
 
 Write-Host "`nGenerating Inno Setup script..." -ForegroundColor Cyan
-New-InnoSetupScript -Version $Version -HasX64 ([bool]$HasX64) -HasArm64 ([bool]$HasArm64) |
+New-InnoSetupScript -Version $Version -HasX64 ([bool]$HasX64) -HasArm64 ([bool]$HasArm64) -OutputDir $ResolvedOutput |
     Out-File -FilePath $SetupScript -Encoding ASCII
 Write-Host "Created: $SetupScript" -ForegroundColor Green
 
@@ -340,27 +340,38 @@ Write-Host "`nChecking for Inno Setup..." -ForegroundColor Cyan
 $InnoSetupPath = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
 
 if (-not (Test-Path $InnoSetupPath)) {
-    Write-Host "Inno Setup not found. Installing via Chocolatey..." -ForegroundColor Yellow
-
-    if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-        Write-Error "Chocolatey is not installed. Please install it from https://chocolatey.org/install"
-        exit 1
-    }
-
-    choco install innosetup -y
-
-    if (-not (Test-Path $InnoSetupPath)) {
-        Write-Error "Failed to install Inno Setup"
-        exit 1
+    if (Get-Command ISCC.exe -ErrorAction SilentlyContinue) {
+        $InnoSetupPath = (Get-Command ISCC.exe).Source
+    } elseif (Get-Command choco -ErrorAction SilentlyContinue) {
+        Write-Host "Inno Setup not found. Installing via Chocolatey..." -ForegroundColor Yellow
+        choco install innosetup --allow-empty-checksums -y
+        if (Test-Path $InnoSetupPath) {
+            Write-Host "Inno Setup installed at $InnoSetupPath" -ForegroundColor Green
+        }
     }
 }
 
+if (-not (Test-Path $InnoSetupPath) -and -not (Get-Command ISCC.exe -ErrorAction SilentlyContinue)) {
+    Write-Error "Failed to locate or install Inno Setup (ISCC.exe)"
+    exit 1
+}
+
 Write-Host "`nBuilding installer with Inno Setup..." -ForegroundColor Cyan
-& $InnoSetupPath $SetupScript
+if (Test-Path $InnoSetupPath) {
+    & $InnoSetupPath $SetupScript
+} else {
+    ISCC.exe $SetupScript
+}
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Inno Setup compilation failed"
     exit 1
+}
+
+# Ensure installer is in output directory if Inno outputted to root
+$ExpectedInstaller = Join-Path $ResolvedOutput 'cgflix-windows-installer.exe'
+if (-not (Test-Path $ExpectedInstaller) -and (Test-Path 'cgflix-windows-installer.exe')) {
+    Move-Item 'cgflix-windows-installer.exe' $ResolvedOutput -Force
 }
 
 Remove-Item $StagingDir -Recurse -Force -ErrorAction SilentlyContinue
@@ -368,4 +379,4 @@ Remove-Item $StagingDir -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host "`nBuild complete!" -ForegroundColor Green
 if ($HasX64)   { Write-Host "Portable (x64):   $X64Portable" -ForegroundColor White }
 if ($HasArm64) { Write-Host "Portable (arm64): $Arm64Portable" -ForegroundColor White }
-Write-Host "Installer:        $(Join-Path $ResolvedOutput 'cgflix-windows-installer.exe')" -ForegroundColor White
+Write-Host "Installer:        $ExpectedInstaller" -ForegroundColor White
