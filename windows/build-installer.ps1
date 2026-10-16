@@ -66,10 +66,12 @@ ArchitecturesAllowed=$ArchAllowed
 ArchitecturesInstallIn64BitMode=$ArchAllowed
 
 [Languages]
+Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-ElevationRequired=CGFLIX is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://netflix.docaio.com.br/app
+english.ElevationRequired=CGFLIX is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://netflix.docaio.com.br/app
+brazilianportuguese.ElevationRequired=O CGFLIX está instalado em %1, o que requer privilégios de administrador para atualizar.%n%nExecute este instalador novamente usando "Executar como administrador" ou baixe o instalador mais recente em https://netflix.docaio.com.br/app
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked

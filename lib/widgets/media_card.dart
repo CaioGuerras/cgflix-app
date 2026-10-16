@@ -857,6 +857,7 @@ class _MediaCardList extends StatelessWidget {
         onSecondaryTapDown: onSecondaryTapDown,
         onSecondaryTap: onSecondaryTap,
         borderRadius: BorderRadius.circular(tokens(context).radiusSm),
+        disableHoverScale: true,
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Row(
@@ -1581,7 +1582,7 @@ class SkeletonLoader extends StatelessWidget {
 /// that adds up while scrolling card grids.
 /// Keyboard focus is handled by the focus wrappers either way
 /// (canRequestFocus stays false on the InkWell).
-class _CardTapRegion extends StatelessWidget {
+class _CardTapRegion extends StatefulWidget {
   const _CardTapRegion({
     required this.onTap,
     this.onTapDown,
@@ -1589,6 +1590,7 @@ class _CardTapRegion extends StatelessWidget {
     this.onSecondaryTap,
     this.onSecondaryTapDown,
     this.borderRadius,
+    this.disableHoverScale = false,
     required this.child,
   });
 
@@ -1598,7 +1600,15 @@ class _CardTapRegion extends StatelessWidget {
   final VoidCallback? onSecondaryTap;
   final GestureTapDownCallback? onSecondaryTapDown;
   final BorderRadius? borderRadius;
+  final bool disableHoverScale;
   final Widget child;
+
+  @override
+  State<_CardTapRegion> createState() => _CardTapRegionState();
+}
+
+class _CardTapRegionState extends State<_CardTapRegion> {
+  bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -1606,25 +1616,54 @@ class _CardTapRegion extends StatelessWidget {
       return GestureDetector(
         excludeFromSemantics: true,
         behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        onTapDown: onTapDown,
-        onLongPress: onLongPress,
-        onSecondaryTap: onSecondaryTap,
-        onSecondaryTapDown: onSecondaryTapDown,
-        child: child,
+        onTap: widget.onTap,
+        onTapDown: widget.onTapDown,
+        onLongPress: widget.onLongPress,
+        onSecondaryTap: widget.onSecondaryTap,
+        onSecondaryTapDown: widget.onSecondaryTapDown,
+        child: widget.child,
       );
     }
-    return InkWell(
-      excludeFromSemantics: true,
-      mouseCursor: SystemMouseCursors.click,
-      canRequestFocus: false,
-      onTap: onTap,
-      onTapDown: onTapDown,
-      onLongPress: onLongPress,
-      onSecondaryTapDown: onSecondaryTapDown,
-      onSecondaryTap: onSecondaryTap,
-      borderRadius: borderRadius,
-      child: child,
+
+    final isScaled = _isHovered && !widget.disableHoverScale;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedScale(
+        scale: isScaled ? 1.04 : 1.0,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            borderRadius: widget.borderRadius,
+            boxShadow: isScaled
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.45),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : const [],
+          ),
+          child: InkWell(
+            excludeFromSemantics: true,
+            mouseCursor: SystemMouseCursors.click,
+            canRequestFocus: false,
+            onTap: widget.onTap,
+            onTapDown: widget.onTapDown,
+            onLongPress: widget.onLongPress,
+            onSecondaryTapDown: widget.onSecondaryTapDown,
+            onSecondaryTap: widget.onSecondaryTap,
+            borderRadius: widget.borderRadius,
+            child: widget.child,
+          ),
+        ),
+      ),
     );
   }
 }
